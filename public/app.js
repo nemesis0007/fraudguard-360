@@ -173,17 +173,24 @@ async function runArena() {
 }
 
 async function initialize() {
-  const [catalog, health, fidelity, evidence] = await Promise.all([
-    api("/api/v1/attack/catalog"), api("/api/v1/model/health"), api("/api/v1/fidelity/report"), api("/api/v1/data/evidence")
+  const [catalog, health] = await Promise.all([
+    api("/api/v1/attack/catalog"), api("/api/v1/model/health")
   ]);
   state.catalog = catalog; state.health = health;
   $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
   $("#scenario").value = "SYNID_001";
   $("#modelMetric").textContent = health.status;
   $("#modelVersion").textContent = health.model_version.replace("fg-linear-", "FG-").slice(0, 14).toUpperCase();
-  $("#fidelityMetric").textContent = `${fidelity.passed} / ${fidelity.checks.length}`;
-  const statuses = new Map(evidence.layers.map((item) => [item.id, item.status]));
-  if (statuses.get("public") !== "REFERENCE_ONLY") toast("Evidence manifest changed; review provenance labels.");
+  const [fidelityResult, evidenceResult] = await Promise.allSettled([
+    api("/api/v1/fidelity/report"), api("/api/v1/data/evidence")
+  ]);
+  if (fidelityResult.status === "fulfilled") {
+    $("#fidelityMetric").textContent = `${fidelityResult.value.passed} / ${fidelityResult.value.checks.length}`;
+  }
+  if (evidenceResult.status === "fulfilled") {
+    const statuses = new Map(evidenceResult.value.layers.map((item) => [item.id, item.status]));
+    if (statuses.get("public") !== "REFERENCE_ONLY") toast("Evidence manifest changed; review provenance labels.");
+  }
   await runArena();
 }
 
