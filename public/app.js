@@ -1,5 +1,6 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], health: null, arena: null, graphNodes: [], animation: 0 };
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
 async function api(path, options = {}) {
   const response = await fetch(path, { headers: { "content-type": "application/json" }, ...options });
@@ -129,6 +130,64 @@ function renderReceipt(receipt) {
   $("#receipt").innerHTML = `<div class="receipt-risk"><strong>${receipt.risk_score}</strong><span>/ 100 FUSED RISK<br>${escapeHtml(receipt.transaction_id)}</span><b>${escapeHtml(receipt.decision)}</b></div><div class="receipt-lines"><div><span>Transaction model</span><b>${receipt.transaction_score}</b></div><div><span>Graph signal</span><b>${receipt.graph_score}</b></div><div><span>Amount</span><b>${money(receipt.amount)}</b></div><div><span>Ground truth</span><b>${receipt.is_fraud ? "SYNTHETIC ATTACK" : "BENIGN"}</b></div></div><div class="reason-chips">${receipt.reason_codes.map((code) => `<span>${escapeHtml(code.replaceAll("_", " "))}</span>`).join("")}</div>`;
 }
 
+function renderKillChain(campaign, target = "#killChain") {
+  const container = $(target);
+  if (!container) return;
+  container.innerHTML = campaign.kill_chain.map((stage, index) => `<div class="${target === "#killChain" ? "kill-stage" : ""}"><small>0${index + 1} / ${escapeHtml(stage.phase)}</small><b>${escapeHtml(stage.title)}</b><span>${escapeHtml(stage.observable)}</span></div>`).join("");
+}
+
+function renderFingerprint(fingerprint) {
+  Object.entries(fingerprint).forEach(([signal, value]) => {
+    const name = signal[0].toUpperCase() + signal.slice(1);
+    const bar = $(`#signal${name}`); const output = $(`#signal${name}Value`);
+    if (bar) bar.style.width = `${value}%`;
+    if (output) output.textContent = value;
+  });
+}
+
+function renderCampaignPreview(campaign) {
+  const index = Math.max(0, state.catalog.findIndex((item) => item.id === campaign.id || item.id === campaign.campaign_id));
+  $("#campaignNumber").textContent = `CAMPAIGN ${String(index + 1).padStart(2, "0")} / ${String(state.catalog.length).padStart(2, "0")}`;
+  $("#campaignCodename").textContent = campaign.codename.toUpperCase();
+  $("#campaignName").textContent = campaign.name ?? campaign.label;
+  $("#campaignThesis").textContent = campaign.thesis;
+  $("#campaignNovelty").textContent = campaign.novelty;
+  $("#campaignDifficulty").textContent = campaign.difficulty;
+  $("#activeTactic").textContent = campaign.ai_enabler ?? campaign.tactic;
+  $("#campaignChannels").innerHTML = campaign.channels.map((channel) => `<span>${escapeHtml(channel)}</span>`).join("");
+  $("#defenseControls").innerHTML = campaign.defenses.map((defense) => `<span>${escapeHtml(defense)}</span>`).join("");
+  renderKillChain(campaign);
+  renderFingerprint(campaign.fingerprint);
+}
+
+function renderSpotlight(campaign) {
+  const index = state.catalog.findIndex((item) => item.id === campaign.id);
+  $("#spotlightIndex").textContent = `${String(index + 1).padStart(2, "0")} / ${String(state.catalog.length).padStart(2, "0")}`;
+  $("#spotlightNovelty").textContent = `NOVELTY ${campaign.novelty}`;
+  $("#spotlightCodename").textContent = campaign.codename.toUpperCase();
+  $("#spotlightName").textContent = campaign.name;
+  $("#spotlightThesis").textContent = campaign.thesis;
+  $("#spotlightEnabler").textContent = campaign.ai_enabler;
+  $("#spotlightChannels").textContent = campaign.channels.join(" · ");
+  renderKillChain(campaign, "#spotlightChain");
+  document.querySelectorAll(".campaign-card").forEach((card) => card.classList.toggle("active", card.dataset.campaignId === campaign.id));
+}
+
+function renderCampaignAtlas(campaigns) {
+  $("#campaignCards").innerHTML = campaigns.map((campaign, index) => `<button class="campaign-card${index === 0 ? " active" : ""}" data-campaign-id="${escapeHtml(campaign.id)}"><small>${String(index + 1).padStart(2, "0")} · ${escapeHtml(campaign.codename.toUpperCase())}</small><b>${escapeHtml(campaign.name)}</b><span>N${campaign.novelty} · D${campaign.difficulty}</span></button>`).join("");
+  renderSpotlight(campaigns[0]);
+}
+
+function renderAgentTrace(trace, scale) {
+  $("#scaleLabel").textContent = `${scale.events_materialized} materialized events · ${scale.virtual_population.toLocaleString()} virtual population · ${scale.parallel_agents} parallel agents`;
+  $("#agentTrace").innerHTML = trace.map((step) => `<div class="agent-step ${step.state === "ADAPTED" ? "adapted" : ""}"><small>${escapeHtml(step.agent)} · ${escapeHtml(step.state)}</small><b>${escapeHtml(step.action)}</b><span>${escapeHtml(step.evidence)}</span><em>TRACE SEALED</em></div>`).join("");
+}
+
+function renderCoverage(coverage) {
+  $("#coverageLedger").innerHTML = coverage.pillars.map((pillar) => `<article class="ledger-card"><div class="ledger-score" style="--score:${pillar.score}"><b>${pillar.score}</b></div><small>${escapeHtml(pillar.id)} / PROOF</small><h3>${escapeHtml(pillar.label)}</h3><ul>${pillar.proof.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></article>`).join("");
+  $("#pilotGaps").innerHTML = coverage.gaps_before_pilot.map((gap) => `<b>${escapeHtml(gap)}</b>`).join("");
+}
+
 function renderArena(data) {
   state.arena = data;
   const baseline = data.rounds.find((round) => round.id === "BASELINE").metrics;
@@ -140,7 +199,6 @@ function renderArena(data) {
   $("#exposureReduction").textContent = percentage(data.outcome.escaped_value_reduction);
   $("#detectionLatency").textContent = `${data.outcome.estimated_detection_latency_ms} ms`;
   $("#attackerBudget").textContent = money(data.controls.attacker_budget);
-  $("#activeTactic").textContent = data.scenario.tactic.replaceAll("_", " ").toLowerCase();
   $("#motifLabel").textContent = data.graph.motif.replaceAll("_", " ").toLowerCase();
   $("#graphStats").textContent = `${data.graph.nodes.length} entities · ${data.graph.edges.length} relationships`;
   $("#baselineValue").textContent = money(baseline.payment_value);
@@ -148,6 +206,8 @@ function renderArena(data) {
   $("#adaptedPrevented").textContent = money(adapted.prevented_value);
   $("#adaptedEscaped").textContent = money(adapted.escaped_value);
   $("#graphEmpty").classList.add("hidden");
+  renderCampaignPreview({ ...data.scenario, id: data.scenario.campaign_id, name: data.scenario.label, ai_enabler: data.scenario.tactic });
+  renderAgentTrace(data.agent_trace, data.simulation_scale);
   renderTimeline(data.timeline);
   renderReceipt(data.decision_receipts[0]);
 }
@@ -157,7 +217,7 @@ async function runArena() {
   button.disabled = true; button.firstChild.textContent = "Simulating ";
   try {
     const payload = {
-      scenarioId: $("#scenario").value,
+      campaignId: $("#scenario").value,
       volume: 130,
       seed: 42,
       aggression: Number($("#aggression").value) / 100,
@@ -174,15 +234,17 @@ async function runArena() {
 
 async function initialize() {
   const [catalog, health] = await Promise.all([
-    api("/api/v1/attack/catalog"), api("/api/v1/model/health")
+    api("/api/v1/campaign/catalog"), api("/api/v1/model/health")
   ]);
   state.catalog = catalog; state.health = health;
-  $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
-  $("#scenario").value = "SYNID_001";
+  $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
+  $("#scenario").value = catalog[0].id;
+  renderCampaignAtlas(catalog);
+  renderCampaignPreview(catalog[0]);
   $("#modelMetric").textContent = health.status;
   $("#modelVersion").textContent = health.model_version.replace("fg-linear-", "FG-").slice(0, 14).toUpperCase();
-  const [fidelityResult, evidenceResult] = await Promise.allSettled([
-    api("/api/v1/fidelity/report"), api("/api/v1/data/evidence")
+  const [fidelityResult, evidenceResult, coverageResult] = await Promise.allSettled([
+    api("/api/v1/fidelity/report"), api("/api/v1/data/evidence"), api("/api/v1/challenge/coverage")
   ]);
   if (fidelityResult.status === "fulfilled") {
     $("#fidelityMetric").textContent = `${fidelityResult.value.passed} / ${fidelityResult.value.checks.length}`;
@@ -191,7 +253,11 @@ async function initialize() {
     const statuses = new Map(evidenceResult.value.layers.map((item) => [item.id, item.status]));
     if (statuses.get("public") !== "REFERENCE_ONLY") toast("Evidence manifest changed; review provenance labels.");
   }
+  if (coverageResult.status === "fulfilled") renderCoverage(coverageResult.value);
   await runArena();
+  if (window.location.hash) {
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" })));
+  }
 }
 
 function bindControls() {
@@ -199,6 +265,17 @@ function bindControls() {
     $(input).addEventListener("input", () => { $(output).textContent = `${$(input).value}%`; if (input === "#aggression") $("#attackerBudget").textContent = money(25000 + Number($(input).value) / 100 * 175000); });
   });
   $("#graphDefense").addEventListener("change", () => { document.querySelector(".model-state .cyan").textContent = $("#graphDefense").checked ? "ACTIVE" : "DISABLED"; });
+  $("#scenario").addEventListener("change", () => {
+    const campaign = state.catalog.find((item) => item.id === $("#scenario").value);
+    if (campaign) { renderCampaignPreview(campaign); renderSpotlight(campaign); }
+  });
+  $("#campaignCards").addEventListener("click", (event) => {
+    const card = event.target.closest(".campaign-card");
+    if (!card) return;
+    const campaign = state.catalog.find((item) => item.id === card.dataset.campaignId);
+    if (campaign) { $("#scenario").value = campaign.id; renderSpotlight(campaign); renderCampaignPreview(campaign); }
+  });
+  $("#launchSpotlight").addEventListener("click", () => { $("#arena").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runArena, 450); });
   $("#runArena").addEventListener("click", runArena);
   ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { $("#arena").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runArena, 450); }));
   $("#graphCanvas").addEventListener("click", (event) => {

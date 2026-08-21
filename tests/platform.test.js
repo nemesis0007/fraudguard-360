@@ -82,3 +82,20 @@ test("hybrid evidence stack labels active, reference, and pilot data truthfully"
   assert.deepEqual(stack.layers.map((item) => item.status), ["ACTIVE", "REFERENCE_ONLY", "PILOT_REQUIRED"]);
   assert.equal(stack.layers[0].contains_pii, false);
 });
+
+test("AI-native campaign catalog exposes novelty, kill chain, and observable defenses", () => {
+  const platform = new FraudGuardPlatform();
+  const campaigns = platform.campaigns();
+  assert.equal(campaigns.length, 12);
+  assert.ok(campaigns.every((item) => item.ai_enabler && item.kill_chain.length === 4));
+  assert.ok(campaigns.every((item) => item.novelty >= 80 && item.difficulty >= 80));
+  assert.ok(campaigns.every((item) => Object.keys(item.fingerprint).length === 6));
+});
+
+test("campaign arena returns agent orchestration and challenge-scale evidence", () => {
+  const result = new FraudGuardPlatform().runArena({ campaignId: "AGENT_INTENT_001", volume: 70, seed: 33 });
+  assert.equal(result.scenario.codename, "Ghost Cart");
+  assert.equal(result.agent_trace.length, 5);
+  assert.equal(result.simulation_scale.events_materialized, 70);
+  assert.ok(result.simulation_scale.virtual_population > result.simulation_scale.events_materialized);
+});

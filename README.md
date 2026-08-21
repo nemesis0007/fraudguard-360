@@ -23,6 +23,8 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 - Quantified prevented-value lift, exposure reduction, customer friction, defender/attacker advantage, and decision receipts.
 - A realistic company site and interactive entity graph backed by the live API rather than hard-coded demo numbers.
 - A shared versioned API envelope and explicit hybrid-data provenance manifest.
+- A 12-campaign AI-native threat atlas with named AI enablers, payment surfaces, four-stage observable kill chains, novelty/difficulty scores, signal fingerprints, and expected controls.
+- A visible challenge proof ledger mapping the working prototype to Identify, Generate, Defend, and the closed learning loop.
 - Zero runtime dependencies, Node tests, Docker image, Compose health check, and GitHub Actions CI.
 
 ## Run it
@@ -57,6 +59,8 @@ All JSON responses use a shared envelope with `request_id`, `status`, `data`, an
 | --- | --- | --- |
 | `GET` | `/health` | Service and model health |
 | `GET` | `/api/v1/attack/catalog` | Structured attack catalog |
+| `GET` | `/api/v1/campaign/catalog` | AI-native campaigns, kill chains, signal fingerprints, and defenses |
+| `GET` | `/api/v1/challenge/coverage` | Visible proof and remaining gaps for each challenge pillar |
 | `POST` | `/api/v1/simulate` | Generate a traceable synthetic dataset |
 | `POST` | `/api/v1/score` | Score a live-style transaction |
 | `POST` | `/api/v1/evaluate` | Run a red-vs-blue evaluation |
@@ -74,10 +78,29 @@ Example arena request:
 ```bash
 curl -X POST http://localhost:8080/api/v1/arena/run \
   -H "content-type: application/json" \
-  -d '{"scenarioId":"SYNID_001","volume":130,"seed":42,"aggression":0.72,"stealth":0.64,"defenderStrength":0.78,"graphDefense":true}'
+  -d '{"campaignId":"AGENT_INTENT_001","volume":130,"seed":42,"aggression":0.72,"stealth":0.64,"defenderStrength":0.78,"graphDefense":true}'
 ```
 
 The response contains three comparable rounds, an entity graph, a forensic timeline, business-impact metrics, and explainable decision receipts. Inputs are bounded and high-level; the simulator does not expose operational instructions for committing fraud.
+
+## AI-native campaign atlas
+
+The arena deliberately avoids presenting old fraud categories as if they were novel. Twelve higher-order campaigns compose AI capability, payment surface, temporal sequence, and hidden entity behavior:
+
+1. **Ghost Cart** — delegated-commerce intent hijacking.
+2. **Consent Mirage** — deepfake consent relayed across inconsistent channels.
+3. **Glass Box** — a learning swarm that infers policy boundaries from outcomes.
+4. **Sleeper Garden** — synthetic identities that mature separately and activate together.
+5. **Mirage Market** — generative storefronts hiding stable merchant infrastructure.
+6. **Shard Route** — cross-rail value fragments that only reveal risk when reconstructed.
+7. **Clean Label** — delayed disputes used to corrupt the defender's view of training truth.
+8. **Perfect Stranger** — mutually consistent synthetic KYC artifacts with weak provenance.
+9. **Quiet Provision** — fraud hidden inside a plausible device-token lifecycle.
+10. **Hive Coupon** — cooperative low-value account swarms with emergent community behavior.
+11. **Trust Ladder** — beneficiaries warmed gradually before coordinated value movement.
+12. **Semantic Switch** — enterprise payment agents agreeing on manipulated invoice intent.
+
+Each campaign is a safe defensive abstraction. It describes observable telemetry and mitigations, never victim targeting, credential theft, or instructions for interacting with live rails.
 
 Example evaluation:
 

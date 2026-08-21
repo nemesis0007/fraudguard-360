@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { FeatureEngine } from "./features.js";
 import { generateTransactions } from "./generator.js";
 import { seededRandom } from "./random.js";
+import { CAMPAIGN_CATALOG, getCampaign } from "./campaigns.js";
 
 const SCENARIO_PROFILES = Object.freeze({
   ATO_001: { label: "Agentic account takeover", tactic: "AUTHORIZATION_DRIFT", graph: "DEVICE_FAN_OUT" },
@@ -115,9 +116,24 @@ function timeline(profile, attack, adapted) {
   ];
 }
 
+function agentTrace(campaign, controls, attackMetrics, adaptedMetrics) {
+  const escaped = Math.max(0, attackMetrics.attack_attempts - attackMetrics.attacks_detected);
+  return [
+    { agent: "THREAT SCOUT", state: "COMPLETE", action: "Selected an under-covered payment behavior", evidence: `${campaign.channels.length} channels · novelty ${campaign.novelty}` },
+    { agent: "SCENARIO PLANNER", state: "COMPLETE", action: "Compiled a bounded campaign plan", evidence: `${campaign.kill_chain.length} stages · difficulty ${campaign.difficulty}` },
+    { agent: "SWARM ORCHESTRATOR", state: "COMPLETE", action: "Materialized fictional actors and events", evidence: `${controls.volume} events · ${Math.max(4, Math.round(controls.aggression * 12))} parallel agents` },
+    { agent: "POLICY MUTATOR", state: escaped ? "ADAPTED" : "CONTAINED", action: escaped ? "Shifted pressure toward observed gaps" : "Could not find a transaction-only escape", evidence: `${escaped} initial escapes · stealth ${Math.round(controls.stealth * 100)}%` },
+    { agent: "BLUE EVALUATOR", state: "SEALED", action: "Compared transaction-only and graph-aware defense", evidence: `${Math.round(adaptedMetrics.attack_recall * 100)}% recall · human gate preserved` }
+  ];
+}
+
 export function runTwinArena(risk, input = {}) {
-  const scenarioId = SCENARIO_PROFILES[input.scenarioId] ? input.scenarioId : "SYNID_001";
-  const profile = SCENARIO_PROFILES[scenarioId];
+  const campaign = getCampaign(input.campaignId)
+    ?? CAMPAIGN_CATALOG.find((item) => item.base_scenario_id === input.scenarioId)
+    ?? CAMPAIGN_CATALOG[0];
+  const scenarioId = campaign.base_scenario_id;
+  const baseProfile = SCENARIO_PROFILES[scenarioId];
+  const profile = { label: campaign.name, tactic: campaign.ai_enabler, graph: campaign.graph_motif };
   const seed = Number(input.seed) || 42;
   const volume = clamp(Number(input.volume) || 120, 40, 400);
   const aggression = clamp(Number(input.aggression) || 0.72, 0.2, 1);
@@ -142,8 +158,24 @@ export function runTwinArena(risk, input = {}) {
   return {
     arena_id: `AR_${randomUUID().slice(0, 8)}`,
     created_at: new Date().toISOString(),
-    scenario: { id: scenarioId, ...profile },
-    controls: { seed, volume, aggression, stealth, defender_strength: defenderStrength, graph_defense: graphDefense, attacker_budget: Math.round(25000 + aggression * 175000) },
+    scenario: {
+      id: campaign.id,
+      campaign_id: campaign.id,
+      base_scenario_id: scenarioId,
+      codename: campaign.codename,
+      label: campaign.name,
+      tactic: campaign.ai_enabler,
+      graph: campaign.graph_motif,
+      thesis: campaign.thesis,
+      channels: campaign.channels,
+      novelty: campaign.novelty,
+      difficulty: campaign.difficulty,
+      fingerprint: campaign.fingerprint,
+      kill_chain: campaign.kill_chain,
+      defenses: campaign.defenses,
+      base_family: baseProfile.label
+    },
+    controls: { campaign_id: campaign.id, seed, volume, aggression, stealth, defender_strength: defenderStrength, graph_defense: graphDefense, attacker_budget: Math.round(25000 + aggression * 175000) },
     rounds: [
       { id: "BASELINE", label: "Counterfactual normal", metrics: baselineMetrics },
       { id: "ATTACK", label: "Adaptive attack", metrics: attackMetrics },
@@ -160,6 +192,13 @@ export function runTwinArena(risk, input = {}) {
     },
     graph: buildGraph(attacked, adaptedDecisions, profile),
     timeline: timeline(profile, attackDecisions, adaptedDecisions),
+    agent_trace: agentTrace(campaign, { volume, aggression, stealth }, attackMetrics, adaptedMetrics),
+    simulation_scale: {
+      events_materialized: volume,
+      virtual_population: volume * 200,
+      parallel_agents: Math.max(4, Math.round(aggression * 12)),
+      replay_mode: "DETERMINISTIC_SEEDED"
+    },
     decision_receipts: adaptedDecisions.filter((item) => item.is_fraud || item.decision !== "ALLOW").slice(0, 8),
     governance: {
       mode: "SYNTHETIC_SANDBOX",

@@ -20,6 +20,7 @@ The real-time path is deterministic and contains no generative model. Scenario d
 | Module | Responsibility | Extraction trigger |
 | --- | --- | --- |
 | `catalog.js` | Approved scenario registry and safe signals | Multiple researchers need write access or provenance persistence |
+| `campaigns.js` | AI-native campaign intelligence, observable kill chains, novelty/difficulty, fingerprints, and challenge traceability | Threat research and approval become a governed registry |
 | `generator.js` | Seeded synthetic transaction generation | Large batches need workers/object storage |
 | `twin-engine.js` | Counterfactual worlds, attacker pressure, graph motifs, adaptive rounds, and business outcomes | Simulation runs require durable workers or GPU graph models |
 | `evidence.js` | Truthful active/reference/pilot data provenance and governance manifest | Dataset registry and approval workflow become persistent |
@@ -57,6 +58,7 @@ The current linear artifact is intentionally dependency-light. LightGBM or XGBoo
 - Synthetic metrics are labeled as prototype evidence, never production claims.
 - Arena comparisons hold the scenario controls constant and report normal, attacked, and adapted rounds separately.
 - Graph fusion keeps its component signal in every decision receipt so the outcome remains auditable.
+- Campaigns remain separate from low-level generator families: a novel campaign composes an AI enabler, payment surfaces, sequence, and graph motif while reusing a tested synthetic transaction primitive.
 
 ## Hybrid evidence architecture
 

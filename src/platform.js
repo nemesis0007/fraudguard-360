@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { ATTACK_CATALOG } from "./catalog.js";
+import { CAMPAIGN_CATALOG, CHALLENGE_COVERAGE } from "./campaigns.js";
 import { FeatureEngine } from "./features.js";
 import { loadFidelityReport } from "./fidelity.js";
 import { EVIDENCE_STACK } from "./evidence.js";
@@ -25,6 +26,14 @@ export class FraudGuardPlatform {
 
   catalog() {
     return ATTACK_CATALOG;
+  }
+
+  campaigns() {
+    return CAMPAIGN_CATALOG;
+  }
+
+  challengeCoverage() {
+    return CHALLENGE_COVERAGE;
   }
 
   fidelityReport() {

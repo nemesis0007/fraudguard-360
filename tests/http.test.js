@@ -76,3 +76,13 @@ test("evidence endpoint exposes the hybrid data governance manifest", () => with
   assert.equal(response.status, 200);
   assert.equal(body.data.layers[1].status, "REFERENCE_ONLY");
 }));
+
+test("challenge endpoints expose campaign intelligence and visible proof", () => withServer(async (base) => {
+  const [campaigns, coverage] = await Promise.all([
+    fetch(`${base}/api/v1/campaign/catalog`).then((response) => response.json()),
+    fetch(`${base}/api/v1/challenge/coverage`).then((response) => response.json())
+  ]);
+  assert.equal(campaigns.data.length, 12);
+  assert.equal(coverage.data.pillars.length, 4);
+  assert.deepEqual(coverage.data.pillars.map((item) => item.id), ["IDENTIFY", "GENERATE", "DEFEND", "LEARN"]);
+}));

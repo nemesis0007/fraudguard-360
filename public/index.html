@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#071014">
   <meta property="og:title" content="FraudGuard 360 — Adaptive payment defense">
   <meta property="og:description" content="Simulate evolving payment attacks. See hidden network risk. Prove how the defense adapts.">
-  <meta property="og:image" content="/og-fraudguard.png">
+  <meta property="og:image" content="/og-fraudguard-v2.png">
   <title>FraudGuard 360 — Adaptive Payment Defense</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -62,8 +62,7 @@
 
     <section class="platform shell" id="platform">
       <div class="section-intro">
-        <p class="kicker">THE ADAPTIVE DEFENSE CLOUD</p>
-        <h2>Fraud is a moving system.<br>Your defense should be one too.</h2>
+        <div><p class="kicker">THE ADAPTIVE DEFENSE CLOUD</p><h2>Fraud is a moving system.<br>Your defense should be one too.</h2></div>
         <p>Most tools score a transaction in isolation. FraudGuard tests the transaction, the network around it, and the adversary changing tactics after every response.</p>
       </div>
       <div class="capability-grid">
@@ -91,6 +90,25 @@
       </div>
     </section>
 
+    <section class="threat-atlas shell" id="threats">
+      <div class="section-intro threat-intro">
+        <div><p class="kicker red-kicker">IDENTIFY / AI-NATIVE THREAT ATLAS</p><h2>Not fraud categories.<br>Adaptive campaigns.</h2></div>
+        <p>Each campaign names the AI capability that changes the threat, the payment surfaces it crosses, the observable kill chain, and the defense evidence required to stop it.</p>
+      </div>
+      <div class="atlas-shell">
+        <div class="atlas-index" id="campaignCards" aria-label="AI-native attack campaigns"></div>
+        <article class="atlas-spotlight">
+          <div class="spotlight-head"><span id="spotlightIndex">01 / 12</span><b id="spotlightNovelty">NOVELTY 96</b></div>
+          <p class="spotlight-code" id="spotlightCodename">GHOST CART</p>
+          <h3 id="spotlightName">Agent intent hijack</h3>
+          <p id="spotlightThesis">A compromised shopping agent stays inside a valid spending mandate while merchant and payee intent quietly diverge.</p>
+          <div class="spotlight-meta"><div><small>AI ENABLER</small><b id="spotlightEnabler">Prompt injection against delegated commerce</b></div><div><small>PAYMENT SURFACE</small><b id="spotlightChannels">Agentic commerce · Instant pay · Card</b></div></div>
+          <div class="spotlight-chain" id="spotlightChain"></div>
+          <button class="atlas-launch" id="launchSpotlight">Load campaign into arena <span>→</span></button>
+        </article>
+      </div>
+    </section>
+
     <section class="arena-section" id="arena">
       <div class="shell">
         <div class="section-intro arena-intro">
@@ -112,38 +130,54 @@
             <div><small>DETECTION LATENCY</small><strong id="detectionLatency">—</strong><span>fusion estimate</span></div>
           </div>
 
-          <div class="arena-workspace">
-            <aside class="control-rail red-rail">
-              <div class="rail-label"><span></span><div><b>RED TEAM</b><small>Adversary policy</small></div></div>
-              <label for="scenario">Attack operation
-                <select id="scenario"></select>
-              </label>
-              <label for="aggression">Aggression <output id="aggressionValue">72%</output>
-                <input id="aggression" type="range" min="20" max="100" value="72">
-              </label>
-              <label for="stealth">Stealth <output id="stealthValue">64%</output>
-                <input id="stealth" type="range" min="10" max="95" value="64">
-              </label>
-              <div class="budget"><small>SIMULATED BUDGET</small><strong id="attackerBudget">₹151K</strong><span>Fictional resources</span></div>
-              <div class="tactic-list"><small>ACTIVE POLICY</small><b id="activeTactic">Identity incubation</b><span>Agent changes pressure within safe, high-level constraints.</span></div>
-            </aside>
+          <div class="command-deck">
+            <div class="command-primary">
+              <div class="rail-label"><span></span><div><b>RED TEAM / CAMPAIGN</b><small>AI-native adversary policy</small></div></div>
+              <label for="scenario">Attack operation<select id="scenario"></select></label>
+            </div>
+            <div class="command-slider"><label for="aggression">Aggression <output id="aggressionValue">72%</output><input id="aggression" type="range" min="20" max="100" value="72"></label></div>
+            <div class="command-slider"><label for="stealth">Stealth <output id="stealthValue">64%</output><input id="stealth" type="range" min="10" max="95" value="64"></label></div>
+            <div class="command-slider blue-command"><label for="defenseStrength">Defense <output id="defenseValue">78%</output><input id="defenseStrength" type="range" min="20" max="100" value="78"></label></div>
+            <label class="toggle-line deck-toggle"><span><b>Graph fusion</b><small>Entity + temporal</small></span><input id="graphDefense" type="checkbox" checked><i></i></label>
+          </div>
 
+          <section class="campaign-brief">
+            <div class="campaign-identity"><small id="campaignNumber">CAMPAIGN 01 / 12</small><span id="campaignCodename">GHOST CART</span><h3 id="campaignName">Agent intent hijack</h3><p id="campaignThesis">Loading campaign intelligence…</p></div>
+            <div class="campaign-stats"><div><small>NOVELTY</small><strong id="campaignNovelty">96</strong></div><div><small>DIFFICULTY</small><strong id="campaignDifficulty">91</strong></div><div><small>SIMULATED BUDGET</small><strong id="attackerBudget">₹151K</strong></div></div>
+            <div class="campaign-policy"><small>AI ENABLER</small><b id="activeTactic">Prompt injection against a delegated commerce agent</b><div id="campaignChannels" class="channel-chips"></div></div>
+          </section>
+
+          <section class="kill-chain-panel">
+            <div class="subhead"><span>ADVERSARIAL KILL CHAIN</span><small>Safe observable behavior · No operational attack instructions</small></div>
+            <div class="kill-chain-grid" id="killChain"></div>
+          </section>
+
+          <div class="arena-visual-grid">
             <section class="graph-stage">
-              <div class="stage-head"><div><small>ENTITY INTELLIGENCE</small><b id="motifLabel">Network awaiting replay</b></div><div class="legend"><span class="customer-dot"></span>Customer <span class="merchant-dot"></span>Merchant <span class="device-dot"></span>Device</div></div>
-              <div class="canvas-wrap"><canvas id="graphCanvas" width="900" height="580" aria-label="Simulated payment entity graph"></canvas><div class="scan-line"></div><div class="graph-empty" id="graphEmpty"><span>⌁</span><b>Twin environment ready</b><small>Run the attack to materialize an entity graph</small></div></div>
+              <div class="stage-head"><div><small>ENTITY INTELLIGENCE / ATTACK PATH</small><b id="motifLabel">Network awaiting replay</b></div><div class="legend"><span class="customer-dot"></span>Customer <span class="merchant-dot"></span>Merchant <span class="device-dot"></span>Device</div></div>
+              <div class="canvas-wrap"><canvas id="graphCanvas" width="1100" height="640" aria-label="Simulated payment entity graph"></canvas><div class="scan-line"></div><div class="graph-empty" id="graphEmpty"><span>⌁</span><b>Twin environment ready</b><small>Run the campaign to materialize hidden entity relationships</small></div></div>
               <div class="graph-foot"><span><i class="pulse-red"></i> Attack path</span><span><i class="pulse-blue"></i> Defensive intervention</span><b id="graphStats">0 entities · 0 relationships</b></div>
             </section>
-
-            <aside class="control-rail blue-rail">
-              <div class="rail-label"><span></span><div><b>BLUE TEAM</b><small>Defense policy</small></div></div>
-              <label for="defenseStrength">Defense strength <output id="defenseValue">78%</output>
-                <input id="defenseStrength" type="range" min="20" max="100" value="78">
-              </label>
-              <label class="toggle-line"><span><b>Graph fusion</b><small>Entity + temporal evidence</small></span><input id="graphDefense" type="checkbox" checked><i></i></label>
-              <div class="model-state"><small>INFERENCE STACK</small><div><span>Transaction model</span><b id="modelVersion">LOADING</b></div><div><span>Graph intelligence</span><b class="cyan">ACTIVE</b></div><div><span>Policy fallback</span><b>ARMED</b></div></div>
+            <aside class="intelligence-rail">
+              <div class="subhead"><span>SIGNAL FINGERPRINT</span><small>Campaign pressure</small></div>
+              <div class="fingerprint" id="fingerprint">
+                <div><span>Intent</span><i><b id="signalIntent"></b></i><output id="signalIntentValue">—</output></div>
+                <div><span>Identity</span><i><b id="signalIdentity"></b></i><output id="signalIdentityValue">—</output></div>
+                <div><span>Graph</span><i><b id="signalGraph"></b></i><output id="signalGraphValue">—</output></div>
+                <div><span>Velocity</span><i><b id="signalVelocity"></b></i><output id="signalVelocityValue">—</output></div>
+                <div><span>Merchant</span><i><b id="signalMerchant"></b></i><output id="signalMerchantValue">—</output></div>
+                <div><span>Sequence</span><i><b id="signalSequence"></b></i><output id="signalSequenceValue">—</output></div>
+              </div>
+              <div class="model-state"><small>DEFENSE STACK</small><div><span>Transaction model</span><b id="modelVersion">LOADING</b></div><div><span>Graph intelligence</span><b class="cyan">ACTIVE</b></div><div><span>Policy fallback</span><b>ARMED</b></div></div>
+              <div class="defense-list"><small>EXPECTED CONTROLS</small><div id="defenseControls"></div></div>
               <div class="guardrail-note"><span>G</span><p><b>Governance locked</b>No automatic retraining or live-model promotion.</p></div>
             </aside>
           </div>
+
+          <section class="agent-orchestration">
+            <div class="subhead"><span>GENERATE / AGENT ORCHESTRATION</span><small id="scaleLabel">Materialized events and virtual population</small></div>
+            <div class="agent-trace" id="agentTrace"><div class="agent-empty">Run a campaign to inspect the red-team agents and evaluator handoffs.</div></div>
+          </section>
 
           <div class="twin-comparison">
             <div class="twin-heading"><span>COUNTERFACTUAL OUTCOME</span><small>Same intent · Two worlds · Measured delta</small></div>
@@ -172,6 +206,15 @@
       <div class="architecture-line">
         <div><span>01</span><b>Event fabric</b><small>Payments · devices · identity</small></div><i></i><div><span>02</span><b>Real-time model</b><small>Fast local transaction score</small></div><i></i><div><span>03</span><b>Graph intelligence</b><small>Temporal entity context</small></div><i></i><div><span>04</span><b>Policy fusion</b><small>Allow · step-up · review · block</small></div>
       </div>
+    </section>
+
+    <section class="proof-ledger shell" id="challenge-proof">
+      <div class="section-intro proof-intro">
+        <div><p class="kicker">CHALLENGE PROOF LEDGER</p><h2>Every requirement.<br>Visible and testable.</h2></div>
+        <p>The brief is translated into product evidence. A judge can see the threat intelligence, the agents generating the world, the defense response, and the governed learning loop without reading the code first.</p>
+      </div>
+      <div class="ledger-grid" id="coverageLedger"></div>
+      <div class="ledger-gaps"><span>BEFORE A REAL PILOT</span><div id="pilotGaps"></div></div>
     </section>
 
     <section class="final-cta shell">

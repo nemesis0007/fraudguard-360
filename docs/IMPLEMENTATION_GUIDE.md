@@ -279,3 +279,30 @@ This is intentionally not an opaque blend. The current model has not been traine
 Keep a two-speed architecture. A fast local model (the locked linear model today, then a governed LightGBM/XGBoost challenger) should remain on the authorization path. A separate temporal graph model should calculate relationship risk from devices, accounts, customers, merchants, and transfer paths. Policy fusion combines both scores and preserves a transparent fallback.
 
 Only approved misses should enter retraining. The arena can propose mutated stress cases, but it never modifies or promotes the active model. A real deployment should progress through offline validation, shadow mode, step-up recommendations, selective blocking, artifact signing, and rollback-tested promotion.
+
+## 16. From basic fraud families to AI-native campaigns
+
+The low-level generator still uses ten tested payment-fraud primitives. `src/campaigns.js` adds the missing threat-intelligence layer above them. A campaign composes:
+
+- the AI capability that changes the threat;
+- the payment channels and trust boundary involved;
+- a four-stage observable kill chain;
+- intent, identity, graph, velocity, merchant, and sequence pressure;
+- novelty and difficulty scores;
+- expected defensive controls;
+- a compatible generator primitive for deterministic replay.
+
+This separation avoids pretending that a familiar category such as account takeover is itself novel. Novelty comes from how an AI-enabled actor changes planning, coordination, adaptation, channels, and the defender's evidence.
+
+The current campaign set includes delegated-agent intent hijacking, deepfake consent relay, policy-oracle learning swarms, synthetic-identity maturation, autonomous storefront meshes, cross-rail micro-splintering, delayed-label laundering, synthetic KYC consensus, token-lifecycle parasitism, cooperative incentive swarms, beneficiary trust warming, and agent-to-agent invoice redirection.
+
+## 17. Challenge traceability
+
+`GET /api/v1/challenge/coverage` and the website's Challenge Proof Ledger make the brief visible:
+
+- **Identify:** 12 structured AI-native campaigns with rationale, channels, observables, novelty, and difficulty.
+- **Generate:** seeded red-team agents, fictional actors, event sequences, entity graphs, counterfactual worlds, and provenance.
+- **Defend:** transaction/graph fusion, four policy actions, reason codes, latency, exposure, and customer-friction evidence.
+- **Closed loop:** false-negative mining, defense-guided mutation, an unseen-family holdout, and human-gated promotion.
+
+The ledger also states what is still missing before a real pilot: authorized aggregate calibration, durable drift monitoring, a tree-model challenger, and signed candidate-model promotion.
