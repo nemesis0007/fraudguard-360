@@ -3,101 +3,190 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FraudGuard 360 synthetic red-team and blue-team defense lab">
-  <title>FraudGuard 360 — AI Defense Lab</title>
+  <meta name="description" content="FraudGuard 360 is an adaptive payment-defense platform that stress-tests fraud controls in a privacy-safe digital twin.">
+  <meta name="theme-color" content="#071014">
+  <meta property="og:title" content="FraudGuard 360 — Adaptive payment defense">
+  <meta property="og:description" content="Simulate evolving payment attacks. See hidden network risk. Prove how the defense adapts.">
+  <meta property="og:image" content="/og-fraudguard.png">
+  <title>FraudGuard 360 — Adaptive Payment Defense</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <header class="topbar">
+  <header class="site-header">
     <a class="brand" href="#top" aria-label="FraudGuard 360 home">
-      <span class="brand-mark">FG</span>
-      <span>FraudGuard <strong>360</strong></span>
+      <span class="brand-symbol" aria-hidden="true"><i></i><i></i></span>
+      <span>FRAUDGUARD <b>360</b></span>
     </a>
-    <div class="top-actions"><a class="guide-link" href="/guide.html">How it works</a><div class="system-status"><span class="pulse"></span> <span id="modelStatus">Defense lab online</span></div></div>
+    <nav aria-label="Primary navigation">
+      <a href="#platform">Platform</a>
+      <a href="#arena">Arena</a>
+      <a href="#evidence">Evidence</a>
+      <a href="/guide.html">Documentation</a>
+    </nav>
+    <a class="header-cta" href="#arena">Open the lab <span>↗</span></a>
   </header>
 
   <main id="top">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Mastercard GFF 2026 · AI Defense Lab</p>
-        <h1>Find tomorrow’s fraud<br><span>before it finds you.</span></h1>
-        <p class="hero-copy">A privacy-safe red-team / blue-team lab that creates synthetic attacks, scores every transaction, and turns detection gaps into the next defense cycle.</p>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="release-pill"><span></span> Research preview · GFF 2026</div>
+        <h1>See the attack<br><em>before the loss.</em></h1>
+        <p>FraudGuard 360 is an adaptive defense lab for payment networks. It creates evolving attack worlds, reveals hidden entity relationships, and proves how every control changes the outcome.</p>
         <div class="hero-actions">
-          <button class="primary" id="runEvaluation">Run red vs blue test <span>→</span></button>
-          <a class="secondary" href="#console">Open detection console</a>
+          <button class="button button-primary" id="heroRun">Run a live attack <span>→</span></button>
+          <a href="#platform">Explore the platform</a>
+        </div>
+        <div class="trust-line">
+          <span>BUILT FOR</span>
+          <b>Issuers</b><i></i><b>Acquirers</b><i></i><b>Payment networks</b><i></i><b>Fraud teams</b>
         </div>
       </div>
-      <div class="loop-card" aria-label="Closed-loop defense flow">
-        <div class="loop-stage active"><span>01</span><div><b>Identify</b><small>Threat catalog</small></div></div>
-        <div class="connector"></div>
-        <div class="loop-stage"><span>02</span><div><b>Generate</b><small>Synthetic events</small></div></div>
-        <div class="connector"></div>
-        <div class="loop-stage"><span>03</span><div><b>Defend</b><small>Risk + decisions</small></div></div>
-        <div class="connector"></div>
-        <div class="loop-stage"><span>04</span><div><b>Learn</b><small>Hard negatives</small></div></div>
+      <div class="hero-visual" aria-label="Live payment network preview">
+        <div class="visual-top"><span>LIVE TWIN / MUMBAI REGION</span><b><i></i> ONLINE</b></div>
+        <canvas id="heroCanvas" width="720" height="560"></canvas>
+        <div class="signal-card signal-red"><small>ADAPTIVE PROBE</small><strong>Entity cluster 04</strong><span>Risk propagating</span></div>
+        <div class="signal-card signal-green"><small>POLICY RESPONSE</small><strong>Step-up applied</strong><span>₹84.2K protected</span></div>
+        <div class="visual-foot"><span>12,804 events/s</span><span>28 ms fusion</span><span>0 raw PII</span></div>
       </div>
     </section>
 
-    <section class="metrics" aria-label="System metrics">
-      <article><span>Attack families</span><strong id="attackCount">—</strong><small>Structured scenarios</small></article>
-      <article><span>Transactions scored</span><strong id="scoredCount">0</strong><small>Live session</small></article>
-      <article><span>Average latency</span><strong><span id="latency">0</span><em> ms</em></strong><small>Target &lt; 50 ms</small></article>
-      <article><span>Learning queue</span><strong id="retrainCount">0</strong><small>Retraining candidates</small></article>
-      <article><span>Synthetic fidelity</span><strong id="fidelityScore">—</strong><small id="fidelityDetail">Audit loading</small></article>
+    <section class="proof-strip">
+      <div class="shell proof-grid">
+        <div><strong>10</strong><span>attack families</span></div>
+        <div><strong id="modelMetric">READY</strong><span>locked model artifact</span></div>
+        <div><strong id="fidelityMetric">12 / 12</strong><span>fidelity gates passed</span></div>
+        <div><strong>&lt; 50 ms</strong><span>decision-path target</span></div>
+        <p>Prototype evidence is clearly labeled synthetic. Production performance requires a governed shadow-mode pilot.</p>
+      </div>
     </section>
 
-    <section class="workspace" id="console">
-      <div class="section-heading">
-        <div><p class="eyebrow">Attack simulator</p><h2>Red vs blue console</h2></div>
-        <p>Choose a controlled synthetic scenario and replay it through the exact scoring path used by the API.</p>
+    <section class="platform shell" id="platform">
+      <div class="section-intro">
+        <p class="kicker">THE ADAPTIVE DEFENSE CLOUD</p>
+        <h2>Fraud is a moving system.<br>Your defense should be one too.</h2>
+        <p>Most tools score a transaction in isolation. FraudGuard tests the transaction, the network around it, and the adversary changing tactics after every response.</p>
       </div>
-
-      <div class="console-grid">
-        <article class="panel controls-panel">
-          <div class="panel-title"><span class="red-dot"></span><div><b>Red team</b><small>Scenario configuration</small></div></div>
-          <label for="scenario">Attack family</label>
-          <select id="scenario"></select>
-          <div class="field-row">
-            <label>Volume<input id="volume" type="number" min="10" max="1000" value="160"></label>
-            <label>Seed<input id="seed" type="number" value="42"></label>
+      <div class="capability-grid">
+        <article class="capability capability-wide">
+          <span class="cap-index">01 / DIGITAL TWIN</span>
+          <h3>Fork reality into normal and attacked worlds.</h3>
+          <p>Agent-based customers, merchants, devices, and accounts create a counterfactual baseline for every exercise. The loss delta becomes visible—not hypothetical.</p>
+          <div class="twin-mini">
+            <div><small>NORMAL WORLD</small><span class="flow-line safe"></span><b>₹0 exposed</b></div>
+            <div><small>ATTACKED WORLD</small><span class="flow-line danger"></span><b>Adaptive controls</b></div>
           </div>
-          <button class="danger" id="simulate">Launch synthetic replay</button>
-          <button class="holdout-button" id="holdout">Compare novel holdout</button>
-          <button class="holdout-button" id="mutate">Generate reviewed variants</button>
-          <p class="learning-result" id="learningResult">Learning proposals require human review and never change the active model.</p>
-          <p class="guardrail">Synthetic data only. No real cardholder data, credentials, or payment rails.</p>
         </article>
-
-        <article class="panel result-panel">
-          <div class="panel-title"><span class="blue-dot"></span><div><b>Blue team</b><small>Evaluation result</small></div><span class="result-status" id="resultStatus">Ready</span></div>
-          <div class="score-display">
-            <div class="score-ring" id="scoreRing"><div><strong id="f1Score">—</strong><small>F1 SCORE</small></div></div>
-            <div class="score-details">
-              <div><span>Precision</span><b id="precision">—</b></div>
-              <div><span>Recall</span><b id="recall">—</b></div>
-              <div><span>False-positive rate</span><b id="falsePositive">—</b></div>
-            </div>
-          </div>
-          <div class="confusion" id="confusion"><span>Run an evaluation to populate the defense result.</span></div>
+        <article class="capability">
+          <span class="cap-index">02 / GRAPH INTELLIGENCE</span>
+          <h3>Find the relationship the transaction hides.</h3>
+          <p>Temporal and entity-link signals surface shared devices, mule communities, split-and-merge paths, and merchant collusion.</p>
+          <div class="motif"><i></i><i></i><i></i><i></i><i></i><span></span><span></span><span></span></div>
+        </article>
+        <article class="capability">
+          <span class="cap-index">03 / CONTROLLED LEARNING</span>
+          <h3>Turn model misses into the next stress test.</h3>
+          <p>Defense-guided mutation proposes traceable variants. Human review, artifact locking, and rollback remain mandatory.</p>
+          <div class="learn-steps"><b>MISS</b><span>→</span><b>VARIANT</b><span>→</span><b>REVIEW</b></div>
         </article>
       </div>
     </section>
 
-    <section class="decisions">
-      <div class="section-heading compact">
-        <div><p class="eyebrow">Decision stream</p><h2>Explainable by design</h2></div>
-        <button class="text-button" id="refresh">Refresh ↻</button>
+    <section class="arena-section" id="arena">
+      <div class="shell">
+        <div class="section-intro arena-intro">
+          <div><p class="kicker red-kicker">ADVERSARIAL TWIN ARENA</p><h2>Attack the network.<br>Watch the defense adapt.</h2></div>
+          <p>This is a functioning simulation—not a dashboard mock-up. Change attacker pressure and defense posture, then inspect the graph, counterfactual outcome, and decision receipts returned by the API.</p>
+        </div>
+
+        <div class="arena-app">
+          <div class="arena-bar">
+            <div class="arena-title"><span class="arena-logo">A</span><div><b>Adversarial Twin Arena</b><small id="arenaId">SYNTHETIC SANDBOX · READY</small></div></div>
+            <div class="arena-status"><span></span> ISOLATED ENVIRONMENT</div>
+            <button class="run-button" id="runArena">Run attack <span>⌁</span></button>
+          </div>
+
+          <div class="arena-kpis">
+            <div><small>DEFENDER ADVANTAGE</small><strong id="defenderAdvantage">—</strong><span id="winnerLabel">Awaiting replay</span></div>
+            <div><small>PREVENTED VALUE LIFT</small><strong id="preventedValue">—</strong><span>vs transaction-only defense</span></div>
+            <div><small>EXPOSURE REDUCTION</small><strong id="exposureReduction">—</strong><span>adaptive round</span></div>
+            <div><small>DETECTION LATENCY</small><strong id="detectionLatency">—</strong><span>fusion estimate</span></div>
+          </div>
+
+          <div class="arena-workspace">
+            <aside class="control-rail red-rail">
+              <div class="rail-label"><span></span><div><b>RED TEAM</b><small>Adversary policy</small></div></div>
+              <label for="scenario">Attack operation
+                <select id="scenario"></select>
+              </label>
+              <label for="aggression">Aggression <output id="aggressionValue">72%</output>
+                <input id="aggression" type="range" min="20" max="100" value="72">
+              </label>
+              <label for="stealth">Stealth <output id="stealthValue">64%</output>
+                <input id="stealth" type="range" min="10" max="95" value="64">
+              </label>
+              <div class="budget"><small>SIMULATED BUDGET</small><strong id="attackerBudget">₹151K</strong><span>Fictional resources</span></div>
+              <div class="tactic-list"><small>ACTIVE POLICY</small><b id="activeTactic">Identity incubation</b><span>Agent changes pressure within safe, high-level constraints.</span></div>
+            </aside>
+
+            <section class="graph-stage">
+              <div class="stage-head"><div><small>ENTITY INTELLIGENCE</small><b id="motifLabel">Network awaiting replay</b></div><div class="legend"><span class="customer-dot"></span>Customer <span class="merchant-dot"></span>Merchant <span class="device-dot"></span>Device</div></div>
+              <div class="canvas-wrap"><canvas id="graphCanvas" width="900" height="580" aria-label="Simulated payment entity graph"></canvas><div class="scan-line"></div><div class="graph-empty" id="graphEmpty"><span>⌁</span><b>Twin environment ready</b><small>Run the attack to materialize an entity graph</small></div></div>
+              <div class="graph-foot"><span><i class="pulse-red"></i> Attack path</span><span><i class="pulse-blue"></i> Defensive intervention</span><b id="graphStats">0 entities · 0 relationships</b></div>
+            </section>
+
+            <aside class="control-rail blue-rail">
+              <div class="rail-label"><span></span><div><b>BLUE TEAM</b><small>Defense policy</small></div></div>
+              <label for="defenseStrength">Defense strength <output id="defenseValue">78%</output>
+                <input id="defenseStrength" type="range" min="20" max="100" value="78">
+              </label>
+              <label class="toggle-line"><span><b>Graph fusion</b><small>Entity + temporal evidence</small></span><input id="graphDefense" type="checkbox" checked><i></i></label>
+              <div class="model-state"><small>INFERENCE STACK</small><div><span>Transaction model</span><b id="modelVersion">LOADING</b></div><div><span>Graph intelligence</span><b class="cyan">ACTIVE</b></div><div><span>Policy fallback</span><b>ARMED</b></div></div>
+              <div class="guardrail-note"><span>G</span><p><b>Governance locked</b>No automatic retraining or live-model promotion.</p></div>
+            </aside>
+          </div>
+
+          <div class="twin-comparison">
+            <div class="twin-heading"><span>COUNTERFACTUAL OUTCOME</span><small>Same intent · Two worlds · Measured delta</small></div>
+            <div class="twin-row baseline-row"><b>01</b><div><strong>Normal world</strong><span>Benign baseline</span></div><div class="world-track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><dl><dt>Payment value</dt><dd id="baselineValue">—</dd><dt>Customer friction</dt><dd id="baselineFriction">—</dd></dl></div>
+            <div class="twin-row attack-row"><b>02</b><div><strong>Attacked world</strong><span>Graph-aware defense</span></div><div class="world-track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><dl><dt>Prevented</dt><dd id="adaptedPrevented">—</dd><dt>Escaped</dt><dd id="adaptedEscaped">—</dd></dl></div>
+          </div>
+
+          <div class="arena-lower">
+            <section class="timeline-panel"><div class="subhead"><span>FORENSIC TIMELINE</span><small>What changed, in order</small></div><ol id="timeline"><li class="empty-line">Run an attack to generate the replay timeline.</li></ol></section>
+            <section class="receipt-panel"><div class="subhead"><span>DECISION RECEIPT</span><small>Explainable by default</small></div><div id="receipt" class="receipt-empty">Select a flagged graph node or run a replay to inspect the highest-risk decision.</div></section>
+          </div>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Transaction</th><th>Risk</th><th>Decision</th><th>Reason codes</th><th>Latency</th></tr></thead>
-          <tbody id="decisionRows"><tr><td colspan="5" class="empty">No transactions scored in this session.</td></tr></tbody>
-        </table>
+    </section>
+
+    <section class="evidence shell" id="evidence">
+      <div class="section-intro evidence-intro">
+        <div><p class="kicker">EVIDENCE, NOT THEATER</p><h2>A hybrid data strategy<br>with honest boundaries.</h2></div>
+        <p>Fully synthetic data is useful for novel attacks but weak as proof of realism. Real-only data cannot show attacks that have not happened. FraudGuard combines the strengths without blurring their provenance.</p>
       </div>
+      <div class="evidence-stack" id="evidenceStack">
+        <article><span>01</span><div><small>ACTIVE</small><h3>Payment-network twin</h3><p>Fictional, labeled, counterfactual scenarios for training and adversarial stress tests.</p></div><b>SYNTHETIC</b></article>
+        <article><span>02</span><div><small>REFERENCE ONLY</small><h3>Public benchmarks</h3><p>Schema, imbalance, temporal, and graph-pattern realism checks. No ingestion claim.</p></div><b>PUBLIC</b></article>
+        <article><span>03</span><div><small>PILOT REQUIRED</small><h3>Institution telemetry</h3><p>Restricted aggregates calibrate thresholds, drift, and cost only under authorization.</p></div><b>GOVERNED</b></article>
+      </div>
+      <div class="architecture-line">
+        <div><span>01</span><b>Event fabric</b><small>Payments · devices · identity</small></div><i></i><div><span>02</span><b>Real-time model</b><small>Fast local transaction score</small></div><i></i><div><span>03</span><b>Graph intelligence</b><small>Temporal entity context</small></div><i></i><div><span>04</span><b>Policy fusion</b><small>Allow · step-up · review · block</small></div>
+      </div>
+    </section>
+
+    <section class="final-cta shell">
+      <p class="kicker">BUILD THE DEFENSE BEFORE THE ATTACK</p>
+      <h2>Tomorrow’s fraud will not look like yesterday’s labels.</h2>
+      <p>Stress the network, measure the counterfactual, and improve through governed evidence.</p>
+      <button class="button button-primary" id="bottomRun">Enter the arena <span>→</span></button>
     </section>
   </main>
 
-  <footer><span>FraudGuard 360 · Prototype environment</span><span>Identify → Generate → Defend → Learn</span></footer>
+  <footer class="site-footer shell">
+    <a class="brand" href="#top"><span class="brand-symbol"><i></i><i></i></span><span>FRAUDGUARD <b>360</b></span></a>
+    <p>Adaptive payment defense for a changing adversary.<br><span>Privacy-safe research prototype · Synthetic sandbox</span></p>
+    <div><a href="#platform">Platform</a><a href="#arena">Arena</a><a href="/guide.html">Documentation</a><a href="https://github.com/nemesis0007/fraudguard-360">GitHub</a></div>
+  </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="/app.js"></script>
 </body>

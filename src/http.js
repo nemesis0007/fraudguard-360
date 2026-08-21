@@ -41,6 +41,7 @@ export function createHandler(platform) {
       if (request.method === "GET" && url.pathname === "/health") return sendJson(response, 200, { service: "fraudguard-360", healthy: true, model_version: platform.risk.modelVersion }, requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/model/health") return sendJson(response, 200, platform.risk.modelHealth(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/fidelity/report") return sendJson(response, 200, platform.fidelityReport(), requestId);
+      if (request.method === "GET" && url.pathname === "/api/v1/data/evidence") return sendJson(response, 200, platform.evidenceStack(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/attack/catalog") return sendJson(response, 200, platform.catalog(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/metrics/summary") return sendJson(response, 200, platform.summary(), requestId);
       if (request.method === "POST" && url.pathname === "/api/v1/simulate") {
@@ -60,6 +61,10 @@ export function createHandler(platform) {
       if (request.method === "POST" && url.pathname === "/api/v1/evaluate/holdout") {
         const body = await readJson(request);
         return sendJson(response, 200, platform.evaluateHoldout(body), requestId);
+      }
+      if (request.method === "POST" && url.pathname === "/api/v1/arena/run") {
+        const body = await readJson(request);
+        return sendJson(response, 200, platform.runArena(body), requestId);
       }
       if (request.method === "POST" && url.pathname === "/api/v1/learn/mutate") {
         const body = await readJson(request);

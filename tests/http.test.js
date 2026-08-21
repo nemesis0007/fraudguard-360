@@ -55,3 +55,24 @@ test("learning endpoint returns traceable variants without model promotion", () 
   assert.equal(body.data.governance.promotion_allowed, false);
   assert.ok(body.data.variants_generated > 0);
 }));
+
+test("arena endpoint returns the twin graph, adaptive rounds, and decision receipts", () => withServer(async (base) => {
+  const response = await fetch(`${base}/api/v1/arena/run`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ scenarioId: "MULE_001", volume: 80, seed: 27, aggression: 0.75, stealth: 0.6 })
+  });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.data.rounds[0].id, "BASELINE");
+  assert.equal(body.data.rounds[2].id, "ADAPTED");
+  assert.ok(body.data.graph.edges.length > 0);
+  assert.equal(body.data.governance.mode, "SYNTHETIC_SANDBOX");
+}));
+
+test("evidence endpoint exposes the hybrid data governance manifest", () => withServer(async (base) => {
+  const response = await fetch(`${base}/api/v1/data/evidence`);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.data.layers[1].status, "REFERENCE_ONLY");
+}));

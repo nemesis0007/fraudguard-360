@@ -3,10 +3,14 @@
 ## MVP shape
 
 ```text
-Threat catalog -> Synthetic generator -> Feature engine -> Risk engine -> Policy decision
-      ^                                                           |
-      |                                                           v
-      +---------- reviewed feedback / defense-guided mutation <---+
+Threat catalog -> Agent-based digital twin -> Counterfactual worlds
+                                            | normal       | attacked
+                                            v              v
+                                  Transaction model + graph intelligence
+                                            |              |
+                                            +-- policy fusion --+--> decision receipt
+                                                                 |
+                            reviewed feedback / mutation <-------+
 ```
 
 The real-time path is deterministic and contains no generative model. Scenario discovery, mutation, training, and evaluation are offline or nearline activities.
@@ -17,6 +21,8 @@ The real-time path is deterministic and contains no generative model. Scenario d
 | --- | --- | --- |
 | `catalog.js` | Approved scenario registry and safe signals | Multiple researchers need write access or provenance persistence |
 | `generator.js` | Seeded synthetic transaction generation | Large batches need workers/object storage |
+| `twin-engine.js` | Counterfactual worlds, attacker pressure, graph motifs, adaptive rounds, and business outcomes | Simulation runs require durable workers or GPU graph models |
+| `evidence.js` | Truthful active/reference/pilot data provenance and governance manifest | Dataset registry and approval workflow become persistent |
 | `features.js` | Training/inference-parity feature logic | Shared low-latency state requires Redis/feature store |
 | `model-adapter.js` / `risk-engine.js` | Locked model inference, rule ensemble, and deterministic thresholds | Python model serving or independent scaling becomes necessary |
 | `platform.js` | Closed-loop orchestration, evaluation, feedback | Durable jobs and queues are introduced |
@@ -49,6 +55,18 @@ The current linear artifact is intentionally dependency-light. LightGBM or XGBoo
 - `LAUNDER_001` is excluded from training and used as the current novel-family holdout.
 - The dashboard compares ensemble and safe-fallback behavior on that holdout.
 - Synthetic metrics are labeled as prototype evidence, never production claims.
+- Arena comparisons hold the scenario controls constant and report normal, attacked, and adapted rounds separately.
+- Graph fusion keeps its component signal in every decision receipt so the outcome remains auditable.
+
+## Hybrid evidence architecture
+
+| Layer | Current status | Role |
+| --- | --- | --- |
+| Synthetic digital twin | Active | Novel attacks, counterfactual baselines, labels, hard negatives, repeatable evaluation |
+| Public benchmark references | Reference only | Schema, imbalance, temporal, and graph-motif realism checks |
+| Authorized institution aggregates | Pilot required | Distribution calibration, drift, thresholds, and real business costs |
+
+The distinction is enforced in the API manifest at `/api/v1/data/evidence`. Reference-only data is not represented as trained or ingested, and lab code rejects the idea of raw PAN, credentials, or customer PII.
 
 ## Production feasibility path
 

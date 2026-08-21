@@ -249,3 +249,33 @@ The educational walkthrough is at /guide.html.
 4. Expand fidelity checks against an authorized aggregate reference if one becomes available.
 5. Add drift tests, Prometheus metrics, and durable feedback storage.
 6. Prepare and verify a public deployment.
+
+## 13. Adversarial Twin Arena: the new product layer
+
+The main website now calls `POST /api/v1/arena/run`. The request controls only bounded defensive-simulation concepts: scenario, volume, seed, aggression, stealth, defender strength, and whether graph fusion is active.
+
+The arena executes three rounds:
+
+1. **Counterfactual normal** — a low-fraud baseline world.
+2. **Adaptive attack** — the selected scenario under transaction-only scoring.
+3. **Graph-aware defense** — the same attacked world with entity context fused into policy.
+
+The response is not a pre-rendered chart. It contains the simulated entity graph, graph motif, per-round payment value and loss exposure, customer-friction rate, attacker/defender advantage, a forensic timeline, and decision receipts with separate transaction and graph scores.
+
+The novel attack labels map to safe observable behavior rather than operational instructions: authorization drift, probe-and-pivot behavior, merchant/mule collusion, dispute loops, synthetic-identity maturation, cross-rail fragmentation, payment coercion, and coordinated account swarms.
+
+## 14. Why hybrid evidence beats fully synthetic data
+
+The runnable lab remains synthetic-first because the competition provides no dataset and novel attacks need counterfactual labels. However, synthetic-only accuracy is not credible evidence of production efficacy. `/api/v1/data/evidence` therefore exposes three explicitly different layers:
+
+- **Active synthetic twin** for labeled novelty and reproducible stress tests.
+- **Reference-only public benchmarks** for future schema, temporal, imbalance, and graph realism checks.
+- **Pilot-required institution aggregates** for threshold, drift, and business-cost calibration under authorization.
+
+This is intentionally not an opaque blend. The current model has not been trained on a dataset merely because it is named as a reference. That provenance boundary is part of the product design.
+
+## 15. Recommended production model evolution
+
+Keep a two-speed architecture. A fast local model (the locked linear model today, then a governed LightGBM/XGBoost challenger) should remain on the authorization path. A separate temporal graph model should calculate relationship risk from devices, accounts, customers, merchants, and transfer paths. Policy fusion combines both scores and preserves a transparent fallback.
+
+Only approved misses should enter retraining. The arena can propose mutated stress cases, but it never modifies or promotes the active model. A real deployment should progress through offline validation, shadow mode, step-up recommendations, selective blocking, artifact signing, and rollback-tested promotion.

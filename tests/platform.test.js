@@ -62,3 +62,23 @@ test("defense-guided mutation creates governed variants from model misses", () =
   assert.equal(result.governance.active_model_changed, false);
   assert.ok(result.candidates.every((item) => item.parent_transaction_id && item.mutation_strategy));
 });
+
+test("digital twin produces deterministic counterfactual rounds and governed receipts", () => {
+  const platform = new FraudGuardPlatform();
+  const input = { scenarioId: "SYNID_001", volume: 90, seed: 19, aggression: 0.8, stealth: 0.7, graphDefense: true };
+  const first = platform.runArena(input);
+  const second = new FraudGuardPlatform().runArena(input);
+  assert.deepEqual(first.rounds, second.rounds);
+  assert.deepEqual(first.graph, second.graph);
+  assert.equal(first.rounds.length, 3);
+  assert.equal(first.governance.active_model_changed, false);
+  assert.ok(first.graph.nodes.length > 0);
+  assert.ok(first.decision_receipts.every((item) => Array.isArray(item.reason_codes)));
+});
+
+test("hybrid evidence stack labels active, reference, and pilot data truthfully", () => {
+  const stack = new FraudGuardPlatform().evidenceStack();
+  assert.equal(stack.strategy, "HYBRID_EVIDENCE_STACK");
+  assert.deepEqual(stack.layers.map((item) => item.status), ["ACTIVE", "REFERENCE_ONLY", "PILOT_REQUIRED"]);
+  assert.equal(stack.layers[0].contains_pii, false);
+});

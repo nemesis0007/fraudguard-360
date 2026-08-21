@@ -3,9 +3,11 @@ import { performance } from "node:perf_hooks";
 import { ATTACK_CATALOG } from "./catalog.js";
 import { FeatureEngine } from "./features.js";
 import { loadFidelityReport } from "./fidelity.js";
+import { EVIDENCE_STACK } from "./evidence.js";
 import { generateTransactions } from "./generator.js";
 import { createDefensiveVariants, mutationBatchId } from "./mutation.js";
 import { RiskEngine } from "./risk-engine.js";
+import { runTwinArena } from "./twin-engine.js";
 
 function ratio(value, total) {
   return total ? Number((value / total).toFixed(4)) : 0;
@@ -27,6 +29,29 @@ export class FraudGuardPlatform {
 
   fidelityReport() {
     return this.fidelity;
+  }
+
+  evidenceStack() {
+    return EVIDENCE_STACK;
+  }
+
+  runArena(input = {}) {
+    const result = runTwinArena(this.risk, input);
+    const adapted = result.rounds.find((round) => round.id === "ADAPTED");
+    this.stats.scored += adapted?.metrics.transactions ?? 0;
+    this.stats.blocked += adapted?.metrics.attacks_detected ?? 0;
+    this.stats.latencyTotal += (adapted?.metrics.transactions ?? 0) * result.outcome.estimated_detection_latency_ms;
+    this.recentDecisions = [
+      ...result.decision_receipts.map((decision) => ({
+        ...decision,
+        feature_version: result.governance.feature_version,
+        model_version: result.governance.model_version,
+        latency_ms: result.outcome.estimated_detection_latency_ms,
+        synthetic: true
+      })),
+      ...this.recentDecisions
+    ].slice(0, 20);
+    return result;
   }
 
   simulate(input) {

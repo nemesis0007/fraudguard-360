@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-let modelHealth;
+const state = { catalog: [], health: null, arena: null, graphNodes: [], animation: 0 };
 
 async function api(path, options = {}) {
   const response = await fetch(path, { headers: { "content-type": "application/json" }, ...options });
@@ -9,80 +9,203 @@ async function api(path, options = {}) {
 }
 
 function toast(message) {
-  const node = $("#toast"); node.textContent = message; node.classList.add("show");
-  window.setTimeout(() => node.classList.remove("show"), 2400);
+  const node = $("#toast");
+  node.textContent = message;
+  node.classList.add("show");
+  window.setTimeout(() => node.classList.remove("show"), 2600);
 }
 
-function percent(value) { return `${(Number(value) * 100).toFixed(1)}%`; }
-
-async function loadCatalog() {
-  const [catalog, health] = await Promise.all([api("/api/v1/attack/catalog"), api("/api/v1/model/health")]);
-  modelHealth = health;
-  $("#attackCount").textContent = catalog.length;
-  $("#modelStatus").textContent = health.status === "READY" ? `${health.model_version} ready` : "Safe fallback active";
-  $("#scenario").innerHTML = catalog.map((item) => {
-    const holdout = health.holdout_scenarios?.includes(item.id) ? " · NOVEL HOLDOUT" : "";
-    return `<option value="${item.id}">${item.name} · ${item.severity}${holdout}</option>`;
-  }).join("");
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
 }
 
-async function refresh() {
-  const data = await api("/api/v1/metrics/summary");
-  $("#scoredCount").textContent = data.transactions_scored.toLocaleString();
-  $("#latency").textContent = data.average_latency_ms;
-  $("#retrainCount").textContent = data.retraining_candidates;
-  $("#fidelityScore").textContent = data.fidelity.status === "PASS" ? `${data.fidelity.checks_passed}/${data.fidelity.checks_passed + data.fidelity.checks_failed}` : "N/A";
-  $("#fidelityDetail").textContent = data.fidelity.status === "PASS" ? "Quality gates passed" : "Report unavailable";
-  $("#decisionRows").innerHTML = data.recent_decisions.length ? data.recent_decisions.map((item) => `
-    <tr><td>${item.transaction_id}</td><td><b>${item.risk_score}</b> / 100</td><td><span class="badge ${item.decision}">${item.decision}</span></td><td class="reasons">${item.reason_codes.join(" · ") || "BASELINE"}</td><td>${item.latency_ms} ms</td></tr>`).join("") : '<tr><td colspan="5" class="empty">No transactions scored in this session.</td></tr>';
+function money(value) {
+  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", notation: "compact", maximumFractionDigits: 1 }).format(Number(value) || 0);
 }
 
-function renderResult(data, extra = "") {
-  const { metrics, confusion_matrix: matrix } = data;
-  $("#f1Score").textContent = metrics.f1.toFixed(2);
-  $("#precision").textContent = percent(metrics.precision); $("#recall").textContent = percent(metrics.recall); $("#falsePositive").textContent = percent(metrics.false_positive_rate);
-  $("#scoreRing").style.background = `conic-gradient(var(--cyan) ${metrics.f1 * 360}deg, var(--line) 0deg)`;
-  $("#confusion").innerHTML = `Detected <b>${matrix.tp}</b> attacks · Missed <b>${matrix.fn}</b> · False alerts <b>${matrix.fp}</b> · Correct approvals <b>${matrix.tn}</b><br><span>${data.scoring_mode} · ${data.model_version}${extra}</span>`;
+function percentage(value) { return `${(Number(value) * 100).toFixed(1)}%`; }
+
+function sizeCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  if (canvas.width !== Math.round(rect.width * ratio) || canvas.height !== Math.round(rect.height * ratio)) {
+    canvas.width = Math.round(rect.width * ratio);
+    canvas.height = Math.round(rect.height * ratio);
+  }
+  const context = canvas.getContext("2d");
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { context, width: rect.width, height: rect.height };
 }
 
-async function evaluate() {
-  const button = $("#simulate"); const heroButton = $("#runEvaluation");
-  button.disabled = true; heroButton.disabled = true; $("#resultStatus").textContent = "Running";
+function hash(text) {
+  let value = 0;
+  for (const character of text) value = ((value << 5) - value + character.charCodeAt(0)) | 0;
+  return Math.abs(value);
+}
+
+function drawHero(time = 0) {
+  const canvas = $("#heroCanvas");
+  if (!canvas) return;
+  const { context, width, height } = sizeCanvas(canvas);
+  context.clearRect(0, 0, width, height);
+  const center = { x: width * .5, y: height * .51 };
+  const points = Array.from({ length: 18 }, (_, index) => {
+    const angle = index / 18 * Math.PI * 2 + (index % 3) * .1;
+    const ring = index % 4 === 0 ? .18 : index % 3 === 0 ? .33 : .45;
+    return { x: center.x + Math.cos(angle) * width * ring, y: center.y + Math.sin(angle) * height * ring * .72, hot: index === 3 || index === 8 || index === 14 };
+  });
+  context.lineWidth = 1;
+  for (let index = 0; index < points.length; index += 1) {
+    const point = points[index];
+    const targets = [points[(index + 3) % points.length], points[(index + 7) % points.length]];
+    for (const target of targets) {
+      context.beginPath(); context.moveTo(point.x, point.y); context.lineTo(target.x, target.y);
+      context.strokeStyle = point.hot && target.hot ? "rgba(255,102,95,.28)" : "rgba(112,181,171,.12)"; context.stroke();
+    }
+  }
+  points.forEach((point, index) => {
+    const pulse = point.hot ? 2 + Math.sin(time / 430 + index) * 1.3 : 0;
+    context.beginPath(); context.arc(point.x, point.y, (point.hot ? 4 : 2.4) + pulse, 0, Math.PI * 2);
+    context.fillStyle = point.hot ? "rgba(255,102,95,.85)" : index % 3 === 0 ? "rgba(113,216,223,.75)" : "rgba(158,230,202,.64)"; context.fill();
+  });
+  const moving = (time / 3500) % 1;
+  const a = points[1], b = points[8];
+  context.beginPath(); context.arc(a.x + (b.x - a.x) * moving, a.y + (b.y - a.y) * moving, 2.2, 0, Math.PI * 2); context.fillStyle = "#ff817a"; context.fill();
+  requestAnimationFrame(drawHero);
+}
+
+function layoutGraph(nodes, width, height) {
+  const centers = { customer: [width * .27, height * .52], merchant: [width * .73, height * .42], device: [width * .53, height * .72] };
+  const counts = { customer: 0, merchant: 0, device: 0 };
+  return nodes.map((node) => {
+    const center = centers[node.type] || [width / 2, height / 2];
+    const index = counts[node.type]++;
+    const angle = ((hash(node.id) % 360) / 180) * Math.PI + index * .5;
+    const radius = 34 + (hash(`${node.id}:radius`) % 105);
+    return { ...node, x: center[0] + Math.cos(angle) * radius, y: center[1] + Math.sin(angle) * radius * .62 };
+  });
+}
+
+function drawGraph(time = 0) {
+  const canvas = $("#graphCanvas");
+  if (!canvas) return;
+  const { context, width, height } = sizeCanvas(canvas);
+  context.clearRect(0, 0, width, height);
+  if (!state.arena) { state.animation = requestAnimationFrame(drawGraph); return; }
+  const nodes = layoutGraph(state.arena.graph.nodes, width, height);
+  state.graphNodes = nodes;
+  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+  state.arena.graph.edges.forEach((edge, index) => {
+    const source = nodeMap.get(edge.source), target = nodeMap.get(edge.target);
+    if (!source || !target) return;
+    context.beginPath(); context.moveTo(source.x, source.y); context.lineTo(target.x, target.y);
+    context.lineWidth = edge.blocked ? 1.2 : .7;
+    context.strokeStyle = edge.risk >= 55 ? "rgba(255,102,95,.28)" : edge.blocked ? "rgba(113,216,223,.23)" : "rgba(100,139,135,.13)"; context.stroke();
+    if (edge.risk >= 55 && index < 12) {
+      const progress = ((time / 1700) + index * .17) % 1;
+      context.beginPath(); context.arc(source.x + (target.x - source.x) * progress, source.y + (target.y - source.y) * progress, 1.7, 0, Math.PI * 2);
+      context.fillStyle = edge.blocked ? "#71d8df" : "#ff665f"; context.fill();
+    }
+  });
+  nodes.forEach((node) => {
+    const hot = node.risk >= 60;
+    if (hot) {
+      context.beginPath(); context.arc(node.x, node.y, 11 + Math.sin(time / 350 + hash(node.id)) * 2, 0, Math.PI * 2); context.fillStyle = "rgba(255,102,95,.055)"; context.fill();
+    }
+    context.beginPath(); context.arc(node.x, node.y, hot ? 4.8 : 3.2, 0, Math.PI * 2);
+    context.fillStyle = hot ? "#ff665f" : node.type === "merchant" ? "#f1a25d" : node.type === "device" ? "#71d8df" : "#9ee6ca"; context.fill();
+    context.strokeStyle = "rgba(7,16,20,.9)"; context.lineWidth = 2; context.stroke();
+  });
+  state.animation = requestAnimationFrame(drawGraph);
+}
+
+function renderTimeline(events) {
+  $("#timeline").innerHTML = events.map((event) => `<li class="${event.actor === "RED" ? "red" : event.actor === "BLUE" ? "blue" : ""}"><small>+${event.offset_ms} MS<br>${escapeHtml(event.actor)}</small><div><b>${escapeHtml(event.title)}</b><span>${escapeHtml(event.detail)}</span></div></li>`).join("");
+}
+
+function renderReceipt(receipt) {
+  if (!receipt) { $("#receipt").className = "receipt-empty"; $("#receipt").textContent = "No flagged receipt was generated."; return; }
+  $("#receipt").className = "receipt-grid";
+  $("#receipt").innerHTML = `<div class="receipt-risk"><strong>${receipt.risk_score}</strong><span>/ 100 FUSED RISK<br>${escapeHtml(receipt.transaction_id)}</span><b>${escapeHtml(receipt.decision)}</b></div><div class="receipt-lines"><div><span>Transaction model</span><b>${receipt.transaction_score}</b></div><div><span>Graph signal</span><b>${receipt.graph_score}</b></div><div><span>Amount</span><b>${money(receipt.amount)}</b></div><div><span>Ground truth</span><b>${receipt.is_fraud ? "SYNTHETIC ATTACK" : "BENIGN"}</b></div></div><div class="reason-chips">${receipt.reason_codes.map((code) => `<span>${escapeHtml(code.replaceAll("_", " "))}</span>`).join("")}</div>`;
+}
+
+function renderArena(data) {
+  state.arena = data;
+  const baseline = data.rounds.find((round) => round.id === "BASELINE").metrics;
+  const adapted = data.rounds.find((round) => round.id === "ADAPTED").metrics;
+  $("#arenaId").textContent = `${data.arena_id} · ${data.governance.mode}`;
+  $("#defenderAdvantage").textContent = `${data.outcome.defender_score} : ${data.outcome.attacker_score}`;
+  $("#winnerLabel").textContent = `${data.outcome.winner.toLowerCase()} leads`;
+  $("#preventedValue").textContent = money(data.outcome.prevented_value_lift);
+  $("#exposureReduction").textContent = percentage(data.outcome.escaped_value_reduction);
+  $("#detectionLatency").textContent = `${data.outcome.estimated_detection_latency_ms} ms`;
+  $("#attackerBudget").textContent = money(data.controls.attacker_budget);
+  $("#activeTactic").textContent = data.scenario.tactic.replaceAll("_", " ").toLowerCase();
+  $("#motifLabel").textContent = data.graph.motif.replaceAll("_", " ").toLowerCase();
+  $("#graphStats").textContent = `${data.graph.nodes.length} entities · ${data.graph.edges.length} relationships`;
+  $("#baselineValue").textContent = money(baseline.payment_value);
+  $("#baselineFriction").textContent = percentage(baseline.customer_friction_rate);
+  $("#adaptedPrevented").textContent = money(adapted.prevented_value);
+  $("#adaptedEscaped").textContent = money(adapted.escaped_value);
+  $("#graphEmpty").classList.add("hidden");
+  renderTimeline(data.timeline);
+  renderReceipt(data.decision_receipts[0]);
+}
+
+async function runArena() {
+  const button = $("#runArena");
+  button.disabled = true; button.firstChild.textContent = "Simulating ";
   try {
-    const data = await api("/api/v1/evaluate", { method: "POST", body: JSON.stringify({ scenarioId: $("#scenario").value, volume: Number($("#volume").value), seed: Number($("#seed").value), fraudRate: .25 }) });
-    renderResult(data);
-    $("#resultStatus").textContent = "Complete"; toast("Synthetic replay completed"); await refresh();
-  } catch (error) { $("#resultStatus").textContent = "Error"; toast(error.message); }
-  finally { button.disabled = false; heroButton.disabled = false; }
-}
-
-async function evaluateHoldout() {
-  const button = $("#holdout"); button.disabled = true; $("#resultStatus").textContent = "Running";
-  try {
-    const scenarioId = modelHealth?.holdout_scenarios?.[0] ?? "LAUNDER_001";
-    $("#scenario").value = scenarioId;
-    const data = await api("/api/v1/evaluate/holdout", { method: "POST", body: JSON.stringify({ scenarioId, volume: Number($("#volume").value), seed: Number($("#seed").value) }) });
-    renderResult(data.ensemble, ` · F1 lift ${data.lift.f1 >= 0 ? "+" : ""}${data.lift.f1.toFixed(3)} vs fallback`);
-    $("#resultStatus").textContent = "Holdout"; toast("Novel-family comparison completed"); await refresh();
-  } catch (error) { $("#resultStatus").textContent = "Error"; toast(error.message); }
-  finally { button.disabled = false; }
-}
-
-async function generateMutations() {
-  const button = $("#mutate"); button.disabled = true; button.textContent = "Finding model misses…";
-  try {
-    const scenarioId = modelHealth?.holdout_scenarios?.[0] ?? "LAUNDER_001";
-    const data = await api("/api/v1/learn/mutate", { method: "POST", body: JSON.stringify({ scenarioId, volume: Number($("#volume").value), seed: Number($("#seed").value), maxMisses: 8 }) });
-    $("#learningResult").textContent = `${data.baseline_false_negatives} misses → ${data.variants_generated} traceable variants · ${percent(data.variant_detection_rate)} detected · human review required`;
-    toast("Defense-guided mutation batch created");
+    const payload = {
+      scenarioId: $("#scenario").value,
+      volume: 130,
+      seed: 42,
+      aggression: Number($("#aggression").value) / 100,
+      stealth: Number($("#stealth").value) / 100,
+      defenderStrength: Number($("#defenseStrength").value) / 100,
+      graphDefense: $("#graphDefense").checked
+    };
+    const data = await api("/api/v1/arena/run", { method: "POST", body: JSON.stringify(payload) });
+    renderArena(data);
+    toast(`${data.scenario.label}: replay complete`);
   } catch (error) { toast(error.message); }
-  finally { button.disabled = false; button.textContent = "Generate reviewed variants"; }
+  finally { button.disabled = false; button.firstChild.textContent = "Run attack "; }
 }
 
-$("#simulate").addEventListener("click", evaluate);
-$("#holdout").addEventListener("click", evaluateHoldout);
-$("#mutate").addEventListener("click", generateMutations);
-$("#runEvaluation").addEventListener("click", () => { document.querySelector("#console").scrollIntoView(); evaluate(); });
-$("#refresh").addEventListener("click", refresh);
+async function initialize() {
+  const [catalog, health, fidelity, evidence] = await Promise.all([
+    api("/api/v1/attack/catalog"), api("/api/v1/model/health"), api("/api/v1/fidelity/report"), api("/api/v1/data/evidence")
+  ]);
+  state.catalog = catalog; state.health = health;
+  $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
+  $("#scenario").value = "SYNID_001";
+  $("#modelMetric").textContent = health.status;
+  $("#modelVersion").textContent = health.model_version.replace("fg-linear-", "FG-").slice(0, 14).toUpperCase();
+  $("#fidelityMetric").textContent = `${fidelity.passed} / ${fidelity.checks.length}`;
+  const statuses = new Map(evidence.layers.map((item) => [item.id, item.status]));
+  if (statuses.get("public") !== "REFERENCE_ONLY") toast("Evidence manifest changed; review provenance labels.");
+  await runArena();
+}
 
-Promise.all([loadCatalog(), refresh()]).catch((error) => toast(error.message));
+function bindControls() {
+  [["#aggression", "#aggressionValue"], ["#stealth", "#stealthValue"], ["#defenseStrength", "#defenseValue"]].forEach(([input, output]) => {
+    $(input).addEventListener("input", () => { $(output).textContent = `${$(input).value}%`; if (input === "#aggression") $("#attackerBudget").textContent = money(25000 + Number($(input).value) / 100 * 175000); });
+  });
+  $("#graphDefense").addEventListener("change", () => { document.querySelector(".model-state .cyan").textContent = $("#graphDefense").checked ? "ACTIVE" : "DISABLED"; });
+  $("#runArena").addEventListener("click", runArena);
+  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { $("#arena").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runArena, 450); }));
+  $("#graphCanvas").addEventListener("click", (event) => {
+    if (!state.arena) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left, y = event.clientY - rect.top;
+    const target = state.graphNodes.find((node) => Math.hypot(node.x - x, node.y - y) < 13);
+    if (!target) return;
+    const receipt = state.arena.decision_receipts.find((item) => item.transaction_id.includes(target.id)) || state.arena.decision_receipts[0];
+    renderReceipt(receipt); toast(`${target.type} ${target.label} · peak risk ${target.risk}`);
+  });
+}
+
+bindControls();
+requestAnimationFrame(drawHero);
+requestAnimationFrame(drawGraph);
+initialize().catch((error) => toast(error.message));
