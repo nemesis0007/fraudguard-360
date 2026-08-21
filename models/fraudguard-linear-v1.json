@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0",
+  "model_type": "logistic_regression",
+  "model_version": "fg-linear-ad2919e91e",
+  "feature_version": "features-1.0",
+  "created_at": "2026-08-21T19:45:26.917163+00:00",
+  "feature_order": [
+    "velocity_1h",
+    "amount_deviation",
+    "new_device",
+    "shared_device_count",
+    "location_shift",
+    "new_payee",
+    "card_not_present",
+    "unusual_hour",
+    "new_account",
+    "identity_mismatch",
+    "merchant_risk"
+  ],
+  "normalization": {
+    "means": [
+      1.0919005613,
+      4.2560781075,
+      0.0591820369,
+      0.6970328789,
+      0.4081796311,
+      0.0641539695,
+      0.0325581395,
+      0.1878107458,
+      0.0598235766,
+      0.0246992783,
+      0.215818765
+    ],
+    "scales": [
+      0.298711743,
+      50.7248477428,
+      0.2359650894,
+      0.459541124,
+      0.491496714,
+      0.2450270143,
+      0.1774770607,
+      0.3905609678,
+      0.2371596852,
+      0.1552070357,
+      0.1792631694
+    ]
+  },
+  "weights": [
+    0.0727097852,
+    -0.1976496143,
+    0.524435319,
+    -0.1439993759,
+    0.1412952731,
+    0.8950499931,
+    0.4653100112,
+    -0.0423116068,
+    0.7681869283,
+    0.6992447431,
+    0.915633245
+  ],
+  "bias": -0.3964407993,
+  "decision_threshold": 0.57,
+  "training_manifest": {
+    "schema_version": "1.0",
+    "feature_version": "features-1.0",
+    "generator_version": "synthetic-1.1",
+    "hard_negative_rate": 0.15,
+    "signal_strength": 0.88,
+    "seed": 2026,
+    "rows_per_scenario": 1000,
+    "training_scenarios": [
+      "ATO_001",
+      "CNP_001",
+      "MULE_001",
+      "BOT_001",
+      "REFUND_001",
+      "UPI_001",
+      "SYNID_001",
+      "PROMO_001",
+      "FRIENDLY_001"
+    ],
+    "holdout_scenarios": [
+      "LAUNDER_001"
+    ],
+    "split_strategy": "customer-entity hash: 70% train / 10% validation / 20% test",
+    "examples": {
+      "train": 6235,
+      "validation": 1049,
+      "test": 1716
+    },
+    "positive_rate": 0.260144
+  },
+  "metrics": {
+    "validation": {
+      "precision": 0.769231,
+      "recall": 0.757576,
+      "f1": 0.763359,
+      "false_positive_rate": 0.076433,
+      "confusion_matrix": {
+        "tp": 200,
+        "fp": 60,
+        "tn": 725,
+        "fn": 64
+      }
+    },
+    "test": {
+      "precision": 0.748837,
+      "recall": 0.755869,
+      "f1": 0.752336,
+      "false_positive_rate": 0.083721,
+      "confusion_matrix": {
+        "tp": 322,
+        "fp": 108,
+        "tn": 1182,
+        "fn": 104
+      }
+    }
+  },
+  "coefficient_explanations": [
+    {
+      "feature": "merchant_risk",
+      "coefficient": 0.915633
+    },
+    {
+      "feature": "new_payee",
+      "coefficient": 0.89505
+    },
+    {
+      "feature": "new_account",
+      "coefficient": 0.768187
+    },
+    {
+      "feature": "identity_mismatch",
+      "coefficient": 0.699245
+    },
+    {
+      "feature": "new_device",
+      "coefficient": 0.524435
+    },
+    {
+      "feature": "card_not_present",
+      "coefficient": 0.46531
+    },
+    {
+      "feature": "amount_deviation",
+      "coefficient": -0.19765
+    },
+    {
+      "feature": "shared_device_count",
+      "coefficient": -0.143999
+    },
+    {
+      "feature": "location_shift",
+      "coefficient": 0.141295
+    },
+    {
+      "feature": "velocity_1h",
+      "coefficient": 0.07271
+    },
+    {
+      "feature": "unusual_hour",
+      "coefficient": -0.042312
+    }
+  ],
+  "limitations": [
+    "Trained entirely on synthetic scenarios.",
+    "Linear benchmark intended for comparison and fallback-safe integration, not production authorization."
+  ]
+}

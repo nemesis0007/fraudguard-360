@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Step-by-step explanation of FraudGuard 360 data, features, model, evaluation, and decision flow">
+  <title>How FraudGuard 360 Works</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">FG</span><span>FraudGuard <strong>360</strong></span></a>
+    <div class="top-actions"><a class="guide-link" href="/">← Dashboard</a><div class="system-status"><span class="pulse"></span> Implementation guide</div></div>
+  </header>
+  <main class="guide-main">
+    <section class="guide-hero">
+      <p class="eyebrow">Build guide · data lineage · model card</p>
+      <h1>What is happening,<br><span>step by step.</span></h1>
+      <p>This guide connects the challenge brief to the code: which data we create, how features are produced, why the model was chosen, how it is evaluated, and how a score becomes a payment decision.</p>
+      <div class="status-callout"><b class="verified">Competition alignment:</b> this is a hackathon with no supplied dataset. FraudGuard therefore creates its own safe, traceable synthetic payment dataset and is judged on attack diversity, simulation fidelity, detection efficacy, novelty, and real-world feasibility.</div>
+    </section>
+    <div class="guide-layout">
+      <nav class="guide-nav" aria-label="Guide sections">
+        <a href="#problem">1. Problem</a>
+        <a href="#identify">2. Identify</a>
+        <a href="#generate">3. Dataset</a>
+        <a href="#features">4. Features</a>
+        <a href="#model">5. Model</a>
+        <a href="#evaluation">6. Evaluation</a>
+        <a href="#runtime">7. Decisions</a>
+        <a href="#loop">8. Learning loop</a>
+      </nav>
+      <div class="guide-content">
+        <section id="problem">
+          <span class="step-number">STEP 01</span>
+          <h2>Translate the brief into one closed loop</h2>
+          <p>The challenge asks teams to identify emerging GenAI-enabled payment fraud, generate faithful simulations at scale, and defend against them with accurate AI/ML while limiting false positives. FraudGuard treats these as one loop instead of three disconnected demos.</p>
+          <p>Creative work stays offline: threat research, scenario mutation, dataset generation, and training. The live payment path stays deterministic: feature calculation, model inference, policy thresholds, and auditable reason codes.</p>
+        </section>
+        <section id="identify">
+          <span class="step-number">STEP 02</span>
+          <h2>Identify a broad attack landscape</h2>
+          <p>The current catalog contains ten structured families: account takeover, card-not-present bursts, mule networks, bot testing, refund abuse, urgent instant-payment scams, synthetic identity, transaction layering, promotion abuse, and friendly fraud.</p>
+          <p>Each scenario has a stable ID, severity, version, and observable signals. These are defensive simulation specifications—not instructions for interacting with victims, credentials, or real payment rails.</p>
+        </section>
+        <section id="generate">
+          <span class="step-number">STEP 03</span>
+          <h2>Create the dataset we need</h2>
+          <p>There is no Kaggle dataset for this challenge. The project generates 9,000 fictional training transactions from nine attack families using fixed seeds. Generator version synthetic-1.1 adds controlled benign hard negatives, probabilistic attack signals, monotonic timestamps, and explicit row profiles alongside provenance and labels.</p>
+          <table class="guide-table">
+            <thead><tr><th>Partition</th><th>Purpose</th><th>Leakage control</th></tr></thead>
+            <tbody>
+              <tr><td>Train · 70%</td><td>Learn fraud coefficients</td><td>Customer/scenario entity hashing</td></tr>
+              <tr><td>Validation · 10%</td><td>Select decision threshold</td><td>No customer crosses splits</td></tr>
+              <tr><td>Test · 20%</td><td>Locked performance check</td><td>Untouched during training</td></tr>
+              <tr><td>LAUNDER_001</td><td>Completely unseen attack-family holdout</td><td>Excluded from all training rows</td></tr>
+            </tbody>
+          </table>
+          <p class="warning"><b>Fidelity evidence:</b> the committed report passes 12/12 automated gates for reproducibility, schema, class rates, hard-negative coverage, amount overlap, correlation, feature ranges, and privacy. These checks validate the generator—not production realism.</p>
+        </section>
+        <section id="features">
+          <span class="step-number">STEP 04</span>
+          <h2>Turn transactions into behavior</h2>
+          <p>The same FeatureEngine runs during dataset export and API inference, reducing training-serving skew. It produces eleven signals: one-hour velocity, amount deviation, new device, shared-device count, location shift, new payee, card-not-present, unusual hour, new account, identity mismatch, and merchant risk.</p>
+          <p>Transactions are processed in time order because velocity and novelty only make sense relative to prior customer activity.</p>
+        </section>
+        <section id="model">
+          <span class="step-number">STEP 05</span>
+          <h2>Begin with an explainable trained benchmark</h2>
+          <div class="model-choice">
+            <article><b>Logistic regression · active</b><p>Fast, inspectable coefficients, versioned JSON artifact, and no ML dependency in the live service.</p></article>
+            <article><b>LightGBM/XGBoost · benchmark next</b><p>Useful for nonlinear interactions after the synthetic fidelity suite is locked.</p></article>
+            <article><b>Graph/sequence · measured stretch</b><p>Add only when relationship or temporal lift can be proven.</p></article>
+          </div>
+          <p>The NumPy trainer standardizes every feature, balances fraud and legitimate examples, applies L2 regularization, and selects a validation threshold under a false-positive constraint. The artifact stores weights, normalization, threshold, scenario manifest, metrics, feature version, limitations, and a content-derived model version.</p>
+        </section>
+        <section id="evaluation">
+          <span class="step-number">STEP 06</span>
+          <h2>Measure detection and customer friction</h2>
+          <p>On the harder locked test split, precision is 0.749, recall is 0.756, and F1 is 0.752. On unseen transaction layering, the ensemble reaches F1 0.762 versus 0.667 for fallback and recall 0.877 versus 0.590, while false-positive rate rises from 5.8% to 13.8%. The dashboard makes that tradeoff explicit.</p>
+          <p>We report precision, recall, F1, false-positive rate, confusion matrix, latency, model version, and scoring mode. The dashboard can run both ordinary replay and the novel-family comparison.</p>
+        </section>
+        <section id="runtime">
+          <span class="step-number">STEP 07</span>
+          <h2>Convert risk into an explainable action</h2>
+          <p>The runtime blends 70% model probability with 30% transparent rule score. Configurable thresholds map the result to ALLOW, STEP_UP, REVIEW, or BLOCK. Every response includes probability, rule score, human-readable reason codes, feature/model versions, and latency.</p>
+          <p>If the model artifact is missing or invalid, scoring continues in SAFE_FALLBACK mode using deterministic rules. Generative AI is never placed in the synchronous payment decision path.</p>
+        </section>
+        <section id="loop">
+          <span class="step-number">STEP 08</span>
+          <h2>Use errors to harden the next defense</h2>
+          <p>Outcome feedback is classified as correct, false positive, or false negative. The learning endpoint now replays an unseen scenario, selects actual false negatives, and creates traceable amount, payee, device, and merchant-context stress variants. Every batch is marked HUMAN_REVIEW_REQUIRED: it never retrains, changes, or promotes the active model. The next milestone trains an isolated candidate artifact from approved variants and shows locked before/after evidence.</p>
+          <pre>Identify → Generate → Score → Find misses → Mutate safely
+        → Train candidate → Compare → Human approval → Deploy</pre>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer><span>FraudGuard 360 · Implementation guide</span><span>Synthetic-first · audit-ready · human governed</span></footer>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FraudGuard 360 synthetic red-team and blue-team defense lab">
+  <title>FraudGuard 360 — AI Defense Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="FraudGuard 360 home">
+      <span class="brand-mark">FG</span>
+      <span>FraudGuard <strong>360</strong></span>
+    </a>
+    <div class="top-actions"><a class="guide-link" href="/guide.html">How it works</a><div class="system-status"><span class="pulse"></span> <span id="modelStatus">Defense lab online</span></div></div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Mastercard GFF 2026 · AI Defense Lab</p>
+        <h1>Find tomorrow’s fraud<br><span>before it finds you.</span></h1>
+        <p class="hero-copy">A privacy-safe red-team / blue-team lab that creates synthetic attacks, scores every transaction, and turns detection gaps into the next defense cycle.</p>
+        <div class="hero-actions">
+          <button class="primary" id="runEvaluation">Run red vs blue test <span>→</span></button>
+          <a class="secondary" href="#console">Open detection console</a>
+        </div>
+      </div>
+      <div class="loop-card" aria-label="Closed-loop defense flow">
+        <div class="loop-stage active"><span>01</span><div><b>Identify</b><small>Threat catalog</small></div></div>
+        <div class="connector"></div>
+        <div class="loop-stage"><span>02</span><div><b>Generate</b><small>Synthetic events</small></div></div>
+        <div class="connector"></div>
+        <div class="loop-stage"><span>03</span><div><b>Defend</b><small>Risk + decisions</small></div></div>
+        <div class="connector"></div>
+        <div class="loop-stage"><span>04</span><div><b>Learn</b><small>Hard negatives</small></div></div>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="System metrics">
+      <article><span>Attack families</span><strong id="attackCount">—</strong><small>Structured scenarios</small></article>
+      <article><span>Transactions scored</span><strong id="scoredCount">0</strong><small>Live session</small></article>
+      <article><span>Average latency</span><strong><span id="latency">0</span><em> ms</em></strong><small>Target &lt; 50 ms</small></article>
+      <article><span>Learning queue</span><strong id="retrainCount">0</strong><small>Retraining candidates</small></article>
+      <article><span>Synthetic fidelity</span><strong id="fidelityScore">—</strong><small id="fidelityDetail">Audit loading</small></article>
+    </section>
+
+    <section class="workspace" id="console">
+      <div class="section-heading">
+        <div><p class="eyebrow">Attack simulator</p><h2>Red vs blue console</h2></div>
+        <p>Choose a controlled synthetic scenario and replay it through the exact scoring path used by the API.</p>
+      </div>
+
+      <div class="console-grid">
+        <article class="panel controls-panel">
+          <div class="panel-title"><span class="red-dot"></span><div><b>Red team</b><small>Scenario configuration</small></div></div>
+          <label for="scenario">Attack family</label>
+          <select id="scenario"></select>
+          <div class="field-row">
+            <label>Volume<input id="volume" type="number" min="10" max="1000" value="160"></label>
+            <label>Seed<input id="seed" type="number" value="42"></label>
+          </div>
+          <button class="danger" id="simulate">Launch synthetic replay</button>
+          <button class="holdout-button" id="holdout">Compare novel holdout</button>
+          <button class="holdout-button" id="mutate">Generate reviewed variants</button>
+          <p class="learning-result" id="learningResult">Learning proposals require human review and never change the active model.</p>
+          <p class="guardrail">Synthetic data only. No real cardholder data, credentials, or payment rails.</p>
+        </article>
+
+        <article class="panel result-panel">
+          <div class="panel-title"><span class="blue-dot"></span><div><b>Blue team</b><small>Evaluation result</small></div><span class="result-status" id="resultStatus">Ready</span></div>
+          <div class="score-display">
+            <div class="score-ring" id="scoreRing"><div><strong id="f1Score">—</strong><small>F1 SCORE</small></div></div>
+            <div class="score-details">
+              <div><span>Precision</span><b id="precision">—</b></div>
+              <div><span>Recall</span><b id="recall">—</b></div>
+              <div><span>False-positive rate</span><b id="falsePositive">—</b></div>
+            </div>
+          </div>
+          <div class="confusion" id="confusion"><span>Run an evaluation to populate the defense result.</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="decisions">
+      <div class="section-heading compact">
+        <div><p class="eyebrow">Decision stream</p><h2>Explainable by design</h2></div>
+        <button class="text-button" id="refresh">Refresh ↻</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Transaction</th><th>Risk</th><th>Decision</th><th>Reason codes</th><th>Latency</th></tr></thead>
+          <tbody id="decisionRows"><tr><td colspan="5" class="empty">No transactions scored in this session.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>FraudGuard 360 · Prototype environment</span><span>Identify → Generate → Defend → Learn</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

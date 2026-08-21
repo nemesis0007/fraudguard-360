@@ -1,0 +1,157 @@
+{
+  "schema_version": "1.0",
+  "generator_version": "synthetic-1.1",
+  "rows": 6000,
+  "scenarios": 10,
+  "checks": [
+    {
+      "id": "deterministic_replay",
+      "value": true,
+      "target": true,
+      "pass": true
+    },
+    {
+      "id": "seed_diversity",
+      "value": true,
+      "target": true,
+      "pass": true
+    },
+    {
+      "id": "timestamp_monotonicity",
+      "value": true,
+      "target": true,
+      "pass": true
+    },
+    {
+      "id": "schema_completeness",
+      "value": 1,
+      "target": ">= 0.999",
+      "pass": true
+    },
+    {
+      "id": "identifier_uniqueness",
+      "value": 1,
+      "target": "1.0",
+      "pass": true
+    },
+    {
+      "id": "fraud_rate_control",
+      "value": 0.2513,
+      "target": "0.20–0.30",
+      "pass": true
+    },
+    {
+      "id": "hard_negative_prevalence",
+      "value": 0.1451,
+      "target": "0.10–0.20",
+      "pass": true
+    },
+    {
+      "id": "hard_negative_feature_coverage",
+      "value": 0.8896,
+      "target": ">= 0.55",
+      "pass": true
+    },
+    {
+      "id": "amount_distribution_overlap",
+      "value": 0.3621,
+      "target": ">= 0.20",
+      "pass": true
+    },
+    {
+      "id": "feature_correlation_ceiling",
+      "value": 0.5379,
+      "target": "<= 0.95",
+      "pass": true
+    },
+    {
+      "id": "feature_ranges",
+      "value": true,
+      "target": true,
+      "pass": true
+    },
+    {
+      "id": "privacy_boundary",
+      "value": true,
+      "target": true,
+      "pass": true
+    }
+  ],
+  "passed": 12,
+  "failed": 0,
+  "quality_score": 1,
+  "diagnostics": {
+    "maximum_feature_correlation": {
+      "left": "new_account",
+      "right": "identity_mismatch",
+      "absolute_correlation": 0.5379
+    },
+    "scenario_profiles": [
+      {
+        "scenario_id": "ATO_001",
+        "rows": 600,
+        "fraud_rate": 0.2467,
+        "hard_negative_rate": 0.1438
+      },
+      {
+        "scenario_id": "CNP_001",
+        "rows": 600,
+        "fraud_rate": 0.2583,
+        "hard_negative_rate": 0.1438
+      },
+      {
+        "scenario_id": "MULE_001",
+        "rows": 600,
+        "fraud_rate": 0.2333,
+        "hard_negative_rate": 0.1391
+      },
+      {
+        "scenario_id": "BOT_001",
+        "rows": 600,
+        "fraud_rate": 0.255,
+        "hard_negative_rate": 0.1275
+      },
+      {
+        "scenario_id": "REFUND_001",
+        "rows": 600,
+        "fraud_rate": 0.2567,
+        "hard_negative_rate": 0.1368
+      },
+      {
+        "scenario_id": "UPI_001",
+        "rows": 600,
+        "fraud_rate": 0.24,
+        "hard_negative_rate": 0.1535
+      },
+      {
+        "scenario_id": "SYNID_001",
+        "rows": 600,
+        "fraud_rate": 0.265,
+        "hard_negative_rate": 0.161
+      },
+      {
+        "scenario_id": "LAUNDER_001",
+        "rows": 600,
+        "fraud_rate": 0.255,
+        "hard_negative_rate": 0.1588
+      },
+      {
+        "scenario_id": "PROMO_001",
+        "rows": 600,
+        "fraud_rate": 0.265,
+        "hard_negative_rate": 0.1406
+      },
+      {
+        "scenario_id": "FRIENDLY_001",
+        "rows": 600,
+        "fraud_rate": 0.2383,
+        "hard_negative_rate": 0.1466
+      }
+    ]
+  },
+  "limitations": [
+    "Statistical checks compare synthetic cohorts with each other, not with a confidential production reference population.",
+    "Passing gates establishes generator consistency and controlled overlap; it does not establish production realism."
+  ],
+  "report_version": "fg-fidelity-11ffd89a20"
+}

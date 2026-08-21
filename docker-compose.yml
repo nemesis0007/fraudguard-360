@@ -1,0 +1,16 @@
+services:
+  fraudguard:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      FG_ALLOW_THRESHOLD: 35
+      FG_REVIEW_THRESHOLD: 60
+      FG_BLOCK_THRESHOLD: 80
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+

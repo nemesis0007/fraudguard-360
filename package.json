@@ -1,0 +1,18 @@
+{
+  "name": "fraudguard-360",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Closed-loop synthetic fraud defense lab for Mastercard GFF 2026",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "data:generate": "node scripts/export-training-data.js",
+    "data:fidelity": "node scripts/audit-synthetic-fidelity.js",
+    "test": "node --test",
+    "check": "node --check src/server.js && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
