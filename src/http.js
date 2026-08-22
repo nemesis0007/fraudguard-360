@@ -42,6 +42,8 @@ export function createHandler(platform) {
       if (request.method === "GET" && url.pathname === "/api/v1/model/health") return sendJson(response, 200, platform.risk.modelHealth(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/fidelity/report") return sendJson(response, 200, platform.fidelityReport(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/data/evidence") return sendJson(response, 200, platform.evidenceStack(), requestId);
+      if (request.method === "GET" && url.pathname === "/api/v1/architecture") return sendJson(response, 200, platform.architectureStatus(), requestId);
+      if (request.method === "GET" && url.pathname === "/api/v1/audit/recent") return sendJson(response, 200, platform.recentAudit(Number(url.searchParams.get("limit")) || 20), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/attack/catalog") return sendJson(response, 200, platform.catalog(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/campaign/catalog") return sendJson(response, 200, platform.campaigns(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/challenge/coverage") return sendJson(response, 200, platform.challengeCoverage(), requestId);
@@ -56,6 +58,11 @@ export function createHandler(platform) {
         required(body, ["transaction_id", "customer_id", "merchant_id", "device_id", "amount", "timestamp"]);
         if (Number(body.amount) < 0) throw new Error("INVALID_AMOUNT");
         return sendJson(response, 200, platform.score(body, { modelAvailable: body.model_available !== false }), requestId);
+      }
+      if (request.method === "POST" && url.pathname === "/api/v1/payments/simulate") {
+        const body = await readJson(request);
+        required(body, ["transaction_id", "customer_id", "merchant_id", "device_id", "amount", "timestamp"]);
+        return sendJson(response, 200, platform.authorizeInSimulator(body, { modelAvailable: body.model_available !== false }), requestId);
       }
       if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
         const body = await readJson(request); required(body, ["scenarioId"]);

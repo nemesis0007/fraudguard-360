@@ -40,7 +40,7 @@ export class RiskEngine {
     return this.model.health();
   }
 
-  score(features, { modelAvailable = true } = {}) {
+  infer(features, { modelAvailable = true } = {}) {
     const contributions = REASONS.map(([code, fn, weight]) => ({
       code,
       points: Math.round(Math.max(0, Math.min(1, fn(features))) * weight)
@@ -51,14 +51,8 @@ export class RiskEngine {
     const riskScore = useModel
       ? Math.min(100, Math.round(fraudProbability * 70 + ruleScore * 0.3))
       : ruleScore;
-    const decision = riskScore >= this.thresholds.block ? "BLOCK"
-      : riskScore >= this.thresholds.review ? "REVIEW"
-        : riskScore >= this.thresholds.allow ? "STEP_UP"
-          : "ALLOW";
     return {
       risk_score: riskScore,
-      risk_level: riskScore >= 80 ? "CRITICAL" : riskScore >= 60 ? "HIGH" : riskScore >= 35 ? "MEDIUM" : "LOW",
-      decision,
       reason_codes: contributions.slice(0, 4).map((item) => item.code),
       reason_contributions: contributions.slice(0, 4),
       fraud_probability: fraudProbability === null ? null : Number(fraudProbability.toFixed(6)),
@@ -66,5 +60,21 @@ export class RiskEngine {
       model_version: this.modelVersion,
       scoring_mode: useModel ? "ENSEMBLE" : "SAFE_FALLBACK"
     };
+  }
+
+  decide(inference) {
+    const decision = inference.risk_score >= this.thresholds.block ? "BLOCK"
+      : inference.risk_score >= this.thresholds.review ? "REVIEW"
+        : inference.risk_score >= this.thresholds.allow ? "STEP_UP"
+          : "ALLOW";
+    return {
+      ...inference,
+      risk_level: inference.risk_score >= 80 ? "CRITICAL" : inference.risk_score >= 60 ? "HIGH" : inference.risk_score >= 35 ? "MEDIUM" : "LOW",
+      decision,
+    };
+  }
+
+  score(features, options = {}) {
+    return this.decide(this.infer(features, options));
   }
 }

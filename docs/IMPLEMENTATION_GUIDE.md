@@ -326,3 +326,11 @@ The ledger also states what is still missing before a real pilot: authorized agg
 The user chooses one of four defensive-research objectives: find defense gaps, optimize stealth, stress customer friction, or challenge graph fusion. `POST /api/v1/agents/mission` returns every action/observation event, all candidate scores, the winning policy per generation, the overall champion, and its complete arena evidence. The website replays that audit trail and loads the champion into the manual arena for inspection.
 
 This is autonomous policy search, not a claim that a general-purpose model has unrestricted control. It runs in process and needs no hosted AI provider. Its action space cannot invoke tools, access a network, use credentials, read customer data, or reach live payment rails. The active fraud model never self-modifies; promotion remains human-gated.
+
+## 19. Layered system architecture
+
+The reference offline/nearline/real-time architecture is now executable rather than illustrative. `src/nearline-stores.js` defines the threat repository, synthetic data vault, online feature store, locked model registry, and append-style decision audit store. `src/realtime-pipeline.js` defines transaction ingestion, online feature calculation, model inference, runtime policy, response construction, and the isolated payment-system simulator as separate contracts.
+
+`RiskEngine.infer()` now produces the model/rule evidence without choosing a payment action. `RiskEngine.decide()` applies deterministic thresholds afterward. This keeps model inference separate from business policy and makes it possible to replace the model or extract the decision service without changing the response contract.
+
+Every `/api/v1/score` result includes a five-stage `pipeline_trace`, a 100 ms response target, and target compliance. `/api/v1/payments/simulate` uses the same path and adds a fictional issuer/gateway outcome with `external_call_made: false` and `live_payment_access: false`. `/api/v1/architecture` exposes the implemented lanes, stores, cross-cutting controls, prototype/production distinctions, and governing principles. `/api/v1/audit/recent` exposes the bounded local audit view.

@@ -130,3 +130,20 @@ test("site exposes attack anatomy and direct GitHub dataset access", () => withS
   assert.match(homepage, /fraudguard-360-synthetic-dataset-210k\.zip/);
   assert.match(homepage, /210,000/);
 }));
+
+test("architecture API and simulated payment endpoint expose the separated runtime path", () => withServer(async (base) => {
+  const architecture = await fetch(`${base}/api/v1/architecture`).then((response) => response.json());
+  const response = await fetch(`${base}/api/v1/payments/simulate`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ transaction_id: "TX_HTTP_ARCH", customer_id: "C_HTTP_ARCH", merchant_id: "M_HTTP_ARCH", device_id: "D_HTTP_ARCH", amount: 8500, timestamp: "2026-08-22T13:00:00Z", country: "IN", new_payee: true, card_present: false })
+  });
+  const body = await response.json();
+  const audit = await fetch(`${base}/api/v1/audit/recent?limit=1`).then((item) => item.json());
+  assert.equal(architecture.data.architecture_id, "FRAUDGUARD_CLOSED_LOOP_V1");
+  assert.equal(architecture.data.lanes.find((lane) => lane.id === "REAL_TIME_PATH").stages.length, 5);
+  assert.equal(response.status, 200);
+  assert.equal(body.data.pipeline_trace.length, 5);
+  assert.equal(body.data.simulated_payment.external_call_made, false);
+  assert.equal(audit.data[0].transaction_id, "TX_HTTP_ARCH");
+}));

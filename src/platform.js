@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { performance } from "node:perf_hooks";
+import { readFileSync } from "node:fs";
 import { localAgentHealth, runLocalAgentMission } from "./agent-lab.js";
 import { ATTACK_CATALOG } from "./catalog.js";
 import { CAMPAIGN_CATALOG, CHALLENGE_COVERAGE } from "./campaigns.js";
@@ -8,8 +8,13 @@ import { loadFidelityReport } from "./fidelity.js";
 import { EVIDENCE_STACK } from "./evidence.js";
 import { generateTransactions } from "./generator.js";
 import { createDefensiveVariants, mutationBatchId } from "./mutation.js";
+import { DecisionAuditStore, ModelRegistry, OnlineFeatureStore, SyntheticDataVault, ThreatScenarioRepository } from "./nearline-stores.js";
+import { RealTimeDecisionPipeline } from "./realtime-pipeline.js";
 import { RiskEngine } from "./risk-engine.js";
+import { buildSystemArchitecture } from "./system-architecture.js";
 import { runTwinArena } from "./twin-engine.js";
+
+const DATASET_MANIFEST = JSON.parse(readFileSync(new URL("../data/dataset-manifest.json", import.meta.url), "utf8"));
 
 function ratio(value, total) {
   return total ? Number((value / total).toFixed(4)) : 0;
@@ -19,6 +24,12 @@ export class FraudGuardPlatform {
   constructor() {
     this.features = new FeatureEngine();
     this.risk = new RiskEngine();
+    this.scenarioRepository = new ThreatScenarioRepository(ATTACK_CATALOG, CAMPAIGN_CATALOG);
+    this.dataVault = new SyntheticDataVault(DATASET_MANIFEST);
+    this.featureStore = new OnlineFeatureStore();
+    this.modelRegistry = new ModelRegistry(this.risk);
+    this.auditStore = new DecisionAuditStore();
+    this.realtime = new RealTimeDecisionPipeline({ featureEngine: this.features, riskEngine: this.risk, featureStore: this.featureStore, modelRegistry: this.modelRegistry, auditStore: this.auditStore });
     this.fidelity = loadFidelityReport();
     this.feedback = [];
     this.recentDecisions = [];
@@ -65,28 +76,34 @@ export class FraudGuardPlatform {
     return EVIDENCE_STACK;
   }
 
+  architectureStatus() {
+    return buildSystemArchitecture({ scenarioRepository: this.scenarioRepository, dataVault: this.dataVault, featureStore: this.featureStore, modelRegistry: this.modelRegistry, auditStore: this.auditStore, feedbackCount: this.feedback.length });
+  }
+
   runArena(input = {}) {
     const result = runTwinArena(this.risk, input);
     const adapted = result.rounds.find((round) => round.id === "ADAPTED");
     this.stats.scored += adapted?.metrics.transactions ?? 0;
     this.stats.blocked += adapted?.metrics.attacks_detected ?? 0;
     this.stats.latencyTotal += (adapted?.metrics.transactions ?? 0) * result.outcome.estimated_detection_latency_ms;
-    this.recentDecisions = [
-      ...result.decision_receipts.map((decision) => ({
+    const arenaDecisions = result.decision_receipts.map((decision) => ({
         ...decision,
         feature_version: result.governance.feature_version,
         model_version: result.governance.model_version,
         latency_ms: result.outcome.estimated_detection_latency_ms,
         synthetic: true
-      })),
+      }));
+    this.recentDecisions = [
+      ...arenaDecisions,
       ...this.recentDecisions
     ].slice(0, 20);
+    arenaDecisions.forEach((decision) => this.auditStore.append(decision));
     return result;
   }
 
   simulate(input) {
     const transactions = generateTransactions(input);
-    return {
+    const dataset = {
       dataset_id: `DS_${randomUUID().slice(0, 8)}`,
       scenario_id: input.scenarioId,
       schema_version: "1.0",
@@ -95,26 +112,32 @@ export class FraudGuardPlatform {
       provenance: `${input.scenarioId}@1.0:seed-${input.seed ?? 42}`,
       transactions
     };
+    this.dataVault.register(dataset);
+    return dataset;
   }
 
   score(transaction, options = {}) {
-    const started = performance.now();
-    const features = this.features.transform(transaction);
-    const result = this.risk.score(features, options);
-    const latency = Number((performance.now() - started).toFixed(2));
-    const decision = {
-      transaction_id: transaction.transaction_id,
-      ...result,
-      feature_version: "features-1.0",
-      latency_ms: latency,
-      synthetic: transaction.synthetic === true
-    };
+    const decision = this.realtime.execute(transaction, options);
     this.stats.scored += 1;
     this.stats.blocked += decision.decision === "BLOCK" ? 1 : 0;
-    this.stats.latencyTotal += latency;
+    this.stats.latencyTotal += decision.latency_ms;
     this.recentDecisions.unshift(decision);
     this.recentDecisions = this.recentDecisions.slice(0, 20);
     return decision;
+  }
+
+  authorizeInSimulator(transaction, options = {}) {
+    const decision = this.realtime.authorizeInSimulator(transaction, options);
+    this.stats.scored += 1;
+    this.stats.blocked += decision.decision === "BLOCK" ? 1 : 0;
+    this.stats.latencyTotal += decision.latency_ms;
+    this.recentDecisions.unshift(decision);
+    this.recentDecisions = this.recentDecisions.slice(0, 20);
+    return decision;
+  }
+
+  recentAudit(limit = 20) {
+    return this.auditStore.recent(limit);
   }
 
   evaluate(input, options = {}) {

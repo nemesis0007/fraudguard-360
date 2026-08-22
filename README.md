@@ -24,6 +24,8 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 - Quantified prevented-value lift, exposure reduction, customer friction, defender/attacker advantage, and decision receipts.
 - A realistic company site and interactive entity graph backed by the live API rather than hard-coded demo numbers.
 - A shared versioned API envelope and explicit hybrid-data provenance manifest.
+- An explicit sub-100 ms real-time pipeline: transaction ingestion → online features/store → locked-model inference → deterministic decision engine → response and audit service.
+- Versioned threat repository, synthetic data vault, feature store, model registry, decision audit store, and an isolated issuer/payment simulator matching the reference architecture.
 - A 24-campaign AI-native threat atlas with named AI enablers, payment surfaces, four-stage observable kill chains, novelty/difficulty scores, signal fingerprints, and expected controls.
 - A genuine local multi-agent mission engine: six goal-driven agents select a campaign, propose competing policies, execute them in isolated twins, score outcomes, retain the winner, and adapt the defender across generations.
 - A live operations interface that exposes agent actions and observations, policy evolution, champion controls, and the sealed handoff into the manual arena rather than presenting only aggregate numbers.
@@ -75,8 +77,11 @@ All JSON responses use a shared envelope with `request_id`, `status`, `data`, an
 | `GET` | `/api/v1/model/health` | Locked model manifest, feature version, holdout, and test metrics |
 | `GET` | `/api/v1/fidelity/report` | Synthetic generator quality gates, diagnostics, and limitations |
 | `GET` | `/api/v1/data/evidence` | Active/reference/pilot data layers and governance gates |
+| `GET` | `/api/v1/architecture` | Executable offline, nearline, real-time, feedback, and infrastructure topology |
+| `GET` | `/api/v1/audit/recent` | Recent append-style decision audit records |
 | `GET` | `/api/v1/metrics/summary` | Dashboard metrics and recent decisions |
 | `POST` | `/api/v1/arena/run` | Run the counterfactual digital twin and adaptive red/blue exercise |
+| `POST` | `/api/v1/payments/simulate` | Execute the complete authorization path against an isolated issuer/payment simulator |
 
 Example autonomous mission:
 
@@ -184,7 +189,7 @@ Generator version `synthetic-1.1` deliberately introduces benign transactions th
 
 ## Architecture decision
 
-The planning documents proposed six deployable services immediately. The MVP uses a **modular monolith** instead: the catalog, generator, feature engine, risk policy, local-agent lab, evaluation loop, feedback queue, HTTP adapter, and UI are separate modules but one process.
+The reference design is implemented as a **modular monolith with deployable service boundaries**. Offline/nearline discovery and generation are separated from the deterministic real-time path. Transaction ingestion, online features, model inference, decision policy, response, audit, registries, and payment simulation are distinct classes and contracts, while one dependency-free process keeps the challenge demo reliable. These boundaries can be extracted independently when scale or governance requires it.
 
 That choice is deliberate for a short challenge window:
 

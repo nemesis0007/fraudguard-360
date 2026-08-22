@@ -22,6 +22,7 @@
       <a href="#platform">Platform</a>
       <a href="#arena">Arena</a>
       <a href="#dataset">Dataset</a>
+      <a href="#architecture">Architecture</a>
       <a href="#evidence">Evidence</a>
       <a href="/guide.html">Documentation</a>
     </nav>
@@ -294,6 +295,37 @@
             </section>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="system-architecture shell" id="architecture">
+      <div class="section-intro architecture-intro">
+        <div><p class="kicker">CLOSED-LOOP SYSTEM ARCHITECTURE</p><h2>AI discovers offline.<br>Deterministic defense decides live.</h2></div>
+        <p>The reference architecture is now reflected in executable service boundaries. Follow the data from red-team research to synthetic generation, registries, the sub-100 ms decision path, simulated payment outcome, and governed feedback.</p>
+      </div>
+      <div class="architecture-board">
+        <header><div><span class="architecture-mark">FG</span><b>FRAUDGUARD 360 / CONTROL PLANE</b></div><p><i></i> ARCHITECTURE STATUS <strong>LIVE</strong></p></header>
+        <section class="architecture-lane offline-lane">
+          <div class="lane-label"><span>○</span><b>OFFLINE / NEARLINE</b><small>Discovery & generation</small></div>
+          <div class="architecture-flow" id="architectureOffline"><div class="architecture-loading">Loading architecture registry…</div></div>
+        </section>
+        <section class="architecture-lane store-lane">
+          <div class="lane-label"><span>↻</span><b>NEARLINE</b><small>Versioned processing</small></div>
+          <div class="architecture-stores" id="architectureStores"></div>
+        </section>
+        <section class="architecture-lane realtime-lane">
+          <div class="lane-label"><span>ϟ</span><b>REAL-TIME PATH</b><small>Target &lt;100 ms</small></div>
+          <div class="architecture-flow realtime-flow" id="architectureRealtime"></div>
+        </section>
+        <section class="architecture-lane feedback-lane">
+          <div class="lane-label"><span>⟳</span><b>FEEDBACK LOOP</b><small>Human-gated learning</small></div>
+          <div class="feedback-flow" id="architectureFeedback"></div>
+        </section>
+        <section class="architecture-lane infrastructure-lane">
+          <div class="lane-label"><span>▦</span><b>CROSS-CUTTING</b><small>Infrastructure</small></div>
+          <div class="infrastructure-flow" id="architectureInfrastructure"></div>
+        </section>
+        <footer><div id="architecturePrinciples"></div><p><b>SAFETY BOUNDARY</b> External payment access is represented by an isolated issuer/payment simulator. No live authorization or settlement call can be made.</p></footer>
       </div>
     </section>
 

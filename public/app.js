@@ -200,6 +200,19 @@ function renderCoverage(coverage) {
   $("#pilotGaps").innerHTML = coverage.gaps_before_pilot.map((gap) => `<b>${escapeHtml(gap)}</b>`).join("");
 }
 
+function renderArchitecture(architecture) {
+  const offline = architecture.lanes.find((lane) => lane.id === "OFFLINE_NEARLINE");
+  const stores = architecture.lanes.find((lane) => lane.id === "NEARLINE_PROCESSING");
+  const realtime = architecture.lanes.find((lane) => lane.id === "REAL_TIME_PATH");
+  const feedback = architecture.lanes.find((lane) => lane.id === "FEEDBACK_LOOP");
+  $("#architectureOffline").innerHTML = offline.stages.map((stage) => `<article class="architecture-box"><small>${String(stage.number).padStart(2, "0")}</small><span>${escapeHtml(stage.id.split("_").map((word) => word[0]).join("").slice(0, 3))}</span><b>${escapeHtml(stage.label)}</b><p>${escapeHtml(stage.module)}</p><em>${escapeHtml(stage.output)}</em></article>`).join("");
+  $("#architectureStores").innerHTML = stores.stages.map((stage) => `<article><span></span><div><small>${escapeHtml(stage.id.replaceAll("_", " "))}</small><b>${escapeHtml(stage.label)}</b></div><em>${escapeHtml(stage.status.status ?? stage.status.registry_mode ?? "READY")}</em></article>`).join("");
+  $("#architectureRealtime").innerHTML = realtime.stages.map((stage, index) => `<article class="architecture-box realtime-box"><small>RT${String(index + 1).padStart(2, "0")}</small><span>${escapeHtml(stage.id.split("_").map((word) => word[0]).join("").slice(0, 3))}</span><b>${escapeHtml(stage.label)}</b><p>${escapeHtml(stage.output)}</p><em>DETERMINISTIC</em></article>`).join("");
+  $("#architectureFeedback").innerHTML = feedback.stages.map((stage, index) => `<article><small>${String(index + 1).padStart(2, "0")}</small><span></span><b>${escapeHtml(stage)}</b></article>`).join("");
+  $("#architectureInfrastructure").innerHTML = architecture.cross_cutting.map((service) => `<article><small>${escapeHtml(service.id.replaceAll("_", " "))}</small><b>${escapeHtml(service.status)}</b></article>`).join("");
+  $("#architecturePrinciples").innerHTML = architecture.principles.slice(0, 3).map((principle) => `<span>${escapeHtml(principle)}</span>`).join("");
+}
+
 function renderAgentRoster(agents) {
   $("#agentMetric").textContent = agents.length;
   $("#agentRosterLive").innerHTML = agents.map((agent) => `<article class="live-agent ${agent.team.toLowerCase()}" data-agent-id="${escapeHtml(agent.id)}"><span>${escapeHtml(agent.id.slice(0, 2))}</span><div><b>${escapeHtml(agent.name)}</b><small>${escapeHtml(agent.goal)}</small></div><i></i></article>`).join("");
@@ -356,8 +369,8 @@ async function initialize() {
   renderCampaignPreview(catalog[0]);
   $("#modelMetric").textContent = health.status;
   $("#modelVersion").textContent = health.model_version.replace("fg-linear-", "FG-").slice(0, 14).toUpperCase();
-  const [fidelityResult, evidenceResult, coverageResult] = await Promise.allSettled([
-    api("/api/v1/fidelity/report"), api("/api/v1/data/evidence"), api("/api/v1/challenge/coverage")
+  const [fidelityResult, evidenceResult, coverageResult, architectureResult] = await Promise.allSettled([
+    api("/api/v1/fidelity/report"), api("/api/v1/data/evidence"), api("/api/v1/challenge/coverage"), api("/api/v1/architecture")
   ]);
   if (fidelityResult.status === "fulfilled") {
     $("#fidelityMetric").textContent = `${fidelityResult.value.passed} / ${fidelityResult.value.checks.length}`;
@@ -367,6 +380,7 @@ async function initialize() {
     if (statuses.get("public") !== "REFERENCE_ONLY") toast("Evidence manifest changed; review provenance labels.");
   }
   if (coverageResult.status === "fulfilled") renderCoverage(coverageResult.value);
+  if (architectureResult.status === "fulfilled") renderArchitecture(architectureResult.value);
   await runArena();
   if (window.location.hash) {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" })));

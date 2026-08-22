@@ -1,87 +1,139 @@
-# FraudGuard 360 Architecture
+# FraudGuard 360 system architecture
 
-## MVP shape
+FraudGuard implements the supplied closed-loop red-team / blue-team architecture as a modular monolith with explicit service contracts. The prototype is one dependency-free process, but offline, nearline, real-time, feedback, storage, and external-adapter responsibilities are separated in code and exposed through `/api/v1/architecture`.
+
+The most important boundary is enforced: generative or agentic AI is allowed only in offline/nearline research and synthetic generation. The real-time path uses a locked model artifact and deterministic decision policy.
+
+## End-to-end topology
 
 ```text
-Threat catalog -> Agent-based digital twin -> Counterfactual worlds
-                                            | normal       | attacked
-                                            v              v
-                                  Transaction model + graph intelligence
-                                            |              |
-                                            +-- policy fusion --+--> decision receipt
-                                                                 |
-                            reviewed feedback / mutation <-------+
+OFFLINE / NEARLINE
+
+1 Threat intelligence   2 Synthetic generator   3 Synthetic data vault
+          |                       |                        |
+          +-----------------------+------------------------+
+                                  v
+4 Feature + graph layer -> 5 Blue-team model registry -> 6 Decision policy design
+                                  |                        |
+                                  +------------------------+
+                                                           v
+                                            8 Issuer/payment simulators
+
+NEARLINE STORES
+
+Threat repository -> Synthetic vault -> Feature store <-> Model registry
+                                                    \-> Decision audit store
+
+REAL-TIME PATH (<100 ms target)
+
+Transaction ingestion -> Online feature service -> Model inference
+        -> Runtime decision engine -> Response service -> Payment simulator
+                                               |
+                                               v
+                                      Append-only audit record
+
+7 GOVERNED FEEDBACK
+
+Outcome -> Drift/performance -> Gap analysis -> Reviewed scenario generation
+        -> Holdout evaluation -> Human-approved promotion or rejection
 ```
 
-The real-time path is deterministic and contains no generative model. Scenario discovery, mutation, training, and evaluation are offline or nearline activities.
+## 1. Threat intelligence and red team
 
-## Module boundaries
+`src/campaigns.js`, `src/catalog.js`, and `src/agent-lab.js` provide the versioned threat repository and autonomous research layer. Twenty-four AI-native campaigns are grounded in 22 tested transaction primitives. The local agents can select campaigns and bounded simulation controls only; they cannot access credentials, networks, customer data, or payment rails.
 
-| Module | Responsibility | Extraction trigger |
+Output: versioned campaign definitions, safe observable kill chains, signal fingerprints, risk labels, and governed mission traces.
+
+## 2. Synthetic data generator
+
+`src/generator.js` materializes seeded fictional transactions with explicit provenance, labels, hard negatives, and monotonic event time. `scripts/export-training-data.js` creates entity-aware splits through the same feature implementation used during inference.
+
+Output: synthetic transaction events.
+
+## 3. Synthetic data vault
+
+`data/` contains the full compressed 210,000-row benchmark, a 4,200-row browsable sample, lineage documentation, and SHA-256 checksums. `SyntheticDataVault` in `src/nearline-stores.js` registers runtime exports. Its current storage is versioned JSONL plus an in-process export registry; object storage is the extraction target.
+
+Output: curated, versioned datasets and quality evidence.
+
+## 4. Feature and graph layer
+
+`src/features.js` calculates eleven training/inference-parity behavioral features. `OnlineFeatureStore` holds current vectors behind an explicit interface. `src/twin-engine.js` adds customer, device, merchant, payee, sequence, and graph-motif signals for the counterfactual arena.
+
+Output: feature vectors and graph signals.
+
+## 5. Blue-team models and registry
+
+`src/model-adapter.js` loads and validates the locked artifact. `ModelRegistry` exposes its version, type, feature contract, holdout, metrics, promotion gate, and rollback mechanism. `ModelInferenceService` produces probability, risk score, and top reason contributions without choosing the final payment action.
+
+Output: model inference and versioned artifact metadata.
+
+## 6. Decision engine
+
+`src/risk-engine.js` separates `infer()` from `decide()`. `RuntimeDecisionEngine` owns the deterministic mapping to `ALLOW`, `STEP_UP`, `REVIEW`, or `BLOCK`. Threshold ordering is validated at startup, transparent rule scoring remains a fallback, and the active model cannot modify policy.
+
+Output: final decision, risk level, reasons, contributions, model version, and policy version.
+
+## Real-time path
+
+`src/realtime-pipeline.js` contains six explicit boundaries:
+
+| Boundary | Responsibility | Output |
 | --- | --- | --- |
-| `catalog.js` | Approved scenario registry and safe signals | Multiple researchers need write access or provenance persistence |
-| `campaigns.js` | AI-native campaign intelligence, observable kill chains, novelty/difficulty, fingerprints, and challenge traceability | Threat research and approval become a governed registry |
-| `generator.js` | Seeded synthetic transaction generation | Large batches need workers/object storage |
-| `twin-engine.js` | Counterfactual worlds, attacker pressure, graph motifs, adaptive rounds, and business outcomes | Simulation runs require durable workers or GPU graph models |
-| `agent-lab.js` | Six-role local mission orchestration, candidate policy evolution, outcome fitness, memory, and safety boundary | Missions require durable queues, signed traces, or separately scaled workers |
-| `evidence.js` | Truthful active/reference/pilot data provenance and governance manifest | Dataset registry and approval workflow become persistent |
-| `features.js` | Training/inference-parity feature logic | Shared low-latency state requires Redis/feature store |
-| `model-adapter.js` / `risk-engine.js` | Locked model inference, rule ensemble, and deterministic thresholds | Python model serving or independent scaling becomes necessary |
-| `platform.js` | Closed-loop orchestration, evaluation, feedback | Durable jobs and queues are introduced |
-| `http.js` | Versioned transport, validation, response envelope | API gateway/auth is required |
-| `public/` | Judge-facing command center | Product UI needs an independent release cadence |
+| `TransactionIngestionService` | Required fields, numeric amount, timestamp, immutable normalized event | Validated event |
+| `FeatureService` | Stateful behavioral features and online-store write | Feature vector |
+| `ModelInferenceService` | Locked model plus transparent rule inference | Score and top reasons |
+| `RuntimeDecisionEngine` | Threshold and policy mapping | Payment decision |
+| `ResponseService` | Versioned response and per-stage latency trace | Audited API response |
+| `PaymentSystemSimulator` | Issuer/gateway outcome without an external call | Synthetic outcome |
 
-## Canonical contracts
+Every `/api/v1/score` response includes `pipeline_trace`, `response_target_ms`, and `within_latency_target`. `/api/v1/payments/simulate` continues into the isolated payment simulator. It always reports `external_call_made: false` and `live_payment_access: false`.
 
-The current schema is intentionally small. Every production-bound transaction contract should add schema validation and explicit version migration before introducing additional services.
+## 7. Governed feedback loop
 
-Every scored decision records:
+Outcomes are classified as correct, false positive, or false negative. Misses can produce traceable defensive variants, but the current loop stops before training or promotion. A production promotion workflow must monitor drift, evaluate a signed candidate against entity-aware test and excluded-family holdout sets, require human approval, and preserve rollback.
 
-- transaction ID;
-- risk score and level;
-- final policy decision;
-- human-readable reason codes and contributions;
-- model version and feature version;
-- scoring mode and latency;
-- synthetic-data flag.
+## 8. External systems boundary
 
-## Model adapter
+This repository deliberately implements an adapter and simulator, not a real payment connector. `PaymentSystemSimulator` represents issuer, gateway, wallet, core-banking, and card-network outcomes while making no external request. Real integration requires separate authorization, authentication, privacy review, secrets management, idempotency, and shadow-mode controls.
 
-The transparent baseline remains a deterministic benchmark and resilience fallback. The offline Python trainer exports a locked JSON artifact containing feature order, normalization values, coefficients, threshold, scenario manifest, split sizes, metrics, limitations, and a content-derived model version. The Node hot path validates and loads that artifact at startup; the deterministic policy layer remains the final authority.
+## Nearline stores
 
-The current linear artifact is intentionally dependency-light. LightGBM or XGBoost can later replace it behind the same adapter after the benchmark dataset is frozen. A missing or invalid artifact never prevents scoring: the system reports `FALLBACK` health and uses rule scoring.
-
-## Evaluation discipline
-
-- Customer entities do not cross train, validation, and test splits within a scenario.
-- `LAUNDER_001` is excluded from training and used as the current novel-family holdout.
-- The dashboard compares ensemble and safe-fallback behavior on that holdout.
-- Synthetic metrics are labeled as prototype evidence, never production claims.
-- Arena comparisons hold the scenario controls constant and report normal, attacked, and adapted rounds separately.
-- Graph fusion keeps its component signal in every decision receipt so the outcome remains auditable.
-- Campaigns remain separate from low-level generator families: a novel campaign composes an AI enabler, payment surfaces, sequence, and graph motif while reusing a tested synthetic transaction primitive.
-
-## Hybrid evidence architecture
-
-| Layer | Current status | Role |
+| Store | Prototype implementation | Production extraction target |
 | --- | --- | --- |
-| Synthetic digital twin | Active | Novel attacks, counterfactual baselines, labels, hard negatives, repeatable evaluation |
-| Public benchmark references | Reference only | Schema, imbalance, temporal, and graph-motif realism checks |
-| Authorized institution aggregates | Pilot required | Distribution calibration, drift, thresholds, and real business costs |
+| Threat/scenario repository | Frozen registries | Versioned governed repository |
+| Synthetic data vault | JSONL/ZIP artifacts plus runtime export index | S3/MinIO-style object storage |
+| Feature store | Bounded in-memory map | Low-latency distributed online/offline store |
+| Model registry | Locked JSON artifact adapter | Signed model registry with promotion states |
+| Decision audit store | Bounded append-style in-memory records | Append-only PostgreSQL/data lake |
 
-The distinction is enforced in the API manifest at `/api/v1/data/evidence`. Reference-only data is not represented as trained or ingested, and lab code rejects the idea of raw PAN, credentials, or customer PII.
+## Cross-cutting infrastructure
 
-## Production feasibility path
+- API gateway: versioned routes, shared envelopes, request IDs, payload bounds.
+- Authentication: intentionally absent from the local sandbox; OAuth2/JWT and service identity are required before a pilot.
+- Configuration: environment thresholds plus locked artifacts.
+- Observability: per-stage latency traces, model status, summary metrics, and audit records.
+- Alerting: prototype gap; drift, threshold, and incident alerts are required before shadow mode.
+- Data quality: 12 committed fidelity checks.
+- CI/CD: automated test pipeline and container health check.
+- Secrets: none are required by the sandbox; managed storage and rotation are required for external integrations.
 
-1. **Offline simulation:** measure attack diversity, fidelity, model lift, and false positives.
-2. **Shadow mode:** score live-like authorized traffic without affecting decisions.
-3. **Step-up recommendation:** restrict medium risk to extra authentication or review.
-4. **Selective blocking:** block only calibrated, high-confidence patterns with rollback.
-5. **Continuous hardening:** reviewed scenario generation, scheduled retraining, governance approval, and immutable audit history.
+## Canonical decision contract
+
+Every real-time response records the transaction ID, feature version, model version, scoring mode, rule score, probability, risk score and level, final policy action, reason codes and contributions, policy version, per-stage latency, total latency, target compliance, synthetic flag, and audit timestamp.
+
+## Migration path
+
+1. Keep the current modular monolith for deterministic challenge demonstrations.
+2. Extract the synthetic generator and agent missions into queued nearline workers when batch size requires it.
+3. Replace in-memory feature and audit stores with governed persistent services.
+4. Deploy ingestion, feature, inference, decision, and response behind an authenticated gateway without changing their contracts.
+5. Run the payment adapter in shadow mode with no payment impact.
+6. Calibrate on authorized aggregates, add signing/rollback, then consider step-up recommendations before selective blocking.
 
 ## Explicit non-goals
 
-- No real payment rails, real credentials, or customer PII.
-- No uncontrolled model self-update.
 - No generative model in the authorization path.
-- No production claims based only on synthetic offline metrics.
+- No live payment rail, customer credential, raw PAN, or customer PII access.
+- No automatic retraining or model promotion.
+- No production efficacy claim based only on synthetic evidence.
