@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { catalog: [], health: null, arena: null, graphNodes: [], animation: 0 };
+const state = { catalog: [], health: null, agentHealth: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0 };
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
 async function api(path, options = {}) {
@@ -189,6 +189,103 @@ function renderCoverage(coverage) {
   $("#pilotGaps").innerHTML = coverage.gaps_before_pilot.map((gap) => `<b>${escapeHtml(gap)}</b>`).join("");
 }
 
+function renderAgentRoster(agents) {
+  $("#agentMetric").textContent = agents.length;
+  $("#agentRosterLive").innerHTML = agents.map((agent) => `<article class="live-agent ${agent.team.toLowerCase()}" data-agent-id="${escapeHtml(agent.id)}"><span>${escapeHtml(agent.id.slice(0, 2))}</span><div><b>${escapeHtml(agent.name)}</b><small>${escapeHtml(agent.goal)}</small></div><i></i></article>`).join("");
+}
+
+function setActiveAgent(agentId = null) {
+  document.querySelectorAll(".live-agent").forEach((agent) => agent.classList.toggle("active", agent.dataset.agentId === agentId));
+}
+
+function renderMissionEvent(event, index) {
+  const agent = state.agentHealth?.agents.find((item) => item.id === event.agent);
+  const team = agent?.team?.toLowerCase() ?? "neutral";
+  const node = document.createElement("article");
+  node.className = `agent-event ${team}`;
+  node.innerHTML = `<small>G${String(event.generation).padStart(2, "0")} / ${escapeHtml(event.agent)} / ${escapeHtml(event.state)}</small><div><b>${escapeHtml(event.action)}</b><span>${escapeHtml(event.observation)}</span>${event.candidate_id ? `<em>${escapeHtml(event.candidate_id)}</em>` : ""}</div>`;
+  $("#missionConsole").append(node);
+  $("#missionConsole").scrollTop = $("#missionConsole").scrollHeight;
+  $("#missionClock").textContent = `00:${String(Math.floor(index * 0.09)).padStart(2, "0")}.${String((index * 90) % 1000).padStart(3, "0")}`;
+  $("#agentRunState").textContent = `${event.agent.toLowerCase()} · ${event.state.toLowerCase()}`;
+  setActiveAgent(event.agent);
+}
+
+function renderEvolution(mission) {
+  $("#evolutionChart").innerHTML = mission.evolution.map((generation) => `<div class="evo-generation"><div><b>GEN ${String(generation.generation).padStart(2, "0")}</b><span>BEST ${generation.best_reward} · BLUE ${Math.round(generation.blue_strength * 100)}</span></div><div class="evo-bars">${generation.candidates.map((candidate) => `<i class="${candidate.candidate_id === generation.winner ? "winner" : ""}" title="${escapeHtml(candidate.candidate_id)}: fitness ${candidate.fitness.reward}"><b style="width:${candidate.fitness.reward}%"></b></i>`).join("")}</div></div>`).join("");
+}
+
+function renderMissionResult(mission) {
+  const champion = mission.champion;
+  const redWon = mission.summary.winner === "RED_AGENT";
+  $("#missionId").textContent = `${mission.mission_id} · SEALED LOCAL RUN`;
+  $("#championPressure").style.width = `${champion.aggression * 100}%`;
+  $("#championPressureValue").textContent = `${Math.round(champion.aggression * 100)}%`;
+  $("#championStealth").style.width = `${champion.stealth * 100}%`;
+  $("#championStealthValue").textContent = `${Math.round(champion.stealth * 100)}%`;
+  $("#missionWinner").textContent = redWon ? "DEFENSE GAP FOUND" : "BLUE DEFENSE HELD";
+  $("#missionWinner").classList.toggle("red", redWon);
+  $("#missionSummary").textContent = `${mission.campaign.codename}: ${champion.candidate_id} reached fitness ${champion.fitness.reward}. ${Math.round(champion.fitness.escape_rate * 100)}% of synthetic attack attempts escaped the adapted defense.`;
+  $("#missionPolicies").textContent = mission.summary.policies_evaluated;
+  $("#missionEvents").textContent = mission.summary.synthetic_events_materialized.toLocaleString();
+  $("#missionReward").textContent = champion.fitness.reward;
+  $("#missionHandoff").textContent = `${champion.candidate_id} is loaded into the manual arena. The model stayed unchanged; only bounded simulation policy memory evolved.`;
+  $("#agentRunState").textContent = "mission sealed";
+  renderEvolution(mission);
+  renderArena(mission.final_arena);
+}
+
+function playMission(mission) {
+  window.clearInterval(state.missionTimer);
+  $("#missionConsole").innerHTML = "";
+  $("#missionClock").textContent = "00:00.000";
+  $("#agentRunState").textContent = "agents active";
+  let index = 0;
+  state.missionTimer = window.setInterval(() => {
+    renderMissionEvent(mission.events[index], index);
+    index += 1;
+    if (index >= mission.events.length) {
+      window.clearInterval(state.missionTimer);
+      state.missionTimer = null;
+      setActiveAgent();
+      renderMissionResult(mission);
+      $("#runMission").disabled = false;
+      $("#runMission").firstChild.textContent = "Launch mission ";
+      toast(`${mission.campaign.codename}: local agent mission sealed`);
+    }
+  }, 90);
+}
+
+async function runAgentMission() {
+  const button = $("#runMission");
+  if (state.missionTimer) window.clearInterval(state.missionTimer);
+  button.disabled = true;
+  button.firstChild.textContent = "Agents working ";
+  $("#agentRunState").textContent = "forking synthetic twins";
+  try {
+    const payload = {
+      objective: $("#agentObjective").value,
+      campaignId: $("#agentCampaign").value,
+      generations: Number($("#agentGenerations").value),
+      volume: Number($("#agentVolume").value),
+      seed: 2026,
+      aggression: Number($("#aggression").value) / 100,
+      stealth: Number($("#stealth").value) / 100,
+      defenderStrength: Number($("#defenseStrength").value) / 100,
+      graphDefense: $("#graphDefense").checked
+    };
+    const mission = await api("/api/v1/agents/mission", { method: "POST", body: JSON.stringify(payload) });
+    state.mission = mission;
+    playMission(mission);
+  } catch (error) {
+    button.disabled = false;
+    button.firstChild.textContent = "Launch mission ";
+    $("#agentRunState").textContent = "mission failed safely";
+    setActiveAgent();
+    toast(error.message);
+  }
+}
+
 function renderArena(data) {
   state.arena = data;
   const baseline = data.rounds.find((round) => round.id === "BASELINE").metrics;
@@ -234,12 +331,16 @@ async function runArena() {
 }
 
 async function initialize() {
-  const [catalog, health] = await Promise.all([
-    api("/api/v1/campaign/catalog"), api("/api/v1/model/health")
+  const [catalog, health, agentHealth] = await Promise.all([
+    api("/api/v1/campaign/catalog"), api("/api/v1/model/health"), api("/api/v1/agents/health")
   ]);
-  state.catalog = catalog; state.health = health;
+  state.catalog = catalog; state.health = health; state.agentHealth = agentHealth;
   $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
   $("#scenario").value = catalog[0].id;
+  $("#agentCampaign").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
+  $("#agentCampaign").value = catalog[0].id;
+  $("#agentObjective").innerHTML = agentHealth.objectives.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`).join("");
+  renderAgentRoster(agentHealth.agents);
   renderCampaignAtlas(catalog);
   renderCampaignPreview(catalog[0]);
   $("#modelMetric").textContent = health.status;
@@ -268,17 +369,25 @@ function bindControls() {
   $("#graphDefense").addEventListener("change", () => { document.querySelector(".model-state .cyan").textContent = $("#graphDefense").checked ? "ACTIVE" : "DISABLED"; });
   $("#scenario").addEventListener("change", () => {
     const campaign = state.catalog.find((item) => item.id === $("#scenario").value);
-    if (campaign) { renderCampaignPreview(campaign); renderSpotlight(campaign); }
+    if (campaign) { $("#agentCampaign").value = campaign.id; renderCampaignPreview(campaign); renderSpotlight(campaign); }
+  });
+  [["#agentGenerations", "#agentGenerationsValue"], ["#agentVolume", "#agentVolumeValue"]].forEach(([input, output]) => {
+    $(input).addEventListener("input", () => { $(output).textContent = $(input).value; });
+  });
+  $("#agentCampaign").addEventListener("change", () => {
+    const campaign = state.catalog.find((item) => item.id === $("#agentCampaign").value);
+    if (campaign) { $("#scenario").value = campaign.id; renderCampaignPreview(campaign); renderSpotlight(campaign); }
   });
   $("#campaignCards").addEventListener("click", (event) => {
     const card = event.target.closest(".campaign-card");
     if (!card) return;
     const campaign = state.catalog.find((item) => item.id === card.dataset.campaignId);
-    if (campaign) { $("#scenario").value = campaign.id; renderSpotlight(campaign); renderCampaignPreview(campaign); }
+    if (campaign) { $("#scenario").value = campaign.id; $("#agentCampaign").value = campaign.id; renderSpotlight(campaign); renderCampaignPreview(campaign); }
   });
-  $("#launchSpotlight").addEventListener("click", () => { $("#arena").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runArena, 450); });
+  $("#launchSpotlight").addEventListener("click", () => { $("#agent-lab").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runAgentMission, 450); });
+  $("#runMission").addEventListener("click", runAgentMission);
   $("#runArena").addEventListener("click", runArena);
-  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { $("#arena").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runArena, 450); }));
+  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { $("#agent-lab").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runAgentMission, 450); }));
   $("#graphCanvas").addEventListener("click", (event) => {
     if (!state.arena) return;
     const rect = event.currentTarget.getBoundingClientRect();

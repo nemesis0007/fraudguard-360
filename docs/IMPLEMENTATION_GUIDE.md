@@ -318,3 +318,11 @@ The 24-campaign set includes delegated-agent intent hijacking, deepfake consent 
 - **Closed loop:** false-negative mining, defense-guided mutation, an unseen-family holdout, and human-gated promotion.
 
 The ledger also states what is still missing before a real pilot: authorized aggregate calibration, durable drift monitoring, a tree-model challenger, and signed candidate-model promotion.
+
+## 18. Local autonomous agent missions
+
+`src/agent-lab.js` makes the Generate pillar executable. It runs six named roles locally: Threat Scout, Policy Planner, Twin Operator, Outcome Critic, Policy Evolver, and Blue Sentinel. For every generation, the planner creates three candidate policies inside fixed pressure and stealth bounds. The operator executes each candidate through the real twin engine, and the critic calculates a fitness score from observed escape rate, graph-detection lift, customer friction, attack pressure, and stealth. The evolver retains the best policy as the next generation's parent while the defender raises graph-aware defense pressure.
+
+The user chooses one of four defensive-research objectives: find defense gaps, optimize stealth, stress customer friction, or challenge graph fusion. `POST /api/v1/agents/mission` returns every action/observation event, all candidate scores, the winning policy per generation, the overall champion, and its complete arena evidence. The website replays that audit trail and loads the champion into the manual arena for inspection.
+
+This is autonomous policy search, not a claim that a general-purpose model has unrestricted control. It runs in process and needs no hosted AI provider. Its action space cannot invoke tools, access a network, use credentials, read customer data, or reach live payment rails. The active fraud model never self-modifies; promotion remains human-gated.

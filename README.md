@@ -24,6 +24,8 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 - A realistic company site and interactive entity graph backed by the live API rather than hard-coded demo numbers.
 - A shared versioned API envelope and explicit hybrid-data provenance manifest.
 - A 24-campaign AI-native threat atlas with named AI enablers, payment surfaces, four-stage observable kill chains, novelty/difficulty scores, signal fingerprints, and expected controls.
+- A genuine local multi-agent mission engine: six goal-driven agents select a campaign, propose competing policies, execute them in isolated twins, score outcomes, retain the winner, and adapt the defender across generations.
+- A live operations interface that exposes agent actions and observations, policy evolution, champion controls, and the sealed handoff into the manual arena rather than presenting only aggregate numbers.
 - A visible challenge proof ledger mapping the working prototype to Identify, Generate, Defend, and the closed learning loop.
 - Zero runtime dependencies, Node tests, Docker image, Compose health check, and GitHub Actions CI.
 
@@ -61,6 +63,8 @@ All JSON responses use a shared envelope with `request_id`, `status`, `data`, an
 | `GET` | `/api/v1/attack/catalog` | Structured attack catalog |
 | `GET` | `/api/v1/campaign/catalog` | AI-native campaigns, kill chains, signal fingerprints, and defenses |
 | `GET` | `/api/v1/challenge/coverage` | Visible proof and remaining gaps for each challenge pillar |
+| `GET` | `/api/v1/agents/health` | Local agent roster, objectives, execution mode, and safety boundary |
+| `POST` | `/api/v1/agents/mission` | Run a bounded multi-generation red/blue mission in synthetic twins |
 | `POST` | `/api/v1/simulate` | Generate a traceable synthetic dataset |
 | `POST` | `/api/v1/score` | Score a live-style transaction |
 | `POST` | `/api/v1/evaluate` | Run a red-vs-blue evaluation |
@@ -72,6 +76,16 @@ All JSON responses use a shared envelope with `request_id`, `status`, `data`, an
 | `GET` | `/api/v1/data/evidence` | Active/reference/pilot data layers and governance gates |
 | `GET` | `/api/v1/metrics/summary` | Dashboard metrics and recent decisions |
 | `POST` | `/api/v1/arena/run` | Run the counterfactual digital twin and adaptive red/blue exercise |
+
+Example autonomous mission:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/agents/mission \
+  -H "content-type: application/json" \
+  -d '{"campaignId":"POLICY_ORACLE_003","objective":"GRAPH_EVASION","generations":4,"volume":110,"seed":2026}'
+```
+
+This is real autonomous orchestration within a deliberately narrow action space—not a connection to a hosted LLM. The scout, planner, operator, critic, evolver, and defender use actual arena results as observations. They can vary only synthetic pressure, stealth, seeds, event volume, and graph-defense strength; they cannot call the network, use credentials, touch customer data, or send payments.
 
 Example arena request:
 
@@ -169,7 +183,7 @@ Generator version `synthetic-1.1` deliberately introduces benign transactions th
 
 ## Architecture decision
 
-The planning documents proposed six deployable services immediately. The MVP uses a **modular monolith** instead: the catalog, generator, feature engine, risk policy, evaluation loop, feedback queue, HTTP adapter, and UI are separate modules but one process.
+The planning documents proposed six deployable services immediately. The MVP uses a **modular monolith** instead: the catalog, generator, feature engine, risk policy, local-agent lab, evaluation loop, feedback queue, HTTP adapter, and UI are separate modules but one process.
 
 That choice is deliberate for a short challenge window:
 

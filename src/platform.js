@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
+import { localAgentHealth, runLocalAgentMission } from "./agent-lab.js";
 import { ATTACK_CATALOG } from "./catalog.js";
 import { CAMPAIGN_CATALOG, CHALLENGE_COVERAGE } from "./campaigns.js";
 import { FeatureEngine } from "./features.js";
@@ -42,6 +43,18 @@ export class FraudGuardPlatform {
 
   challengeCoverage() {
     return CHALLENGE_COVERAGE;
+  }
+
+  agentHealth() {
+    return localAgentHealth();
+  }
+
+  runAgentMission(input = {}) {
+    const mission = runLocalAgentMission(this.risk, input);
+    const adapted = mission.final_arena.rounds.find((round) => round.id === "ADAPTED");
+    this.stats.scored += adapted?.metrics.transactions ?? 0;
+    this.stats.blocked += adapted?.metrics.attacks_detected ?? 0;
+    return mission;
   }
 
   fidelityReport() {

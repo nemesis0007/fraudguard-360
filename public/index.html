@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FraudGuard 360 is an adaptive payment-defense platform that stress-tests fraud controls in a privacy-safe digital twin.">
+  <meta name="description" content="Watch six autonomous local agents attack, critique, evolve, and defend a privacy-safe synthetic payment-network twin.">
   <meta name="theme-color" content="#071014">
   <meta property="og:title" content="FraudGuard 360 — Adaptive payment defense">
-  <meta property="og:description" content="Simulate evolving payment attacks. See hidden network risk. Prove how the defense adapts.">
-  <meta property="og:image" content="/og-fraudguard-v2.png">
+  <meta property="og:description" content="Six local AI agents. Twenty-four AI-native campaigns. One sealed synthetic payment lab.">
+  <meta property="og:image" content="/fraudguard-agent-lab-social.png">
   <title>FraudGuard 360 — Adaptive Payment Defense</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -18,23 +18,24 @@
       <span>FRAUDGUARD <b>360</b></span>
     </a>
     <nav aria-label="Primary navigation">
+      <a href="#agent-lab">Agent Lab</a>
       <a href="#platform">Platform</a>
       <a href="#arena">Arena</a>
       <a href="#evidence">Evidence</a>
       <a href="/guide.html">Documentation</a>
     </nav>
-    <a class="header-cta" href="#arena">Open the lab <span>↗</span></a>
+    <a class="header-cta" href="#agent-lab">Launch agents <span>↗</span></a>
   </header>
 
   <main id="top">
     <section class="hero shell">
       <div class="hero-copy">
         <div class="release-pill"><span></span> Research preview · GFF 2026</div>
-        <h1>See the attack<br><em>before the loss.</em></h1>
-        <p>FraudGuard 360 is an adaptive defense lab for payment networks. It creates evolving attack worlds, reveals hidden entity relationships, and proves how every control changes the outcome.</p>
+        <h1>Watch AI attack.<br><em>Watch defense learn.</em></h1>
+        <p>Six local agents autonomously research, plan, execute, critique, and evolve payment attacks inside a fictional network. Every action is bounded, inspectable, and replayed against the graph-aware defense.</p>
         <div class="hero-actions">
-          <button class="button button-primary" id="heroRun">Run a live attack <span>→</span></button>
-          <a href="#platform">Explore the platform</a>
+          <button class="button button-primary" id="heroRun">Launch an agent mission <span>→</span></button>
+          <a href="#threats">Inspect the threat atlas</a>
         </div>
         <div class="trust-line">
           <span>BUILT FOR</span>
@@ -52,11 +53,65 @@
 
     <section class="proof-strip">
       <div class="shell proof-grid">
-        <div><strong>10</strong><span>attack families</span></div>
+        <div><strong>22</strong><span>attack families</span></div>
         <div><strong id="modelMetric">READY</strong><span>locked model artifact</span></div>
         <div><strong id="fidelityMetric">12 / 12</strong><span>fidelity gates passed</span></div>
-        <div><strong>&lt; 50 ms</strong><span>decision-path target</span></div>
-        <p>Prototype evidence is clearly labeled synthetic. Production performance requires a governed shadow-mode pilot.</p>
+        <div><strong id="agentMetric">6</strong><span>local autonomous agents</span></div>
+        <p>The agents can modify only bounded simulation policies. They have no network, credential, customer-data, or live-payment access.</p>
+      </div>
+    </section>
+
+    <section class="agent-lab-section" id="agent-lab">
+      <div class="shell">
+        <div class="section-intro agent-lab-intro">
+          <div><p class="kicker red-kicker">LOCAL AUTONOMOUS RED TEAM</p><h2>Not a dashboard.<br>A running adversary.</h2></div>
+          <p>Give the agents an objective. They generate candidate attack policies, execute each one in the payment twin, score the outcomes, preserve the best policy in memory, and adapt against a strengthening defender.</p>
+        </div>
+
+        <div class="mission-app">
+          <header class="mission-bar">
+            <div class="mission-title"><span class="mission-mark">AI</span><div><b>Local Agent Operations</b><small id="missionId">RUNTIME READY · NO EXTERNAL MODEL REQUIRED</small></div></div>
+            <div class="mission-runtime"><i></i><span>LOCAL POLICY ENGINE</span></div>
+            <button class="mission-run" id="runMission">Launch mission <span>▶</span></button>
+          </header>
+
+          <div class="mission-layout">
+            <aside class="mission-controls">
+              <div class="mission-panel-title"><span>MISSION DIRECTIVE</span><small>Bounded action space</small></div>
+              <label for="agentObjective">Agent objective<select id="agentObjective"></select></label>
+              <label for="agentCampaign">Campaign<select id="agentCampaign"></select></label>
+              <label for="agentGenerations">Evolution generations <output id="agentGenerationsValue">4</output><input id="agentGenerations" type="range" min="2" max="6" value="4"></label>
+              <label for="agentVolume">Events per candidate <output id="agentVolumeValue">110</output><input id="agentVolume" type="range" min="60" max="180" step="10" value="110"></label>
+              <div class="autonomy-boundary"><small>AUTONOMY BOUNDARY</small><div><span>External actions</span><b>0</b></div><div><span>Live payment access</span><b>DENIED</b></div><div><span>Human gate</span><b>ARMED</b></div></div>
+            </aside>
+
+            <main class="mission-stage">
+              <div class="mission-panel-title"><span>AGENT NETWORK</span><small id="agentRunState">Awaiting directive</small></div>
+              <div class="agent-roster-live" id="agentRosterLive"></div>
+              <div class="mission-console-head"><span>LIVE ACTION / OBSERVATION TRACE</span><b id="missionClock">00:00.000</b></div>
+              <div class="mission-console" id="missionConsole" role="log" aria-live="polite"><div class="console-empty"><i></i><b>Agents are standing by</b><span>Launch a mission to watch policies evolve against the defender.</span></div></div>
+            </main>
+
+            <aside class="mission-evolution">
+              <div class="mission-panel-title"><span>POLICY EVOLUTION</span><small>Fitness by generation</small></div>
+              <div class="evolution-chart" id="evolutionChart"><div class="evolution-empty">No generations evaluated</div></div>
+              <div class="champion-policy">
+                <small>CHAMPION POLICY</small>
+                <div><span>Pressure</span><i><b id="championPressure"></b></i><output id="championPressureValue">—</output></div>
+                <div><span>Stealth</span><i><b id="championStealth"></b></i><output id="championStealthValue">—</output></div>
+              </div>
+              <div class="mission-verdict"><small>MISSION VERDICT</small><strong id="missionWinner">AWAITING RUN</strong><span id="missionSummary">No policy evidence yet.</span></div>
+            </aside>
+          </div>
+
+          <footer class="mission-outcome">
+            <div><small>POLICIES EVALUATED</small><strong id="missionPolicies">0</strong></div>
+            <div><small>SYNTHETIC EVENTS</small><strong id="missionEvents">0</strong></div>
+            <div><small>BEST FITNESS</small><strong id="missionReward">—</strong></div>
+            <div><small>MODEL CHANGED</small><strong class="safe-text">NO</strong></div>
+            <p id="missionHandoff">The winning policy will load into the manual arena with a sealed audit trail.</p>
+          </footer>
+        </div>
       </div>
     </section>
 
@@ -222,7 +277,7 @@
       <p class="kicker">BUILD THE DEFENSE BEFORE THE ATTACK</p>
       <h2>Tomorrow’s fraud will not look like yesterday’s labels.</h2>
       <p>Stress the network, measure the counterfactual, and improve through governed evidence.</p>
-      <button class="button button-primary" id="bottomRun">Enter the arena <span>→</span></button>
+      <button class="button button-primary" id="bottomRun">Launch the local agents <span>→</span></button>
     </section>
   </main>
 

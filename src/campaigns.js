@@ -346,7 +346,7 @@ export const CHALLENGE_COVERAGE = Object.freeze({
   brief: "Build an end-to-end adversarial AI system that identifies novel GenAI payment fraud, simulates it at scale, and detects, flags, and mitigates it.",
   pillars: [
     { id: "IDENTIFY", label: "Identify", score: 94, proof: ["24 AI-native campaigns", "22 payment attack families", "Kill chain + observable telemetry", "Novelty and difficulty scores"], endpoint: "/api/v1/campaign/catalog" },
-    { id: "GENERATE", label: "Generate", score: 91, proof: ["Seeded agent orchestration", "Counterfactual normal/attack worlds", "Entity graph + event sequence", "Versioned provenance + fidelity gates"], endpoint: "/api/v1/arena/run" },
+    { id: "GENERATE", label: "Generate", score: 94, proof: ["Six-role autonomous local agent missions", "Three competing policies per generation", "Counterfactual normal/attack worlds", "Versioned provenance + fidelity gates"], endpoint: "/api/v1/agents/mission" },
     { id: "DEFEND", label: "Defend", score: 90, proof: ["Transaction + graph fusion", "Allow / step-up / review / block", "Explainable decision receipts", "Latency and customer-friction metrics"], endpoint: "/api/v1/score" },
     { id: "LEARN", label: "Closed loop", score: 82, proof: ["False-negative mining", "Defense-guided mutation", "Unseen-family holdout", "Human-gated promotion"], endpoint: "/api/v1/learn/mutate" }
   ],

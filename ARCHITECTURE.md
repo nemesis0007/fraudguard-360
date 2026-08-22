@@ -23,6 +23,7 @@ The real-time path is deterministic and contains no generative model. Scenario d
 | `campaigns.js` | AI-native campaign intelligence, observable kill chains, novelty/difficulty, fingerprints, and challenge traceability | Threat research and approval become a governed registry |
 | `generator.js` | Seeded synthetic transaction generation | Large batches need workers/object storage |
 | `twin-engine.js` | Counterfactual worlds, attacker pressure, graph motifs, adaptive rounds, and business outcomes | Simulation runs require durable workers or GPU graph models |
+| `agent-lab.js` | Six-role local mission orchestration, candidate policy evolution, outcome fitness, memory, and safety boundary | Missions require durable queues, signed traces, or separately scaled workers |
 | `evidence.js` | Truthful active/reference/pilot data provenance and governance manifest | Dataset registry and approval workflow become persistent |
 | `features.js` | Training/inference-parity feature logic | Shared low-latency state requires Redis/feature store |
 | `model-adapter.js` / `risk-engine.js` | Locked model inference, rule ensemble, and deterministic thresholds | Python model serving or independent scaling becomes necessary |

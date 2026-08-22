@@ -104,3 +104,20 @@ test("new attack surfaces run through the complete arena", () => withServer(asyn
   assert.equal(body.data.scenario.kill_chain.length, 4);
   assert.ok(body.data.graph.edges.length > 0);
 }));
+
+test("agent endpoints expose the local roster and a governed mission", () => withServer(async (base) => {
+  const health = await fetch(`${base}/api/v1/agents/health`).then((response) => response.json());
+  const response = await fetch(`${base}/api/v1/agents/mission`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ campaignId: "QR_CHAMELEON_014", objective: "STEALTH_DISCOVERY", generations: 2, volume: 60, seed: 42 })
+  });
+  const body = await response.json();
+  assert.equal(health.data.agents.length, 6);
+  assert.equal(health.data.execution, "IN_PROCESS");
+  assert.equal(response.status, 200);
+  assert.equal(body.data.summary.policies_evaluated, 6);
+  assert.equal(body.data.final_arena.scenario.campaign_id, "QR_CHAMELEON_014");
+  assert.equal(body.data.governance.synthetic_only, true);
+  assert.equal(body.data.governance.network_access, false);
+}));

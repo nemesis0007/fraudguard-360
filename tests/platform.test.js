@@ -120,3 +120,32 @@ test("campaign arena returns agent orchestration and challenge-scale evidence", 
   assert.equal(result.simulation_scale.events_materialized, 70);
   assert.ok(result.simulation_scale.virtual_population > result.simulation_scale.events_materialized);
 });
+
+test("local agent lab evolves bounded policies against the payment twin", () => {
+  const platform = new FraudGuardPlatform();
+  const health = platform.agentHealth();
+  assert.equal(health.provider, "LOCAL_POLICY_ENGINE");
+  assert.equal(health.external_model_required, false);
+  assert.equal(health.agents.length, 6);
+
+  const mission = platform.runAgentMission({
+    campaignId: "POLICY_ORACLE_003",
+    objective: "GRAPH_EVASION",
+    generations: 3,
+    volume: 70,
+    seed: 2026
+  });
+  assert.equal(mission.status, "COMPLETE");
+  assert.equal(mission.mode, "LOCAL_AUTONOMOUS_SANDBOX");
+  assert.equal(mission.evolution.length, 3);
+  assert.equal(mission.summary.policies_evaluated, 9);
+  assert.equal(mission.summary.synthetic_events_materialized, 630);
+  assert.equal(mission.final_arena.scenario.campaign_id, "POLICY_ORACLE_003");
+  assert.ok(mission.events.length > 20);
+  assert.ok(mission.evolution.every((generation) => generation.candidates.length === 3));
+  assert.ok(mission.evolution.every((generation) => generation.candidates.some((candidate) => candidate.candidate_id === generation.winner)));
+  assert.equal(mission.governance.network_access, false);
+  assert.equal(mission.governance.live_payment_access, false);
+  assert.equal(mission.governance.customer_data_access, false);
+  assert.equal(mission.governance.audit_log_complete, true);
+});

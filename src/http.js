@@ -45,6 +45,7 @@ export function createHandler(platform) {
       if (request.method === "GET" && url.pathname === "/api/v1/attack/catalog") return sendJson(response, 200, platform.catalog(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/campaign/catalog") return sendJson(response, 200, platform.campaigns(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/challenge/coverage") return sendJson(response, 200, platform.challengeCoverage(), requestId);
+      if (request.method === "GET" && url.pathname === "/api/v1/agents/health") return sendJson(response, 200, platform.agentHealth(), requestId);
       if (request.method === "GET" && url.pathname === "/api/v1/metrics/summary") return sendJson(response, 200, platform.summary(), requestId);
       if (request.method === "POST" && url.pathname === "/api/v1/simulate") {
         const body = await readJson(request); required(body, ["scenarioId"]);
@@ -67,6 +68,10 @@ export function createHandler(platform) {
       if (request.method === "POST" && url.pathname === "/api/v1/arena/run") {
         const body = await readJson(request);
         return sendJson(response, 200, platform.runArena(body), requestId);
+      }
+      if (request.method === "POST" && url.pathname === "/api/v1/agents/mission") {
+        const body = await readJson(request);
+        return sendJson(response, 200, platform.runAgentMission(body), requestId);
       }
       if (request.method === "POST" && url.pathname === "/api/v1/learn/mutate") {
         const body = await readJson(request);
