@@ -1,7 +1,44 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], health: null, agentHealth: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0 };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", data: "#dataset", system: "#architecture" };
-const workspaceNames = { overview: "Overview", missions: "Missions", threats: "Threat library", simulation: "Simulation", data: "Data", system: "System" };
+const workspaceNames = { overview: "Start", missions: "AI lab", threats: "Attacks", simulation: "Simulator", data: "Dataset", system: "How it works" };
+const workspaceGuides = {
+  missions: {
+    eyebrow: "AI LAB / SAFE EXPERIMENTS",
+    title: "See how an attack learns—inside a sandbox.",
+    description: "Local AI agents try different fraud strategies against fictional payments. They cannot reach real accounts, credentials, or payment systems.",
+    steps: ["Choose a goal", "Agents test variations", "Review the winning strategy"],
+    action: "Open the AI lab"
+  },
+  threats: {
+    eyebrow: "ATTACK LIBRARY / PLAIN ENGLISH",
+    title: "Meet each attack before running it.",
+    description: "Every attack card explains the criminal goal, the payment signals it changes, and the defense expected to catch it.",
+    steps: ["Pick an attack", "Follow its stages", "See the defensive signals"],
+    action: "Explore the attacks"
+  },
+  simulation: {
+    eyebrow: "LIVE SIMULATOR / GUIDED REPLAY",
+    title: "Watch one attack become one decision.",
+    description: "Choose an attack and press Run. FraudGuard creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
+    steps: ["Select an attack", "Run fictional payments", "Inspect the decision"],
+    action: "Open the simulator"
+  },
+  data: {
+    eyebrow: "DATASET / WHAT IT ACTUALLY CONTAINS",
+    title: "A fraud dataset, explained without jargon.",
+    description: "The dataset contains 210,000 fictional payment events—not real cardholder records. It includes normal behavior, known attack patterns, difficult safe examples, and one unseen attack family for a fair final test.",
+    steps: ["Generate fictional payments", "Label normal and attack behavior", "Train, validate, and test"],
+    action: "See and download the data"
+  },
+  system: {
+    eyebrow: "HOW IT WORKS / ONE PAYMENT AT A TIME",
+    title: "Follow a payment through the whole system.",
+    description: "Start with a payment request, add behavior and relationship signals, calculate risk, apply policy, and record an explainable decision.",
+    steps: ["Receive a payment", "Calculate risk", "Allow, challenge, review, or block"],
+    action: "View the architecture"
+  }
+};
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
 function getPreference(key, fallback) {
@@ -44,6 +81,17 @@ function workspaceForHash(hashValue) {
 
 function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   const selected = workspaceTargets[view] ? view : "overview";
+  const guide = $("#workspaceGuide");
+  const guideContent = workspaceGuides[selected];
+  guide.hidden = !guideContent;
+  if (guideContent) {
+    $("#workspaceGuideEyebrow").textContent = guideContent.eyebrow;
+    $("#workspaceGuideTitle").textContent = guideContent.title;
+    $("#workspaceGuideDescription").textContent = guideContent.description;
+    $("#workspaceGuideFlow").innerHTML = guideContent.steps.map((step, index) => `<li><span>0${index + 1}</span><b>${step}</b></li>`).join("");
+    $("#workspaceGuideAction").firstChild.textContent = `${guideContent.action} `;
+    $("#workspaceGuideAction").dataset.target = workspaceTargets[selected];
+  }
   const visibleSections = [];
   document.querySelectorAll("[data-workspace-view]").forEach((section) => {
     const active = section.dataset.workspaceView === selected;
@@ -69,15 +117,23 @@ function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   setPreference("workspace", selected);
   if (updateHistory) history.replaceState(null, "", workspaceTargets[selected]);
   if (scroll) {
-    const target = document.querySelector(workspaceTargets[selected]);
-    target?.scrollIntoView({ behavior: document.documentElement.dataset.motion === "reduced" ? "auto" : "smooth", block: "start" });
+    window.scrollTo({ top: 0, behavior: document.documentElement.dataset.motion === "reduced" ? "auto" : "smooth" });
   }
 }
 
 function bindWorkspaceControls() {
   applyWorkspacePreferences();
-  const requestedView = window.location.hash ? workspaceForHash(window.location.hash) : getPreference("workspace", "overview");
+  const requestedHash = window.location.hash;
+  const requestedView = requestedHash ? workspaceForHash(requestedHash) : getPreference("workspace", "overview");
+  if (requestedView !== "overview" && requestedHash) history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
   activateWorkspace(requestedView, { updateHistory: false, scroll: false });
+  if (requestedView !== "overview") {
+    const showGuideFromTop = () => {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    };
+    if (document.readyState === "complete") showGuideFromTop();
+    else window.addEventListener("load", showGuideFromTop, { once: true });
+  }
 
   const tabs = [...document.querySelectorAll("[data-workspace-tab]")];
   tabs.forEach((button, index) => {
@@ -111,6 +167,10 @@ function bindWorkspaceControls() {
   }));
   window.addEventListener("hashchange", () => activateWorkspace(workspaceForHash(window.location.hash), { updateHistory: false }));
   $("#globalRun").addEventListener("click", () => { activateWorkspace("simulation"); if (state.catalog.length) window.setTimeout(runArena, 250); });
+  $("#workspaceGuideAction").addEventListener("click", (event) => {
+    const target = document.querySelector(event.currentTarget.dataset.target);
+    target?.scrollIntoView({ behavior: document.documentElement.dataset.motion === "reduced" ? "auto" : "smooth", block: "start" });
+  });
 }
 
 function bindMotionEnhancements() {

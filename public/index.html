@@ -24,17 +24,17 @@
         <span>FRAUDGUARD <b>360</b></span>
       </a>
       <nav class="workspace-tabs" role="tablist" aria-label="FraudGuard workspaces">
-        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Overview</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">Missions</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="threats">Threat library</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulation</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Data</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">System</button>
+        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Start</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">AI lab</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="threats">Attacks</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulator</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Dataset</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
       </nav>
       <div class="header-actions">
         <span class="header-status"><i></i> Sandbox</span>
         <button class="header-control" id="openViewOptions" type="button" aria-expanded="false" aria-controls="viewOptions"><span class="control-glyph" aria-hidden="true"><i></i><i></i><i></i></span><b>Display</b></button>
-        <button class="workspace-primary" id="globalRun" type="button" disabled>New run</button>
+        <button class="workspace-primary" id="globalRun" type="button" disabled>Run demo</button>
       </div>
     </div>
     <div class="workspace-progress" aria-hidden="true"><i id="workspaceProgress"></i></div>
@@ -48,6 +48,18 @@
   </header>
   <div class="sr-only" id="viewAnnouncer" role="status" aria-live="polite"></div>
 
+  <section class="workspace-guide" id="workspaceGuide" aria-labelledby="workspaceGuideTitle" hidden>
+    <div class="shell workspace-guide-inner">
+      <div class="workspace-guide-copy">
+        <p class="workspace-guide-eyebrow" id="workspaceGuideEyebrow">START HERE</p>
+        <h1 id="workspaceGuideTitle">Understand this workspace.</h1>
+        <p id="workspaceGuideDescription">A plain-language guide appears here for every part of FraudGuard.</p>
+      </div>
+      <ol class="workspace-guide-flow" id="workspaceGuideFlow" aria-label="What happens in this workspace"></ol>
+      <button class="workspace-guide-action" id="workspaceGuideAction" type="button">See the workspace <span>↓</span></button>
+    </div>
+  </section>
+
   <main id="top">
     <section class="hero shell" data-workspace-view="overview">
       <div class="hero-copy">
@@ -55,7 +67,7 @@
         <h1>See the attack.<br><em>Prove the defense.</em></h1>
         <p>Choose an adaptive payment campaign, replay it against the synthetic network, and inspect every signal, decision, and defensive intervention.</p>
         <div class="hero-actions">
-          <button class="button button-primary" id="heroRun">Start a simulation <span>→</span></button>
+          <button class="button button-primary" id="heroRun">Run the guided demo <span>→</span></button>
           <button class="text-button" type="button" data-open-workspace="system">Explore the system</button>
         </div>
         <div class="trust-line">
@@ -286,8 +298,8 @@
     <section class="dataset-section" id="dataset" data-workspace-view="data">
       <div class="shell">
         <div class="section-intro dataset-intro">
-          <div><p class="kicker">THE ACTUAL DATASET</p><h2>Download it.<br>Inspect every row.</h2></div>
-          <p>The challenge supplied no data, so this benchmark is generated from the governed payment twin. GitHub now contains both a browsable 4,200-row sample and the complete compressed 210,000-row dataset used by the model.</p>
+          <div><p class="kicker">THE ACTUAL DATASET / START HERE</p><h2>210,000 fictional payments.<br>Zero customer data.</h2></div>
+          <p>Each row represents one made-up payment. Normal purchases teach the model what safe behavior looks like; simulated attacks teach it what to stop. The challenge supplied no dataset, so every record is reproducible and clearly labeled.</p>
         </div>
         <div class="dataset-console">
           <header><div><i></i><b>FRAUDGUARD / SYNTHETIC-1.1</b></div><span>NO PII · REPRODUCIBLE · SHA-256 VERIFIED</span></header>
