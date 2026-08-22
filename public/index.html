@@ -37,6 +37,7 @@
       </nav>
       <button class="workspace-primary" id="globalRun" type="button" disabled>New simulation</button>
     </div>
+    <div class="workspace-progress" aria-hidden="true"><i id="workspaceProgress"></i></div>
     <aside class="view-options" id="viewOptions" aria-label="Workspace view options" hidden>
       <div class="view-options-head"><div><small>VIEW OPTIONS</small><b>Make the workspace yours</b></div><button id="closeViewOptions" type="button" aria-label="Close view options">×</button></div>
       <fieldset><legend>Appearance</legend><div class="segmented-control" data-preference="theme"><button type="button" data-value="light">Light</button><button type="button" data-value="dark">Dark</button><button type="button" data-value="auto">Auto</button></div></fieldset>
@@ -45,6 +46,7 @@
       <label class="preference-toggle"><span><b>Automatic preview</b><small>Run a comparison when the app opens.</small></span><input id="autoPreview" type="checkbox"><i></i></label>
     </aside>
   </div>
+  <div class="sr-only" id="viewAnnouncer" role="status" aria-live="polite"></div>
 
   <main id="top">
     <section class="hero shell" data-workspace-view="overview">
@@ -189,7 +191,7 @@
           </section>
           <div class="spotlight-meta"><div><small>ADAPTATION MECHANISM</small><b id="spotlightEnabler">Prompt injection against delegated commerce</b></div><div><small>PAYMENT SURFACE</small><b id="spotlightChannels">Agentic commerce · Instant pay · Card</b></div><div><small>FRAUD PRIMITIVE</small><b id="spotlightFamily">Instant-payment scam</b></div></div>
           <div class="spotlight-chain" id="spotlightChain"></div>
-          <button class="atlas-launch" id="launchSpotlight">Load campaign into arena <span>→</span></button>
+          <button class="atlas-launch" id="launchSpotlight">Open in simulation <span>→</span></button>
         </article>
       </div>
     </section>
@@ -205,7 +207,7 @@
           <div class="arena-bar">
             <div class="arena-title"><span class="arena-logo">A</span><div><b>Adversarial Twin Arena</b><small id="arenaId">SYNTHETIC SANDBOX · READY</small></div></div>
             <div class="arena-status"><span></span> ISOLATED ENVIRONMENT</div>
-            <button class="run-button" id="runArena">Run attack <span>⌁</span></button>
+            <button class="run-button" id="runArena">Run simulation <span>↗</span></button>
           </div>
 
           <div class="arena-kpis">

@@ -1,6 +1,7 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], health: null, agentHealth: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0 };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", data: "#dataset", system: "#architecture" };
+const workspaceNames = { overview: "Overview", missions: "Missions", threats: "Threat library", simulation: "Simulation", data: "Data", system: "System" };
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
 function getPreference(key, fallback) {
@@ -43,13 +44,28 @@ function workspaceForHash(hashValue) {
 
 function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   const selected = workspaceTargets[view] ? view : "overview";
-  document.querySelectorAll("[data-workspace-view]").forEach((section) => section.classList.toggle("workspace-view-hidden", section.dataset.workspaceView !== selected));
+  const visibleSections = [];
+  document.querySelectorAll("[data-workspace-view]").forEach((section) => {
+    const active = section.dataset.workspaceView === selected;
+    section.classList.toggle("workspace-view-hidden", !active);
+    if (active) visibleSections.push(section);
+  });
   document.querySelectorAll("[data-workspace-tab]").forEach((button) => {
     const active = button.dataset.workspaceTab === selected;
     button.setAttribute("aria-selected", String(active));
     button.tabIndex = active ? 0 : -1;
   });
   document.body.dataset.workspace = selected;
+  const viewIndex = Object.keys(workspaceTargets).indexOf(selected);
+  $("#workspaceProgress").style.transform = `scaleX(${(viewIndex + 1) / Object.keys(workspaceTargets).length})`;
+  $("#viewAnnouncer").textContent = `${workspaceNames[selected]} workspace selected`;
+  if (document.documentElement.dataset.motion !== "reduced") {
+    visibleSections.forEach((section, index) => {
+      section.classList.remove("workspace-entering");
+      section.style.setProperty("--enter-delay", `${index * 65}ms`);
+      requestAnimationFrame(() => section.classList.add("workspace-entering"));
+    });
+  }
   setPreference("workspace", selected);
   if (updateHistory) history.replaceState(null, "", workspaceTargets[selected]);
   if (scroll) {
@@ -85,7 +101,7 @@ function bindWorkspaceControls() {
   document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.addEventListener("click", () => { setPreference("density", button.dataset.value); applyWorkspacePreferences(); }));
   $("#reduceMotion").addEventListener("change", (event) => { setPreference("motion", event.target.checked ? "reduced" : "full"); applyWorkspacePreferences(); });
   $("#autoPreview").addEventListener("change", (event) => setPreference("auto-preview", event.target.checked ? "on" : "off"));
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (getPreference("theme", "light") === "auto") applyWorkspacePreferences(); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (getPreference("theme", "light") === "auto") applyWorkspacePreferences(); });
 
   document.querySelectorAll("[data-open-workspace]").forEach((button) => button.addEventListener("click", () => activateWorkspace(button.dataset.openWorkspace)));
   document.querySelectorAll('a[href^="#"]:not([data-open-workspace])').forEach((link) => link.addEventListener("click", (event) => {
@@ -95,6 +111,42 @@ function bindWorkspaceControls() {
   }));
   window.addEventListener("hashchange", () => activateWorkspace(workspaceForHash(window.location.hash), { updateHistory: false }));
   $("#globalRun").addEventListener("click", () => { activateWorkspace("simulation"); if (state.catalog.length) window.setTimeout(runArena, 250); });
+}
+
+function bindMotionEnhancements() {
+  const hero = document.querySelector(".hero-visual");
+  hero?.addEventListener("pointermove", (event) => {
+    if (document.documentElement.dataset.motion === "reduced") return;
+    const rect = hero.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - .5;
+    const y = (event.clientY - rect.top) / rect.height - .5;
+    hero.style.setProperty("--tilt-x", `${(-y * 3.2).toFixed(2)}deg`);
+    hero.style.setProperty("--tilt-y", `${(x * 4.4).toFixed(2)}deg`);
+    hero.style.setProperty("--glow-x", `${((x + .5) * 100).toFixed(1)}%`);
+    hero.style.setProperty("--glow-y", `${((y + .5) * 100).toFixed(1)}%`);
+  });
+  hero?.addEventListener("pointerleave", () => { hero.style.setProperty("--tilt-x", "0deg"); hero.style.setProperty("--tilt-y", "0deg"); });
+
+  document.addEventListener("pointerdown", (event) => {
+    const button = event.target.closest("button, .dataset-actions a");
+    if (!button || document.documentElement.dataset.motion === "reduced") return;
+    const rect = button.getBoundingClientRect();
+    const ripple = document.createElement("i");
+    ripple.className = "button-ripple";
+    ripple.style.left = `${event.clientX - rect.left}px`;
+    ripple.style.top = `${event.clientY - rect.top}px`;
+    button.append(ripple);
+    window.setTimeout(() => ripple.remove(), 620);
+  });
+
+  if (!("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add("revealed"); observer.unobserve(entry.target);
+  }), { threshold: .12, rootMargin: "0px 0px -35px" });
+  document.querySelectorAll(".section-intro, .capability, .proof-grid>div, .team-resource-grid>a, .dataset-console, .architecture-board").forEach((node, index) => {
+    node.classList.add("motion-reveal"); node.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 55}ms`); observer.observe(node);
+  });
 }
 
 async function api(path, options = {}) {
@@ -149,7 +201,8 @@ function drawHero(time = 0) {
   const points = Array.from({ length: 18 }, (_, index) => {
     const angle = index / 18 * Math.PI * 2 + (index % 3) * .1;
     const ring = index % 4 === 0 ? .18 : index % 3 === 0 ? .33 : .45;
-    return { x: center.x + Math.cos(angle) * width * ring, y: center.y + Math.sin(angle) * height * ring * .72, hot: index === 3 || index === 8 || index === 14 };
+    const drift = document.documentElement.dataset.motion === "reduced" ? 0 : motionTime / 1700;
+    return { x: center.x + Math.cos(angle) * width * ring + Math.sin(drift + index * .8) * 4, y: center.y + Math.sin(angle) * height * ring * .72 + Math.cos(drift * .78 + index) * 3, hot: index === 3 || index === 8 || index === 14 };
   });
   context.lineWidth = 1;
   for (let index = 0; index < points.length; index += 1) {
@@ -162,6 +215,11 @@ function drawHero(time = 0) {
   }
   points.forEach((point, index) => {
     const pulse = point.hot ? 2 + Math.sin(motionTime / 430 + index) * 1.3 : 0;
+    if (point.hot) {
+      const halo = context.createRadialGradient(point.x, point.y, 1, point.x, point.y, 24 + pulse * 2);
+      halo.addColorStop(0, "rgba(255,102,95,.16)"); halo.addColorStop(1, "rgba(255,102,95,0)");
+      context.beginPath(); context.arc(point.x, point.y, 26 + pulse * 2, 0, Math.PI * 2); context.fillStyle = halo; context.fill();
+    }
     context.beginPath(); context.arc(point.x, point.y, (point.hot ? 4 : 2.4) + pulse, 0, Math.PI * 2);
     context.fillStyle = point.hot ? "rgba(255,102,95,.85)" : index % 3 === 0 ? "rgba(113,216,223,.75)" : "rgba(158,230,202,.64)"; context.fill();
   });
@@ -448,7 +506,7 @@ async function runArena() {
     renderArena(data);
     toast(`${data.scenario.label}: replay complete`);
   } catch (error) { toast(error.message); }
-  finally { button.disabled = false; button.firstChild.textContent = "Run attack "; }
+  finally { button.disabled = false; button.firstChild.textContent = "Run simulation "; }
 }
 
 async function initialize() {
@@ -524,6 +582,7 @@ function bindControls() {
 
 bindWorkspaceControls();
 bindControls();
+bindMotionEnhancements();
 requestAnimationFrame(drawHero);
 requestAnimationFrame(drawGraph);
 initialize().catch((error) => toast(error.message));
