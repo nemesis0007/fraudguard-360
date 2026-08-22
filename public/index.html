@@ -13,6 +13,7 @@
   <meta name="twitter:description" content="See the attack. Prove the defense.">
   <meta name="twitter:image" content="/og-fraudguard-v4.png">
   <title>FraudGuard 360 — Engineering Workspace</title>
+  <link rel="preload" as="image" href="/fraudguard-hero-v1.png" fetchpriority="high">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -63,10 +64,13 @@
         </div>
       </div>
       <div class="hero-visual" aria-label="Live payment network preview">
+        <img class="hero-art" src="/fraudguard-hero-v1.png" alt="A synthetic payment network showing an attack route intercepted by a defense decision" width="1736" height="909" fetchpriority="high" decoding="async">
+        <div class="hero-art-shade" aria-hidden="true"></div>
         <div class="visual-top"><span>SYNTHETIC NETWORK / LOCAL RUNTIME</span><b><i></i> READY</b></div>
-        <canvas id="heroCanvas" width="720" height="560"></canvas>
+        <canvas id="heroCanvas" width="1240" height="620" aria-hidden="true"></canvas>
         <div class="signal-card signal-red"><small>CAMPAIGN EVENT</small><strong>Entity cluster 04</strong><span>Graph risk observed</span></div>
         <div class="signal-card signal-green"><small>DECISION RESPONSE</small><strong>STEP_UP</strong><span>Reason codes recorded</span></div>
+        <div class="visual-legend" aria-hidden="true"><span><i class="legend-attack"></i>Attack path</span><span><i class="legend-defense"></i>Defense path</span></div>
         <div class="visual-foot"><span>12,804 events/s</span><span>28 ms fusion</span><span>0 raw PII</span></div>
       </div>
     </section>
