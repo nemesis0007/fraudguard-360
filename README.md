@@ -1,5 +1,7 @@
 # FraudGuard 360
 
+[Live engineering workspace](https://fraudguard-360.vercel.app/) · [Synthetic dataset](data/README.md) · [API reference](docs/API_REFERENCE.md)
+
 FraudGuard 360 is an adaptive, privacy-safe red-team / blue-team fraud-defense lab for the Mastercard GFF 2026 challenge. It forks a fictional payment network into normal and attacked worlds, lets an adversary vary pressure and stealth, fuses transaction and graph evidence, explains every intervention, and sends detection gaps into a controlled learning queue.
 
 > Prototype boundary: this repository uses synthetic data only. It does not connect to real credentials, customer data, or payment authorization systems, and it does not provide instructions for committing fraud.
