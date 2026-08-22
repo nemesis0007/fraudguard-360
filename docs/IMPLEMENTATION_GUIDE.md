@@ -69,14 +69,14 @@ npm run data:generate
 
 The exporter:
 
-- generates 1,000 fictional transactions for each of nine training scenarios;
+- generates 10,000 fictional transactions for each of nine training scenarios;
 - uses fixed seeds for reproducibility;
 - records scenario version and provenance;
 - explicitly marks every row synthetic;
 - calls the same FeatureEngine used by live inference;
 - keeps each customer/scenario pair within a single split;
 - excludes LAUNDER_001 as a fully unseen holdout family;
-- writes 9,000 feature rows under ignored data/runtime/.
+- writes 90,000 feature rows under ignored data/runtime/.
 - labels controlled benign edge cases as `HARD_NEGATIVE` and expresses attack signals probabilistically;
 - generates timestamps cumulatively so every scenario replay is time ordered.
 
@@ -164,11 +164,11 @@ Current synthetic benchmark:
 
 | Evaluation | Precision | Recall | F1 | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Entity-aware test split | 0.749 | 0.756 | 0.752 | 0.084 |
-| Novel holdout ensemble | 0.673 | 0.877 | 0.762 | 0.138 |
+| Entity-aware test split | 0.753 | 0.733 | 0.743 | 0.079 |
+| Novel holdout ensemble | 0.669 | 0.877 | 0.759 | 0.140 |
 | Novel holdout fallback | 0.766 | 0.590 | 0.667 | 0.058 |
 
-Generator version `synthetic-1.1` introduces hard negatives and partial signal expression. The unseen-family ensemble improves F1 by 0.095 and recall by 0.287 over fallback, while increasing the false-positive rate by 0.079. This makes the security/customer-friction tradeoff visible. It still does not prove production performance on real payment traffic.
+Generator version `synthetic-1.1` introduces hard negatives and partial signal expression. The unseen-family ensemble improves F1 by 0.092 and recall by 0.287 over fallback, while increasing the false-positive rate by 0.082. This makes the security/customer-friction tradeoff visible. It still does not prove production performance on real payment traffic.
 
 ## 8. Runtime decision engine
 

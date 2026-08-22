@@ -438,7 +438,7 @@ def build():
         ["Submission artifact", "Current prototype"],
         [
             ("System shape", "Modular monolith with offline training and deterministic real-time scoring"),
-            ("Dataset", "9,000 traceable synthetic training transactions plus one unseen attack-family holdout"),
+            ("Dataset", "90,000 traceable synthetic training transactions plus one unseen attack-family holdout"),
             ("Model", f"Regularized logistic regression + transparent rules ({MODEL['model_version']})"),
             ("Safety", "Synthetic-only data, no real credentials, no GenAI in the authorization path"),
         ],
@@ -538,7 +538,7 @@ def build():
         doc,
         ["Property", "Implementation"],
         [
-            ("Size", "9,000 training/validation/test feature rows"),
+            ("Size", "90,000 training/validation/test feature rows"),
             ("Coverage", "Nine training attack families; LAUNDER_001 excluded as holdout"),
             ("Class balance", "Approximately 25% fraud per scenario for the current controlled benchmark"),
             ("Reproducibility", "Fixed seeds, generator version, feature version, and scenario provenance"),

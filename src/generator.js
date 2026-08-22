@@ -8,17 +8,17 @@ function round(value) {
   return Math.round(value * 100) / 100;
 }
 
-export function generateTransactions({
+function generateTransactionsWithLimit({
   scenarioId,
   volume = 100,
   seed = 42,
   fraudRate = 0.2,
   hardNegativeRate = 0.15,
   signalStrength = 0.88
-}) {
+}, volumeLimit) {
   const scenario = getScenario(scenarioId);
   if (!scenario) throw new Error("UNKNOWN_SCENARIO");
-  const count = Math.max(1, Math.min(1000, Number(volume) || 100));
+  const count = Math.max(1, Math.min(volumeLimit, Number(volume) || 100));
   const rate = Math.max(0.01, Math.min(0.8, Number(fraudRate) || 0.2));
   const hardRate = Math.max(0, Math.min(0.5, Number(hardNegativeRate) || 0));
   const strength = Math.max(0.5, Math.min(1, Number(signalStrength) || 0.88));
@@ -74,4 +74,12 @@ export function generateTransactions({
     });
   }
   return rows;
+}
+
+export function generateTransactions(input) {
+  return generateTransactionsWithLimit(input, 1000);
+}
+
+export function generateTrainingTransactions(input) {
+  return generateTransactionsWithLimit(input, 50000);
 }

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { FraudGuardPlatform } from "../src/platform.js";
+import { generateTrainingTransactions } from "../src/generator.js";
 
 test("synthetic generation is deterministic and traceable", () => {
   const platform = new FraudGuardPlatform();
@@ -19,6 +20,14 @@ test("synthetic generation includes labeled benign hard negatives", () => {
   const hardNegatives = dataset.transactions.filter((row) => !row.is_fraud && row.synthetic_profile === "HARD_NEGATIVE");
   assert.ok(hardNegatives.length >= 20);
   assert.ok(hardNegatives.every((row) => row.synthetic === true));
+});
+
+test("offline exports scale beyond the guarded live simulation limit", () => {
+  const platform = new FraudGuardPlatform();
+  const liveDataset = platform.simulate({ scenarioId: "ATO_001", volume: 1200, seed: 91 });
+  const trainingDataset = generateTrainingTransactions({ scenarioId: "ATO_001", volume: 1200, seed: 91 });
+  assert.equal(liveDataset.rows, 1000);
+  assert.equal(trainingDataset.length, 1200);
 });
 
 test("fidelity report exposes passing quality gates", () => {

@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { ATTACK_CATALOG } from "../src/catalog.js";
 import { FeatureEngine } from "../src/features.js";
-import { generateTransactions } from "../src/generator.js";
+import { generateTrainingTransactions } from "../src/generator.js";
 
 function argument(name, fallback) {
   const index = process.argv.indexOf(name);
@@ -16,7 +16,7 @@ function bucket(value) {
 
 const output = resolve(argument("--output", "data/runtime/training-dataset.jsonl"));
 const holdoutScenario = argument("--holdout", "LAUNDER_001");
-const rowsPerScenario = Math.max(200, Math.min(1000, Number(argument("--rows", "1000")) || 1000));
+const rowsPerScenario = Math.max(200, Math.min(50000, Number(argument("--rows", "10000")) || 10000));
 const scenarios = ATTACK_CATALOG.filter((item) => item.id !== holdoutScenario);
 const lines = [JSON.stringify({
   _meta: {
@@ -35,7 +35,7 @@ const lines = [JSON.stringify({
 
 for (const [index, scenario] of scenarios.entries()) {
   const featureEngine = new FeatureEngine();
-  const transactions = generateTransactions({ scenarioId: scenario.id, volume: rowsPerScenario, seed: 2026 + index * 97, fraudRate: 0.25 });
+  const transactions = generateTrainingTransactions({ scenarioId: scenario.id, volume: rowsPerScenario, seed: 2026 + index * 97, fraudRate: 0.25 });
   for (const transaction of transactions) {
     const entityBucket = bucket(`${scenario.id}:${transaction.customer_id}`);
     const split = entityBucket < 7 ? "train" : entityBucket === 7 ? "validation" : "test";

@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "model_type": "logistic_regression",
-  "model_version": "fg-linear-ad2919e91e",
+  "model_version": "fg-linear-d0ef65422d",
   "feature_version": "features-1.0",
-  "created_at": "2026-08-21T19:45:26.917163+00:00",
+  "created_at": "2026-08-22T09:04:01.629144+00:00",
   "feature_order": [
     "velocity_1h",
     "amount_deviation",
@@ -19,47 +19,47 @@
   ],
   "normalization": {
     "means": [
-      1.0919005613,
-      4.2560781075,
-      0.0591820369,
-      0.6970328789,
-      0.4081796311,
-      0.0641539695,
-      0.0325581395,
-      0.1878107458,
-      0.0598235766,
-      0.0246992783,
-      0.215818765
+      1.0098427996,
+      3.5164203176,
+      0.0611106722,
+      0.6938620744,
+      0.4176791216,
+      0.0625799826,
+      0.0303025515,
+      0.2504621218,
+      0.0606840983,
+      0.0234615688,
+      0.2109817521
     ],
     "scales": [
-      0.298711743,
-      50.7248477428,
-      0.2359650894,
-      0.459541124,
-      0.491496714,
-      0.2450270143,
-      0.1774770607,
-      0.3905609678,
-      0.2371596852,
-      0.1552070357,
-      0.1792631694
+      0.0993595047,
+      43.0063934863,
+      0.2395332085,
+      0.4608877261,
+      0.4931767158,
+      0.2422059628,
+      0.1714185139,
+      0.4332791795,
+      0.2387499497,
+      0.1513642086,
+      0.1724026665
     ]
   },
   "weights": [
-    0.0727097852,
-    -0.1976496143,
-    0.524435319,
-    -0.1439993759,
-    0.1412952731,
-    0.8950499931,
-    0.4653100112,
-    -0.0423116068,
-    0.7681869283,
-    0.6992447431,
-    0.915633245
+    0.0078088356,
+    -0.1438658001,
+    0.4992923833,
+    -0.145947701,
+    0.1651148112,
+    0.9105305494,
+    0.4754029097,
+    0.0112171553,
+    0.7644240775,
+    0.6719853517,
+    0.8285551215
   ],
-  "bias": -0.3964407993,
-  "decision_threshold": 0.57,
+  "bias": -0.3922786832,
+  "decision_threshold": 0.69,
   "training_manifest": {
     "schema_version": "1.0",
     "feature_version": "features-1.0",
@@ -67,7 +67,7 @@
     "hard_negative_rate": 0.15,
     "signal_strength": 0.88,
     "seed": 2026,
-    "rows_per_scenario": 1000,
+    "rows_per_scenario": 10000,
     "training_scenarios": [
       "ATO_001",
       "CNP_001",
@@ -84,82 +84,82 @@
     ],
     "split_strategy": "customer-entity hash: 70% train / 10% validation / 20% test",
     "examples": {
-      "train": 6235,
-      "validation": 1049,
-      "test": 1716
+      "train": 63295,
+      "validation": 8906,
+      "test": 17799
     },
-    "positive_rate": 0.260144
+    "positive_rate": 0.251047
   },
   "metrics": {
     "validation": {
-      "precision": 0.769231,
-      "recall": 0.757576,
-      "f1": 0.763359,
-      "false_positive_rate": 0.076433,
+      "precision": 0.753355,
+      "recall": 0.728412,
+      "f1": 0.740673,
+      "false_positive_rate": 0.079898,
       "confusion_matrix": {
-        "tp": 200,
-        "fp": 60,
-        "tn": 725,
-        "fn": 64
+        "tp": 1628,
+        "fp": 533,
+        "tn": 6138,
+        "fn": 607
       }
     },
     "test": {
-      "precision": 0.748837,
-      "recall": 0.755869,
-      "f1": 0.752336,
-      "false_positive_rate": 0.083721,
+      "precision": 0.753135,
+      "recall": 0.733047,
+      "f1": 0.742955,
+      "false_positive_rate": 0.079477,
       "confusion_matrix": {
-        "tp": 322,
-        "fp": 108,
-        "tn": 1182,
-        "fn": 104
+        "tp": 3243,
+        "fp": 1063,
+        "tn": 12312,
+        "fn": 1181
       }
     }
   },
   "coefficient_explanations": [
     {
-      "feature": "merchant_risk",
-      "coefficient": 0.915633
+      "feature": "new_payee",
+      "coefficient": 0.910531
     },
     {
-      "feature": "new_payee",
-      "coefficient": 0.89505
+      "feature": "merchant_risk",
+      "coefficient": 0.828555
     },
     {
       "feature": "new_account",
-      "coefficient": 0.768187
+      "coefficient": 0.764424
     },
     {
       "feature": "identity_mismatch",
-      "coefficient": 0.699245
+      "coefficient": 0.671985
     },
     {
       "feature": "new_device",
-      "coefficient": 0.524435
+      "coefficient": 0.499292
     },
     {
       "feature": "card_not_present",
-      "coefficient": 0.46531
-    },
-    {
-      "feature": "amount_deviation",
-      "coefficient": -0.19765
-    },
-    {
-      "feature": "shared_device_count",
-      "coefficient": -0.143999
+      "coefficient": 0.475403
     },
     {
       "feature": "location_shift",
-      "coefficient": 0.141295
+      "coefficient": 0.165115
     },
     {
-      "feature": "velocity_1h",
-      "coefficient": 0.07271
+      "feature": "shared_device_count",
+      "coefficient": -0.145948
+    },
+    {
+      "feature": "amount_deviation",
+      "coefficient": -0.143866
     },
     {
       "feature": "unusual_hour",
-      "coefficient": -0.042312
+      "coefficient": 0.011217
+    },
+    {
+      "feature": "velocity_1h",
+      "coefficient": 0.007809
     }
   ],
   "limitations": [

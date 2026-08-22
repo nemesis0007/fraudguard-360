@@ -143,15 +143,17 @@ npm test
 
 The exporter calls the same [FeatureEngine](src/features.js) used during API inference. It assigns all transactions for a customer/scenario pair to a single split and excludes `LAUNDER_001` completely as the novel-family holdout. The generated dataset stays under `data/runtime/`; the small, versioned model artifact is committed under `models/`.
 
+The default export contains 90,000 rows: 10,000 transactions for each of nine training scenarios. Use `npm run data:generate -- --rows <count>` to choose between 200 and 50,000 rows per scenario when running smaller experiments or larger stress tests.
+
 Current locked synthetic benchmark:
 
 | Evaluation | Precision | Recall | F1 | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Entity-aware test split | 74.9% | 75.6% | 75.2% | 8.4% |
-| Novel holdout, ensemble | 67.3% | 87.7% | 76.2% | 13.8% |
+| Entity-aware test split | 75.3% | 73.3% | 74.3% | 7.9% |
+| Novel holdout, ensemble | 66.9% | 87.7% | 75.9% | 14.0% |
 | Novel holdout, fallback | 76.6% | 59.0% | 66.7% | 5.8% |
 
-Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. The resulting tradeoff is less flattering but more credible: the unseen-family ensemble gains 9.5 F1 points and 28.7 recall points over fallback, at a 7.9-point false-positive-rate cost. These remain synthetic results, not production claims.
+Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. The resulting tradeoff is less flattering but more credible: the unseen-family ensemble gains 9.2 F1 points and 28.7 recall points over fallback, at an 8.2-point false-positive-rate cost. These remain synthetic results, not production claims.
 
 ## Architecture decision
 
