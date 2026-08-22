@@ -20,7 +20,7 @@ function resolvedTheme(preference) {
 }
 
 function applyWorkspacePreferences() {
-  const theme = getPreference("theme", "light");
+  const theme = getPreference("theme", "dark");
   const density = getPreference("density", "comfortable");
   const reduced = getPreference("motion", window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "reduced" : "full");
   document.documentElement.dataset.theme = resolvedTheme(theme);
@@ -101,7 +101,7 @@ function bindWorkspaceControls() {
   document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.addEventListener("click", () => { setPreference("density", button.dataset.value); applyWorkspacePreferences(); }));
   $("#reduceMotion").addEventListener("change", (event) => { setPreference("motion", event.target.checked ? "reduced" : "full"); applyWorkspacePreferences(); });
   $("#autoPreview").addEventListener("change", (event) => setPreference("auto-preview", event.target.checked ? "on" : "off"));
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (getPreference("theme", "light") === "auto") applyWorkspacePreferences(); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (getPreference("theme", "dark") === "auto") applyWorkspacePreferences(); });
 
   document.querySelectorAll("[data-open-workspace]").forEach((button) => button.addEventListener("click", () => activateWorkspace(button.dataset.openWorkspace)));
   document.querySelectorAll('a[href^="#"]:not([data-open-workspace])').forEach((link) => link.addEventListener("click", (event) => {

@@ -4,29 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="FraudGuard 360 is an engineering workspace for synthetic payment-fraud simulation, model evaluation, decision testing, and architecture review.">
-  <meta name="theme-color" content="#f5f5f7">
+  <meta name="theme-color" content="#000000">
   <meta property="og:title" content="FraudGuard 360 — Payment fraud engineering workspace">
   <meta property="og:description" content="Versioned scenarios, synthetic datasets, model evaluation, graph-aware decisions, and reproducible red-team experiments.">
-  <meta property="og:image" content="/og-fraudguard-v3.png">
+  <meta property="og:image" content="/og-fraudguard-v4.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="FraudGuard 360 — Engineering Workspace">
-  <meta name="twitter:description" content="Payment fraud simulation and decision testing.">
-  <meta name="twitter:image" content="/og-fraudguard-v3.png">
+  <meta name="twitter:description" content="See the attack. Prove the defense.">
+  <meta name="twitter:image" content="/og-fraudguard-v4.png">
   <title>FraudGuard 360 — Engineering Workspace</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="FraudGuard 360 home">
-      <span class="brand-symbol" aria-hidden="true"><i></i><i></i></span>
-      <span>FRAUDGUARD <b>360</b></span>
-    </a>
-    <div class="header-context"><span class="header-status"><i></i> Synthetic environment</span><span>Fraud defense workspace</span></div>
-    <button class="header-control" id="openViewOptions" type="button" aria-expanded="false" aria-controls="viewOptions"><span aria-hidden="true">···</span> View options</button>
-  </header>
-
-  <div class="workspace-chrome">
-    <div class="workspace-chrome-inner shell">
+    <div class="header-inner shell">
+      <a class="brand" href="#top" aria-label="FraudGuard 360 home">
+        <span class="brand-symbol" aria-hidden="true"><i></i><i></i></span>
+        <span>FRAUDGUARD <b>360</b></span>
+      </a>
       <nav class="workspace-tabs" role="tablist" aria-label="FraudGuard workspaces">
         <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Overview</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">Missions</button>
@@ -35,28 +30,32 @@
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Data</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">System</button>
       </nav>
-      <button class="workspace-primary" id="globalRun" type="button" disabled>New simulation</button>
+      <div class="header-actions">
+        <span class="header-status"><i></i> Sandbox</span>
+        <button class="header-control" id="openViewOptions" type="button" aria-expanded="false" aria-controls="viewOptions"><span class="control-glyph" aria-hidden="true"><i></i><i></i><i></i></span><b>Display</b></button>
+        <button class="workspace-primary" id="globalRun" type="button" disabled>New run</button>
+      </div>
     </div>
     <div class="workspace-progress" aria-hidden="true"><i id="workspaceProgress"></i></div>
     <aside class="view-options" id="viewOptions" aria-label="Workspace view options" hidden>
       <div class="view-options-head"><div><small>VIEW OPTIONS</small><b>Make the workspace yours</b></div><button id="closeViewOptions" type="button" aria-label="Close view options">×</button></div>
-      <fieldset><legend>Appearance</legend><div class="segmented-control" data-preference="theme"><button type="button" data-value="light">Light</button><button type="button" data-value="dark">Dark</button><button type="button" data-value="auto">Auto</button></div></fieldset>
+      <fieldset><legend>Appearance</legend><div class="segmented-control" data-preference="theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button><button type="button" data-value="auto">Auto</button></div></fieldset>
       <fieldset><legend>Information density</legend><div class="segmented-control" data-preference="density"><button type="button" data-value="comfortable">Comfortable</button><button type="button" data-value="compact">Compact</button></div></fieldset>
       <label class="preference-toggle"><span><b>Reduce motion</b><small>Keep diagrams and transitions still.</small></span><input id="reduceMotion" type="checkbox"><i></i></label>
       <label class="preference-toggle"><span><b>Automatic preview</b><small>Run a comparison when the app opens.</small></span><input id="autoPreview" type="checkbox"><i></i></label>
     </aside>
-  </div>
+  </header>
   <div class="sr-only" id="viewAnnouncer" role="status" aria-live="polite"></div>
 
   <main id="top">
     <section class="hero shell" data-workspace-view="overview">
       <div class="hero-copy">
-        <div class="release-pill"><span></span> Engineering build · Synthetic sandbox · GFF 2026</div>
-        <h1>Payment fraud simulation<br><em>and decision testing.</em></h1>
-        <p>Run versioned fraud campaigns through a synthetic payment network, inspect model and graph signals, compare defensive policies, and reproduce every result from committed data and code.</p>
+        <div class="release-pill"><span></span> Fraud defense lab · Synthetic network · GFF 2026</div>
+        <h1>See the attack.<br><em>Prove the defense.</em></h1>
+        <p>Choose an adaptive payment campaign, replay it against the synthetic network, and inspect every signal, decision, and defensive intervention.</p>
         <div class="hero-actions">
-          <button class="button button-primary" id="heroRun">Run a simulation <span>→</span></button>
-          <button class="text-button" type="button" data-open-workspace="system">Review the architecture</button>
+          <button class="button button-primary" id="heroRun">Start a simulation <span>→</span></button>
+          <button class="text-button" type="button" data-open-workspace="system">Explore the system</button>
         </div>
         <div class="trust-line">
           <span>BUILT FOR</span>
