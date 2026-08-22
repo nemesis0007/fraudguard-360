@@ -1,0 +1,23 @@
+{
+  "dataset": "FraudGuard 360 synthetic payment attack benchmark",
+  "version": "synthetic-1.1",
+  "seed": 2026,
+  "rows": 210000,
+  "fraud_rows": 52753,
+  "benign_rows": 157247,
+  "hard_negative_rows": 23652,
+  "training_scenarios": 21,
+  "holdout_scenarios": ["LAUNDER_001"],
+  "splits": {
+    "train": 146997,
+    "validation": 20865,
+    "test": 42138
+  },
+  "full_archive": "releases/fraudguard-360-synthetic-dataset-210k.zip",
+  "full_archive_sha256": "4B1A0508F1D34830BDB221475B60464877516EB7092FC25FEA0160E1175D5320",
+  "sample": "sample/training-dataset.sample.jsonl",
+  "sample_rows": 4200,
+  "sample_sha256": "5E0BD2AE3FB37047AA3B17BFFB2826C5C627B4105504CF1FCC5E18522806D16A",
+  "synthetic_only": true,
+  "contains_pii": false
+}

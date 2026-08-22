@@ -21,6 +21,7 @@
       <a href="#agent-lab">Agent Lab</a>
       <a href="#platform">Platform</a>
       <a href="#arena">Arena</a>
+      <a href="#dataset">Dataset</a>
       <a href="#evidence">Evidence</a>
       <a href="/guide.html">Documentation</a>
     </nav>
@@ -158,6 +159,16 @@
           <p class="spotlight-code" id="spotlightCodename">GHOST CART</p>
           <h3 id="spotlightName">Agent intent hijack</h3>
           <p id="spotlightThesis">A compromised shopping agent stays inside a valid spending mandate while merchant and payee intent quietly diverge.</p>
+          <section class="attack-visual" aria-label="Visual explanation of the selected attack">
+            <div class="attack-visual-head"><span>LIVE ATTACK ANATOMY</span><small id="attackVisualStatus">4 observable stages · synthetic replay</small></div>
+            <div class="attack-path" id="attackDiagram"></div>
+            <div class="attack-explainer">
+              <div><small>WHAT AI CHANGES</small><b id="attackAiMove">Delegated intent is altered without breaking the payment mandate.</b></div>
+              <div><small>HIDDEN CONNECTION</small><b id="attackGraphClue">Delegation drift links the merchant, payee, and retry sequence.</b></div>
+              <div class="blue-explainer"><small>WHERE BLUE INTERCEPTS</small><b id="attackDefenseMove">Intent attestation exposes the mismatch before settlement.</b></div>
+            </div>
+            <div class="attack-signal-map" id="attackSignalMap"></div>
+          </section>
           <div class="spotlight-meta"><div><small>AI ENABLER</small><b id="spotlightEnabler">Prompt injection against delegated commerce</b></div><div><small>PAYMENT SURFACE</small><b id="spotlightChannels">Agentic commerce · Instant pay · Card</b></div><div><small>FRAUD PRIMITIVE</small><b id="spotlightFamily">Instant-payment scam</b></div></div>
           <div class="spotlight-chain" id="spotlightChain"></div>
           <button class="atlas-launch" id="launchSpotlight">Load campaign into arena <span>→</span></button>
@@ -244,6 +255,43 @@
           <div class="arena-lower">
             <section class="timeline-panel"><div class="subhead"><span>FORENSIC TIMELINE</span><small>What changed, in order</small></div><ol id="timeline"><li class="empty-line">Run an attack to generate the replay timeline.</li></ol></section>
             <section class="receipt-panel"><div class="subhead"><span>DECISION RECEIPT</span><small>Explainable by default</small></div><div id="receipt" class="receipt-empty">Select a flagged graph node or run a replay to inspect the highest-risk decision.</div></section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dataset-section" id="dataset">
+      <div class="shell">
+        <div class="section-intro dataset-intro">
+          <div><p class="kicker">THE ACTUAL DATASET</p><h2>Download it.<br>Inspect every row.</h2></div>
+          <p>The challenge supplied no data, so this benchmark is generated from the governed payment twin. GitHub now contains both a browsable 4,200-row sample and the complete compressed 210,000-row dataset used by the model.</p>
+        </div>
+        <div class="dataset-console">
+          <header><div><i></i><b>FRAUDGUARD / SYNTHETIC-1.1</b></div><span>NO PII · REPRODUCIBLE · SHA-256 VERIFIED</span></header>
+          <div class="dataset-layout">
+            <section class="dataset-summary">
+              <small>DATASET MANIFEST</small><h3>Payment attack benchmark</h3>
+              <div class="dataset-kpis"><div><strong>210,000</strong><span>labeled rows</span></div><div><strong>21 + 1</strong><span>train families + holdout</span></div><div><strong>23,652</strong><span>hard negatives</span></div><div><strong>11</strong><span>model features</span></div></div>
+              <div class="split-visual"><span class="split-train" style="--share:70%"><b>TRAIN</b><small>146,997</small></span><span class="split-validation" style="--share:10%"><b>VALIDATE</b><small>20,865</small></span><span class="split-test" style="--share:20%"><b>TEST</b><small>42,138</small></span></div>
+              <p><b>Novel-family holdout:</b> <code>LAUNDER_001</code> is excluded completely from training so the benchmark measures generalization rather than memorization.</p>
+              <div class="dataset-actions"><a class="dataset-primary" href="https://github.com/nemesis0007/fraudguard-360/blob/main/data/releases/fraudguard-360-synthetic-dataset-210k.zip?raw=1">Download full dataset <span>↓</span></a><a href="https://github.com/nemesis0007/fraudguard-360/blob/main/data/sample/training-dataset.sample.jsonl">Browse sample <span>↗</span></a><a href="https://github.com/nemesis0007/fraudguard-360/tree/main/data">Lineage & checksum <span>↗</span></a></div>
+            </section>
+            <section class="dataset-record">
+              <div class="record-head"><span>ROW PREVIEW / JSONL</span><b>FICTIONAL CUSTOMER C0003</b></div>
+              <pre><span>{</span>
+  <i>"split"</i>: <b>"train"</b>,
+  <i>"scenario_id"</i>: <b>"ATO_001"</b>,
+  <i>"label"</i>: <em>1</em>,
+  <i>"synthetic_profile"</i>: <b>"ATTACK"</b>,
+  <i>"features"</i>: <span>{</span>
+    <i>"velocity_1h"</i>: <em>1</em>,
+    <i>"amount_deviation"</i>: <em>0.389</em>,
+    <i>"location_shift"</i>: <em>1</em>,
+    <i>"merchant_risk"</i>: <em>0.02</em>
+  <span>}</span>
+<span>}</span></pre>
+              <div class="record-foot"><span><i></i> SYNTHETIC ONLY</span><b>generator seed 2026</b></div>
+            </section>
           </div>
         </div>
       </div>

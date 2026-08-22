@@ -11,6 +11,7 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 - 22 versioned attack families spanning account and recovery takeover, CNP, token provisioning, QR substitution, mule and remittance networks, bots, BNPL bust-out, refund and loyalty abuse, instant-payment scams, synthetic identity, merchant laundering, subscriptions, contactless relay, payroll and invoice redirection, gift-card conversion, layering, promotion abuse, and friendly fraud.
 - Deterministic seeded transaction generation with monotonic event time, provenance, synthetic-data flags, and controlled hard negatives.
 - A committed synthetic-fidelity report with 12 automated gates covering reproducibility, schema, class balance, overlap, correlation, feature ranges, and privacy.
+- A downloadable [210,000-row compressed benchmark](data/releases/fraudguard-360-synthetic-dataset-210k.zip), a [4,200-row browsable sample](data/sample/training-dataset.sample.jsonl), and a [dataset card with checksums](data/README.md).
 - Stateful velocity, amount, device, graph-proxy, account, merchant, payee, and geography features.
 - A trained NumPy logistic model blended with explainable rule signals, with a locked JSON artifact and feature manifest.
 - Configurable `ALLOW`, `STEP_UP`, `REVIEW`, and `BLOCK` thresholds plus safe transparent fallback when the artifact is unavailable.
@@ -167,7 +168,7 @@ python ml/train.py
 npm test
 ```
 
-The exporter calls the same [FeatureEngine](src/features.js) used during API inference. It assigns all transactions for a customer/scenario pair to a single split and excludes `LAUNDER_001` completely as the novel-family holdout. The generated dataset stays under `data/runtime/`; the small, versioned model artifact is committed under `models/`.
+The exporter calls the same [FeatureEngine](src/features.js) used during API inference. It assigns all transactions for a customer/scenario pair to a single split and excludes `LAUNDER_001` completely as the novel-family holdout. The reproducible working copy stays under ignored `data/runtime/`; GitHub contains the complete compressed benchmark under [`data/releases/`](data/releases/), a sample under [`data/sample/`](data/sample/), and the versioned model artifact under [`models/`](models/).
 
 The default export contains 210,000 rows: 10,000 transactions for each of 21 training scenarios, with `LAUNDER_001` held out completely. Use `npm run data:generate -- --rows <count>` to choose between 200 and 50,000 rows per scenario when running smaller experiments or larger stress tests.
 

@@ -145,6 +145,16 @@ function renderFingerprint(fingerprint) {
   });
 }
 
+function renderAttackVisual(campaign) {
+  const graphClue = campaign.graph_motif.replaceAll("_", " ").toLowerCase();
+  $("#attackVisualStatus").textContent = `${campaign.kill_chain.length} observable stages · ${campaign.channels.join(" → ")}`;
+  $("#attackAiMove").textContent = campaign.ai_enabler;
+  $("#attackGraphClue").textContent = `${graphClue} links events that appear harmless in isolation.`;
+  $("#attackDefenseMove").textContent = `${campaign.defenses[0]} interrupts the path; ${campaign.defenses.slice(1).join(" and ").toLowerCase()} contain the remaining network.`;
+  $("#attackDiagram").innerHTML = campaign.kill_chain.map((stage, index) => `${index ? `<div class="attack-link" style="--delay:${index * .55}s"><i></i><span>PAYMENT SIGNAL</span></div>` : ""}<article class="attack-stage ${index === campaign.kill_chain.length - 1 ? "attack-stage-terminal" : ""}" style="--delay:${index * .55}s"><div class="attack-node"><span>${String(index + 1).padStart(2, "0")}</span><i></i></div><small>${escapeHtml(stage.phase)}</small><b>${escapeHtml(stage.title)}</b><p>${escapeHtml(stage.observable)}</p></article>`).join("");
+  $("#attackSignalMap").innerHTML = Object.entries(campaign.fingerprint).map(([signal, value]) => `<div title="${escapeHtml(signal)} pressure ${value} out of 100"><span><i style="height:${value}%"></i></span><small>${escapeHtml(signal)}<b>${value}</b></small></div>`).join("");
+}
+
 function renderCampaignPreview(campaign) {
   const index = Math.max(0, state.catalog.findIndex((item) => item.id === campaign.id || item.id === campaign.campaign_id));
   $("#campaignNumber").textContent = `CAMPAIGN ${String(index + 1).padStart(2, "0")} / ${String(state.catalog.length).padStart(2, "0")}`;
@@ -170,6 +180,7 @@ function renderSpotlight(campaign) {
   $("#spotlightEnabler").textContent = campaign.ai_enabler;
   $("#spotlightChannels").textContent = campaign.channels.join(" · ");
   $("#spotlightFamily").textContent = campaign.base_scenario_name ?? campaign.base_family?.replaceAll("_", " ") ?? campaign.base_scenario_id;
+  renderAttackVisual(campaign);
   renderKillChain(campaign, "#spotlightChain");
   document.querySelectorAll(".campaign-card").forEach((card) => card.classList.toggle("active", card.dataset.campaignId === campaign.id));
 }

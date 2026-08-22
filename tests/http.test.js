@@ -121,3 +121,12 @@ test("agent endpoints expose the local roster and a governed mission", () => wit
   assert.equal(body.data.governance.synthetic_only, true);
   assert.equal(body.data.governance.network_access, false);
 }));
+
+test("site exposes attack anatomy and direct GitHub dataset access", () => withServer(async (base) => {
+  const homepage = await fetch(base).then((response) => response.text());
+  assert.match(homepage, /LIVE ATTACK ANATOMY/);
+  assert.match(homepage, /id="attackDiagram"/);
+  assert.match(homepage, /THE ACTUAL DATASET/);
+  assert.match(homepage, /fraudguard-360-synthetic-dataset-210k\.zip/);
+  assert.match(homepage, /210,000/);
+}));
