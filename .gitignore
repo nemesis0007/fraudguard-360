@@ -5,3 +5,6 @@ data/runtime/
 docs/qa/
 models/*.tmp
 *.log
+
+.vercel
+.env*

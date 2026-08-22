@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Watch six autonomous local agents attack, critique, evolve, and defend a privacy-safe synthetic payment-network twin.">
+  <meta name="description" content="FraudGuard 360 is an engineering workspace for synthetic payment-fraud simulation, model evaluation, decision testing, and architecture review.">
   <meta name="theme-color" content="#071014">
-  <meta property="og:title" content="FraudGuard 360 — Adaptive payment defense">
-  <meta property="og:description" content="Six local AI agents. Twenty-four AI-native campaigns. One sealed synthetic payment lab.">
+  <meta property="og:title" content="FraudGuard 360 — Payment fraud engineering workspace">
+  <meta property="og:description" content="Versioned scenarios, synthetic datasets, model evaluation, graph-aware decisions, and reproducible red-team experiments.">
   <meta property="og:image" content="/fraudguard-agent-lab-social.png">
-  <title>FraudGuard 360 — Adaptive Payment Defense</title>
+  <title>FraudGuard 360 — Engineering Workspace</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -18,26 +18,26 @@
       <span>FRAUDGUARD <b>360</b></span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="#agent-lab">Agent Lab</a>
-      <a href="#platform">Platform</a>
+      <a href="#top">Overview</a>
+      <a href="#agent-lab">Mission runner</a>
+      <a href="#threats">Threats</a>
       <a href="#arena">Arena</a>
       <a href="#dataset">Dataset</a>
       <a href="#architecture">Architecture</a>
-      <a href="#evidence">Evidence</a>
-      <a href="/guide.html">Documentation</a>
+      <a href="#team">Engineering</a>
     </nav>
-    <a class="header-cta" href="#agent-lab">Launch agents <span>↗</span></a>
+    <a class="header-cta" href="#agent-lab">Run experiment <span>↗</span></a>
   </header>
 
   <main id="top">
     <section class="hero shell">
       <div class="hero-copy">
-        <div class="release-pill"><span></span> Research preview · GFF 2026</div>
-        <h1>Watch AI attack.<br><em>Watch defense learn.</em></h1>
-        <p>Six local agents autonomously research, plan, execute, critique, and evolve payment attacks inside a fictional network. Every action is bounded, inspectable, and replayed against the graph-aware defense.</p>
+        <div class="release-pill"><span></span> Engineering build · Synthetic sandbox · GFF 2026</div>
+        <h1>Payment fraud simulation<br><em>and decision testing.</em></h1>
+        <p>Run versioned fraud campaigns through a synthetic payment network, inspect model and graph signals, compare defensive policies, and reproduce every result from committed data and code.</p>
         <div class="hero-actions">
-          <button class="button button-primary" id="heroRun">Launch an agent mission <span>→</span></button>
-          <a href="#threats">Inspect the threat atlas</a>
+          <button class="button button-primary" id="heroRun">Run a simulation <span>→</span></button>
+          <a href="#architecture">Review the architecture</a>
         </div>
         <div class="trust-line">
           <span>BUILT FOR</span>
@@ -45,10 +45,10 @@
         </div>
       </div>
       <div class="hero-visual" aria-label="Live payment network preview">
-        <div class="visual-top"><span>LIVE TWIN / MUMBAI REGION</span><b><i></i> ONLINE</b></div>
+        <div class="visual-top"><span>SYNTHETIC NETWORK / LOCAL RUNTIME</span><b><i></i> READY</b></div>
         <canvas id="heroCanvas" width="720" height="560"></canvas>
-        <div class="signal-card signal-red"><small>ADAPTIVE PROBE</small><strong>Entity cluster 04</strong><span>Risk propagating</span></div>
-        <div class="signal-card signal-green"><small>POLICY RESPONSE</small><strong>Step-up applied</strong><span>₹84.2K protected</span></div>
+        <div class="signal-card signal-red"><small>CAMPAIGN EVENT</small><strong>Entity cluster 04</strong><span>Graph risk observed</span></div>
+        <div class="signal-card signal-green"><small>DECISION RESPONSE</small><strong>STEP_UP</strong><span>Reason codes recorded</span></div>
         <div class="visual-foot"><span>12,804 events/s</span><span>28 ms fusion</span><span>0 raw PII</span></div>
       </div>
     </section>
@@ -66,8 +66,8 @@
     <section class="agent-lab-section" id="agent-lab">
       <div class="shell">
         <div class="section-intro agent-lab-intro">
-          <div><p class="kicker red-kicker">LOCAL AUTONOMOUS RED TEAM</p><h2>Not a dashboard.<br>A running adversary.</h2></div>
-          <p>Give the agents an objective. They generate candidate attack policies, execute each one in the payment twin, score the outcomes, preserve the best policy in memory, and adapt against a strengthening defender.</p>
+          <div><p class="kicker red-kicker">RED-TEAM MISSION RUNNER</p><h2>Run repeatable<br>adversarial experiments.</h2></div>
+          <p>Select an objective and campaign. The local policy agents evaluate bounded candidates in isolated synthetic twins, retain the highest-scoring policy, and record every action and observation.</p>
         </div>
 
         <div class="mission-app">
@@ -119,8 +119,8 @@
 
     <section class="platform shell" id="platform">
       <div class="section-intro">
-        <div><p class="kicker">THE ADAPTIVE DEFENSE CLOUD</p><h2>Fraud is a moving system.<br>Your defense should be one too.</h2></div>
-        <p>Most tools score a transaction in isolation. FraudGuard tests the transaction, the network around it, and the adversary changing tactics after every response.</p>
+        <div><p class="kicker">SYSTEM COMPONENTS</p><h2>One workflow from<br>scenario to decision.</h2></div>
+        <p>The system joins counterfactual simulation, transaction features, entity-graph context, locked-model inference, deterministic policy, and governed feedback.</p>
       </div>
       <div class="capability-grid">
         <article class="capability capability-wide">
@@ -149,8 +149,8 @@
 
     <section class="threat-atlas shell" id="threats">
       <div class="section-intro threat-intro">
-        <div><p class="kicker red-kicker">IDENTIFY / AI-NATIVE THREAT ATLAS</p><h2>Not fraud categories.<br>Adaptive campaigns.</h2></div>
-        <p>Each campaign names the AI capability that changes the threat, the payment surfaces it crosses, the observable kill chain, and the defense evidence required to stop it.</p>
+        <div><p class="kicker red-kicker">VERSIONED THREAT REGISTRY</p><h2>Campaign definitions<br>with observable evidence.</h2></div>
+        <p>Each entry records the enabling capability, affected payment surfaces, four-stage observable sequence, signal fingerprint, generator primitive, and expected controls.</p>
       </div>
       <div class="atlas-metrics" aria-label="Expanded attack coverage"><span><b>24</b> AI-native campaigns</span><span><b>22</b> payment attack families</span><span><b>39</b> channel contexts</span><span><b>4</b> observable stages each</span></div>
       <div class="atlas-shell">
@@ -180,8 +180,8 @@
     <section class="arena-section" id="arena">
       <div class="shell">
         <div class="section-intro arena-intro">
-          <div><p class="kicker red-kicker">ADVERSARIAL TWIN ARENA</p><h2>Attack the network.<br>Watch the defense adapt.</h2></div>
-          <p>This is a functioning simulation—not a dashboard mock-up. Change attacker pressure and defense posture, then inspect the graph, counterfactual outcome, and decision receipts returned by the API.</p>
+          <div><p class="kicker red-kicker">COUNTERFACTUAL REPLAY WORKSPACE</p><h2>Compare baseline, attack,<br>and adapted defense.</h2></div>
+          <p>Change campaign controls and defense posture, then inspect the returned entity graph, comparative outcomes, pipeline trace, and explainable decision receipts.</p>
         </div>
 
         <div class="arena-app">
@@ -329,6 +329,21 @@
       </div>
     </section>
 
+    <section class="team-handoff shell" id="team">
+      <div class="section-intro team-intro">
+        <div><p class="kicker">ENGINEERING HANDOFF</p><h2>Everything the team<br>needs to work safely.</h2></div>
+        <p>Start with the engineering guide, inspect the API contracts, follow the contribution workflow, and use the operations runbook for local or hosted environments.</p>
+      </div>
+      <div class="team-resource-grid">
+        <a href="https://github.com/nemesis0007/fraudguard-360/blob/main/docs/ENGINEERING_GUIDE.md"><small>01 / START HERE</small><b>Engineering guide</b><span>Setup, module map, request lifecycle, data and model rebuilds.</span><em>Open on GitHub ↗</em></a>
+        <a href="https://github.com/nemesis0007/fraudguard-360/blob/main/docs/API_REFERENCE.md"><small>02 / CONTRACTS</small><b>API reference</b><span>Endpoints, payloads, response envelopes, pipeline traces, and errors.</span><em>Open on GitHub ↗</em></a>
+        <a href="https://github.com/nemesis0007/fraudguard-360/blob/main/ARCHITECTURE.md"><small>03 / DESIGN</small><b>System architecture</b><span>Offline, nearline, real-time, storage, feedback, and extraction boundaries.</span><em>Open on GitHub ↗</em></a>
+        <a href="https://github.com/nemesis0007/fraudguard-360/blob/main/docs/OPERATIONS.md"><small>04 / RUNBOOK</small><b>Operations</b><span>Configuration, health checks, deployment, rollback, and troubleshooting.</span><em>Open on GitHub ↗</em></a>
+        <a href="https://github.com/nemesis0007/fraudguard-360/blob/main/CONTRIBUTING.md"><small>05 / WORKFLOW</small><b>Contributing</b><span>Branches, tests, commits, pull requests, ownership, and review checklist.</span><em>Open on GitHub ↗</em></a>
+        <a href="https://github.com/nemesis0007/fraudguard-360/tree/main/data"><small>06 / ARTIFACTS</small><b>Dataset and lineage</b><span>Full benchmark, browsable sample, manifest, SHA-256, and reproduction.</span><em>Open on GitHub ↗</em></a>
+      </div>
+    </section>
+
     <section class="evidence shell" id="evidence">
       <div class="section-intro evidence-intro">
         <div><p class="kicker">EVIDENCE, NOT THEATER</p><h2>A hybrid data strategy<br>with honest boundaries.</h2></div>
@@ -354,17 +369,17 @@
     </section>
 
     <section class="final-cta shell">
-      <p class="kicker">BUILD THE DEFENSE BEFORE THE ATTACK</p>
-      <h2>Tomorrow’s fraud will not look like yesterday’s labels.</h2>
-      <p>Stress the network, measure the counterfactual, and improve through governed evidence.</p>
-      <button class="button button-primary" id="bottomRun">Launch the local agents <span>→</span></button>
+      <p class="kicker">TEAM-READY RESEARCH WORKSPACE</p>
+      <h2>Run the experiment. Inspect the evidence. Review the change.</h2>
+      <p>Every scenario, dataset, model artifact, decision, and limitation is versioned for reproducible team review.</p>
+      <button class="button button-primary" id="bottomRun">Run a validation mission <span>→</span></button>
     </section>
   </main>
 
   <footer class="site-footer shell">
     <a class="brand" href="#top"><span class="brand-symbol"><i></i><i></i></span><span>FRAUDGUARD <b>360</b></span></a>
-    <p>Adaptive payment defense for a changing adversary.<br><span>Privacy-safe research prototype · Synthetic sandbox</span></p>
-    <div><a href="#platform">Platform</a><a href="#arena">Arena</a><a href="/guide.html">Documentation</a><a href="https://github.com/nemesis0007/fraudguard-360">GitHub</a></div>
+    <p>Payment-fraud simulation and decision testing.<br><span>Technical research prototype · Synthetic data only</span></p>
+    <div><a href="#architecture">Architecture</a><a href="#dataset">Dataset</a><a href="/guide.html">Guide</a><a href="https://github.com/nemesis0007/fraudguard-360">Repository</a></div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="/app.js"></script>

@@ -6,6 +6,18 @@ FraudGuard 360 is an adaptive, privacy-safe red-team / blue-team fraud-defense l
 
 This competition does not provide a dataset. FraudGuard therefore uses a **hybrid evidence strategy**: the versioned synthetic twin is active now; public fraud/AML simulators are reference anchors for schema and realism checks; restricted institution aggregates are reserved for an authorized shadow-mode pilot. The code never claims that reference or pilot data has already been ingested.
 
+## Team entry points
+
+| Start here | Use it for |
+| --- | --- |
+| [Engineering guide](docs/ENGINEERING_GUIDE.md) | Local setup, repository map, request lifecycle, data/model workflows |
+| [API reference](docs/API_REFERENCE.md) | Endpoint contracts, payloads, response fields, and errors |
+| [System architecture](ARCHITECTURE.md) | Offline, nearline, real-time, storage, feedback, and migration boundaries |
+| [Operations runbook](docs/OPERATIONS.md) | Configuration, health checks, releases, rollback, and troubleshooting |
+| [Contributing](CONTRIBUTING.md) | Branching, required evidence, pull requests, and review checklist |
+| [Security policy](SECURITY.md) | Safety boundary, secrets, reporting, and pilot requirements |
+| [Dataset card](data/README.md) | Download, schema, composition, lineage, and checksums |
+
 ## What is working now
 
 - 22 versioned attack families spanning account and recovery takeover, CNP, token provisioning, QR substitution, mule and remittance networks, bots, BNPL bust-out, refund and loyalty abuse, instant-payment scams, synthetic identity, merchant laundering, subscriptions, contactless relay, payroll and invoice redirection, gift-card conversion, layering, promotion abuse, and friendly fraud.

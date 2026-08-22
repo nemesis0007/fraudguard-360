@@ -10,9 +10,10 @@
     "data:generate": "node scripts/export-training-data.js",
     "data:fidelity": "node scripts/audit-synthetic-fidelity.js",
     "test": "node --test",
-    "check": "node --check src/server.js && node --test"
+    "test:watch": "node --test --watch",
+    "check": "node --check src/server.js && node --check api/index.js && node --check public/app.js && node --test"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   }
 }

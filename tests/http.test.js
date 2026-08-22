@@ -124,6 +124,9 @@ test("agent endpoints expose the local roster and a governed mission", () => wit
 
 test("site exposes attack anatomy and direct GitHub dataset access", () => withServer(async (base) => {
   const homepage = await fetch(base).then((response) => response.text());
+  assert.match(homepage, /Payment fraud simulation[\s\S]*and decision testing/);
+  assert.match(homepage, /ENGINEERING HANDOFF/);
+  assert.doesNotMatch(homepage, /Watch AI attack/);
   assert.match(homepage, /LIVE ATTACK ANATOMY/);
   assert.match(homepage, /id="attackDiagram"/);
   assert.match(homepage, /THE ACTUAL DATASET/);

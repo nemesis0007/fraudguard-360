@@ -1,0 +1,8 @@
+data/releases/
+data/runtime/
+data/sample/
+docs/
+ml/
+.review-temp/
+*.docx
+*.log
