@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "generator_version": "synthetic-1.1",
-  "rows": 6000,
-  "scenarios": 10,
+  "rows": 13200,
+  "scenarios": 22,
   "checks": [
     {
       "id": "deterministic_replay",
@@ -36,31 +36,31 @@
     },
     {
       "id": "fraud_rate_control",
-      "value": 0.2513,
+      "value": 0.2498,
       "target": "0.20–0.30",
       "pass": true
     },
     {
       "id": "hard_negative_prevalence",
-      "value": 0.1451,
+      "value": 0.1501,
       "target": "0.10–0.20",
       "pass": true
     },
     {
       "id": "hard_negative_feature_coverage",
-      "value": 0.8896,
+      "value": 0.9105,
       "target": ">= 0.55",
       "pass": true
     },
     {
       "id": "amount_distribution_overlap",
-      "value": 0.3621,
+      "value": 0.4399,
       "target": ">= 0.20",
       "pass": true
     },
     {
       "id": "feature_correlation_ceiling",
-      "value": 0.5379,
+      "value": 0.4146,
       "target": "<= 0.95",
       "pass": true
     },
@@ -82,9 +82,9 @@
   "quality_score": 1,
   "diagnostics": {
     "maximum_feature_correlation": {
-      "left": "new_account",
-      "right": "identity_mismatch",
-      "absolute_correlation": 0.5379
+      "left": "shared_device_count",
+      "right": "new_account",
+      "absolute_correlation": 0.4146
     },
     "scenario_profiles": [
       {
@@ -102,8 +102,8 @@
       {
         "scenario_id": "MULE_001",
         "rows": 600,
-        "fraud_rate": 0.2333,
-        "hard_negative_rate": 0.1391
+        "fraud_rate": 0.2467,
+        "hard_negative_rate": 0.1593
       },
       {
         "scenario_id": "BOT_001",
@@ -138,14 +138,86 @@
       {
         "scenario_id": "PROMO_001",
         "rows": 600,
-        "fraud_rate": 0.265,
-        "hard_negative_rate": 0.1406
+        "fraud_rate": 0.2583,
+        "hard_negative_rate": 0.1663
       },
       {
         "scenario_id": "FRIENDLY_001",
         "rows": 600,
         "fraud_rate": 0.2383,
         "hard_negative_rate": 0.1466
+      },
+      {
+        "scenario_id": "SIMSWAP_001",
+        "rows": 600,
+        "fraud_rate": 0.2533,
+        "hard_negative_rate": 0.1496
+      },
+      {
+        "scenario_id": "TOKEN_001",
+        "rows": 600,
+        "fraud_rate": 0.2283,
+        "hard_negative_rate": 0.1469
+      },
+      {
+        "scenario_id": "QR_001",
+        "rows": 600,
+        "fraud_rate": 0.2783,
+        "hard_negative_rate": 0.1339
+      },
+      {
+        "scenario_id": "BNPL_001",
+        "rows": 600,
+        "fraud_rate": 0.2467,
+        "hard_negative_rate": 0.1372
+      },
+      {
+        "scenario_id": "INVOICE_001",
+        "rows": 600,
+        "fraud_rate": 0.2533,
+        "hard_negative_rate": 0.1362
+      },
+      {
+        "scenario_id": "LOYALTY_001",
+        "rows": 600,
+        "fraud_rate": 0.2833,
+        "hard_negative_rate": 0.1605
+      },
+      {
+        "scenario_id": "SUBSCRIPTION_001",
+        "rows": 600,
+        "fraud_rate": 0.2867,
+        "hard_negative_rate": 0.1659
+      },
+      {
+        "scenario_id": "MERCHANT_001",
+        "rows": 600,
+        "fraud_rate": 0.2467,
+        "hard_negative_rate": 0.1748
+      },
+      {
+        "scenario_id": "NFC_001",
+        "rows": 600,
+        "fraud_rate": 0.2367,
+        "hard_negative_rate": 0.1638
+      },
+      {
+        "scenario_id": "REMIT_001",
+        "rows": 600,
+        "fraud_rate": 0.23,
+        "hard_negative_rate": 0.1494
+      },
+      {
+        "scenario_id": "PAYROLL_001",
+        "rows": 600,
+        "fraud_rate": 0.235,
+        "hard_negative_rate": 0.1416
+      },
+      {
+        "scenario_id": "GIFT_001",
+        "rows": 600,
+        "fraud_rate": 0.1983,
+        "hard_negative_rate": 0.1455
       }
     ]
   },
@@ -153,5 +225,5 @@
     "Statistical checks compare synthetic cohorts with each other, not with a confidential production reference population.",
     "Passing gates establishes generator consistency and controlled overlap; it does not establish production realism."
   ],
-  "report_version": "fg-fidelity-11ffd89a20"
+  "report_version": "fg-fidelity-bd6e07ca96"
 }

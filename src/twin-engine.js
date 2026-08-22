@@ -3,6 +3,7 @@ import { FeatureEngine } from "./features.js";
 import { generateTransactions } from "./generator.js";
 import { seededRandom } from "./random.js";
 import { CAMPAIGN_CATALOG, getCampaign } from "./campaigns.js";
+import { getScenario } from "./catalog.js";
 
 const SCENARIO_PROFILES = Object.freeze({
   ATO_001: { label: "Agentic account takeover", tactic: "AUTHORIZATION_DRIFT", graph: "DEVICE_FAN_OUT" },
@@ -132,7 +133,7 @@ export function runTwinArena(risk, input = {}) {
     ?? CAMPAIGN_CATALOG.find((item) => item.base_scenario_id === input.scenarioId)
     ?? CAMPAIGN_CATALOG[0];
   const scenarioId = campaign.base_scenario_id;
-  const baseProfile = SCENARIO_PROFILES[scenarioId];
+  const baseScenario = getScenario(scenarioId);
   const profile = { label: campaign.name, tactic: campaign.ai_enabler, graph: campaign.graph_motif };
   const seed = Number(input.seed) || 42;
   const volume = clamp(Number(input.volume) || 120, 40, 400);
@@ -162,6 +163,9 @@ export function runTwinArena(risk, input = {}) {
       id: campaign.id,
       campaign_id: campaign.id,
       base_scenario_id: scenarioId,
+      base_family: baseScenario.family,
+      base_scenario_name: baseScenario.name,
+      severity: baseScenario.severity,
       codename: campaign.codename,
       label: campaign.name,
       tactic: campaign.ai_enabler,
@@ -172,8 +176,7 @@ export function runTwinArena(risk, input = {}) {
       difficulty: campaign.difficulty,
       fingerprint: campaign.fingerprint,
       kill_chain: campaign.kill_chain,
-      defenses: campaign.defenses,
-      base_family: baseProfile.label
+      defenses: campaign.defenses
     },
     controls: { campaign_id: campaign.id, seed, volume, aggression, stealth, defender_strength: defenderStrength, graph_defense: graphDefense, attacker_budget: Math.round(25000 + aggression * 175000) },
     rounds: [

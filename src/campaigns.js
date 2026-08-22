@@ -112,7 +112,7 @@ export const CAMPAIGN_CATALOG = Object.freeze([
     defenses: ["Provenance attestation", "Cross-modal entropy", "Latent infrastructure graph"]
   },
   {
-    id: "TOKEN_PARASITE_009", codename: "Quiet Provision", name: "Token lifecycle parasite", base_scenario_id: "ATO_001",
+    id: "TOKEN_PARASITE_009", codename: "Quiet Provision", name: "Token lifecycle parasite", base_scenario_id: "TOKEN_001",
     ai_enabler: "Automation selects low-friction token provisioning and usage windows",
     thesis: "The attack hides inside a legitimate device-token lifecycle, avoiding a single dramatic takeover signal.",
     channels: ["TOKEN", "WALLET", "CARD"], graph_motif: "TOKEN_DEVICE_DRIFT", novelty: 87, difficulty: 89,
@@ -154,7 +154,7 @@ export const CAMPAIGN_CATALOG = Object.freeze([
     defenses: ["Trust-age/value ratio", "Beneficiary fan-in graph", "Onward-velocity hold"]
   },
   {
-    id: "INVOICE_SWITCH_012", codename: "Semantic Switch", name: "Agent-to-agent invoice redirection", base_scenario_id: "CNP_001",
+    id: "INVOICE_SWITCH_012", codename: "Semantic Switch", name: "Agent-to-agent invoice redirection", base_scenario_id: "INVOICE_001",
     ai_enabler: "Business agents interpret manipulated invoice semantics as legitimate intent",
     thesis: "Two authorized enterprise agents agree on document content while the beneficiary semantics have changed outside the trusted workflow.",
     channels: ["B2B", "INVOICE", "BANK TRANSFER"], graph_motif: "DOCUMENT_PAYEE_DIVERGENCE", novelty: 97, difficulty: 94,
@@ -166,6 +166,174 @@ export const CAMPAIGN_CATALOG = Object.freeze([
       { phase: "SETTLE", title: "Payment leaves trusted path", observable: "Destination is novel despite an apparently familiar invoice." }
     ],
     defenses: ["Invoice provenance", "Beneficiary semantic binding", "Human confirmation on lineage break"]
+  },
+  {
+    id: "RECOVERY_GHOST_013", codename: "Recovery Ghost", name: "Adaptive recovery-channel takeover", base_scenario_id: "SIMSWAP_001",
+    ai_enabler: "Conversational agents adapt identity claims across recovery checkpoints",
+    thesis: "The attacker avoids a single impossible identity claim and instead builds a locally plausible recovery story whose device, geography, and behavior do not agree globally.",
+    channels: ["ACCOUNT RECOVERY", "MOBILE", "WALLET"], graph_motif: "RECOVERY_CONTEXT_FRACTURE", novelty: 94, difficulty: 92,
+    fingerprint: { intent: 79, identity: 98, graph: 66, velocity: 58, merchant: 26, sequence: 95 },
+    kill_chain: [
+      { phase: "PROBE", title: "Recovery paths are sampled", observable: "Low-impact recovery attempts move between channels and claimed contexts." },
+      { phase: "RECOVER", title: "Identity story converges", observable: "Each answer is plausible while the combined evidence remains inconsistent." },
+      { phase: "REBIND", title: "Trusted factors change", observable: "Device, phone, or wallet relationships are replaced within a compressed window." },
+      { phase: "MONETIZE", title: "New context moves value", observable: "A newly recovered identity immediately approaches unfamiliar beneficiaries." }
+    ],
+    defenses: ["Recovery-journey graph", "Factor-change cooling period", "Cross-channel identity consistency"]
+  },
+  {
+    id: "QR_CHAMELEON_014", codename: "Chameleon Code", name: "Context-aware QR substitution", base_scenario_id: "QR_001",
+    ai_enabler: "Vision-language generation produces context-matched payment destinations",
+    thesis: "A QR destination looks native to the physical or digital context while merchant identity and settlement lineage point somewhere else.",
+    channels: ["QR PAY", "PHYSICAL RETAIL", "MESSAGING"], graph_motif: "VISUAL_SETTLEMENT_DIVERGENCE", novelty: 95, difficulty: 88,
+    fingerprint: { intent: 94, identity: 57, graph: 79, velocity: 48, merchant: 96, sequence: 82 },
+    kill_chain: [
+      { phase: "MIMIC", title: "Payment context is mirrored", observable: "Visual branding agrees with the expected merchant experience." },
+      { phase: "SUBSTITUTE", title: "Destination lineage changes", observable: "Resolved payee differs from the merchant or invoice context." },
+      { phase: "DISTRIBUTE", title: "Codes rotate", observable: "Many surface variants resolve into a smaller beneficiary community." },
+      { phase: "MIGRATE", title: "Risk shifts destination", observable: "Traffic moves when a beneficiary is challenged or blocked." }
+    ],
+    defenses: ["Signed QR payloads", "Merchant-payee binding", "Destination community detection"]
+  },
+  {
+    id: "LIMIT_WEAVE_015", codename: "Limit Loom", name: "Cross-provider credit stacking", base_scenario_id: "BNPL_001",
+    ai_enabler: "Planning agents coordinate applications and spending across isolated credit providers",
+    thesis: "Each lender sees a plausible new borrower, but the combined network reveals synchronized limit acquisition and a shared bust-out objective.",
+    channels: ["BNPL", "CARD", "ECOMMERCE"], graph_motif: "CROSS_LENDER_LIMIT_CONVERGENCE", novelty: 92, difficulty: 95,
+    fingerprint: { intent: 65, identity: 93, graph: 98, velocity: 87, merchant: 63, sequence: 91 },
+    kill_chain: [
+      { phase: "APPLY", title: "Thin files spread", observable: "Applications arrive across providers with correlated timing and infrastructure." },
+      { phase: "SEASON", title: "Small obligations perform", observable: "Early repayments are unusually regular across the cohort." },
+      { phase: "STACK", title: "Limits expand together", observable: "Available credit rises faster than independent income evidence." },
+      { phase: "BREAK", title: "Exposure synchronizes", observable: "High-value spending appears across providers before outcomes are shared." }
+    ],
+    defenses: ["Consortium exposure graph", "Credit-age velocity", "Synchronized-limit hold"]
+  },
+  {
+    id: "LOYALTY_MIRROR_016", codename: "Point Doppel", name: "Behavior-matched loyalty drain", base_scenario_id: "LOYALTY_001",
+    ai_enabler: "Personalization models imitate each member's ordinary redemption behavior",
+    thesis: "Redemptions resemble the customer's preferences transaction by transaction, but destination reuse and accelerated balance conversion expose coordination.",
+    channels: ["LOYALTY", "TRAVEL", "GIFT CARD"], graph_motif: "REDEMPTION_DESTINATION_REUSE", novelty: 89, difficulty: 86,
+    fingerprint: { intent: 72, identity: 84, graph: 91, velocity: 82, merchant: 74, sequence: 89 },
+    kill_chain: [
+      { phase: "PROFILE", title: "Preferences are inferred", observable: "Redemption choices closely match historical categories." },
+      { phase: "MIMIC", title: "Low-value behavior blends", observable: "Initial conversions remain within ordinary customer ranges." },
+      { phase: "ACCELERATE", title: "Balance drains", observable: "Redemption cadence detaches from the customer's long-term rhythm." },
+      { phase: "CONVERGE", title: "Value shares endpoints", observable: "Many accounts redeem into linked travel, voucher, or delivery identities." }
+    ],
+    defenses: ["Redemption rhythm model", "Fulfilment-identity graph", "Balance-drain step-up"]
+  },
+  {
+    id: "TRIAL_CONSTELLATION_017", codename: "Trial Constellation", name: "Synthetic subscription farm", base_scenario_id: "SUBSCRIPTION_001",
+    ai_enabler: "Autonomous agents maintain varied personas, usage, and cancellation timing",
+    thesis: "Synthetic subscribers appear individually engaged while shared devices, payment instruments, and synchronized lifecycle events reveal one coordinated farm.",
+    channels: ["SUBSCRIPTION", "CARD", "DIGITAL SERVICE"], graph_motif: "LIFECYCLE_SYNCHRONY", novelty: 88, difficulty: 84,
+    fingerprint: { intent: 49, identity: 89, graph: 97, velocity: 73, merchant: 61, sequence: 94 },
+    kill_chain: [
+      { phase: "ENROLL", title: "Personas diversify", observable: "Profiles vary while infrastructure overlap remains weak but persistent." },
+      { phase: "ENGAGE", title: "Usage looks organic", observable: "Automated sessions imitate different consumption patterns." },
+      { phase: "CONVERT", title: "Value is harvested", observable: "Benefits or trials concentrate into related fulfilment endpoints." },
+      { phase: "ROTATE", title: "Cohort is replaced", observable: "Cancellations and new enrollments reproduce the same community shape." }
+    ],
+    defenses: ["Lifecycle community model", "Instrument reuse graph", "Cohort-shape matching"]
+  },
+  {
+    id: "MERCHANT_MASK_018", codename: "Merchant Mask", name: "Adaptive transaction laundering", base_scenario_id: "MERCHANT_001",
+    ai_enabler: "Generative catalogs and descriptors continuously imitate low-risk merchant activity",
+    thesis: "Transaction descriptions and storefront content change to match expected categories while settlement, refund, and infrastructure relationships remain stable.",
+    channels: ["ACQUIRING", "ECOMMERCE", "SETTLEMENT"], graph_motif: "DESCRIPTOR_SETTLEMENT_MISMATCH", novelty: 96, difficulty: 94,
+    fingerprint: { intent: 61, identity: 58, graph: 100, velocity: 69, merchant: 100, sequence: 85 },
+    kill_chain: [
+      { phase: "MASK", title: "Commerce narrative changes", observable: "Catalog and descriptor semantics move faster than business operations." },
+      { phase: "BLEND", title: "Volume imitates peers", observable: "Amounts and timing track the selected low-risk merchant cohort." },
+      { phase: "SETTLE", title: "Infrastructure persists", observable: "Bank, device, domain, or refund entities recur beneath new presentations." },
+      { phase: "MORPH", title: "Category shifts", observable: "The merchant changes identity after risk pressure without changing hidden ownership." }
+    ],
+    defenses: ["Descriptor-content consistency", "Merchant ownership graph", "Settlement lineage scoring"]
+  },
+  {
+    id: "TAP_SHADOW_019", codename: "Tap Shadow", name: "Coordinated contactless relay", base_scenario_id: "NFC_001",
+    ai_enabler: "Real-time agents coordinate timing and context across separated devices",
+    thesis: "A contactless payment carries valid local credentials while device geography, terminal context, and customer presence form an impossible combined state.",
+    channels: ["CONTACTLESS", "DEVICE", "PHYSICAL RETAIL"], graph_motif: "PROXIMITY_IMPOSSIBILITY", novelty: 93, difficulty: 96,
+    fingerprint: { intent: 68, identity: 86, graph: 80, velocity: 62, merchant: 55, sequence: 98 },
+    kill_chain: [
+      { phase: "PAIR", title: "Sessions synchronize", observable: "Separated device contexts show unusually tight timing relationships." },
+      { phase: "RELAY", title: "Presence is contradicted", observable: "Credential validity and physical proximity evidence disagree." },
+      { phase: "REPEAT", title: "Terminal path expands", observable: "The same device relationship appears across distant merchant locations." },
+      { phase: "ADAPT", title: "Cadence changes", observable: "Intervals and merchant choices shift after authorization friction." }
+    ],
+    defenses: ["Proximity attestation", "Impossible-travel sequence", "Terminal-device lineage"]
+  },
+  {
+    id: "CORRIDOR_COMPOSER_020", codename: "Corridor Composer", name: "Adaptive remittance corridor hopping", base_scenario_id: "REMIT_001",
+    ai_enabler: "Route-planning agents optimize transfers across currencies, providers, and timing windows",
+    thesis: "Transfers remain ordinary inside each provider while a cross-border temporal graph reveals repeated corridor pivots and downstream reconvergence.",
+    channels: ["REMITTANCE", "WALLET", "BANK TRANSFER"], graph_motif: "CORRIDOR_RECONVERGENCE", novelty: 97, difficulty: 97,
+    fingerprint: { intent: 58, identity: 72, graph: 100, velocity: 88, merchant: 39, sequence: 99 },
+    kill_chain: [
+      { phase: "QUOTE", title: "Routes are explored", observable: "Low-value transfers sample providers, currencies, and destinations." },
+      { phase: "SPLIT", title: "Value crosses corridors", observable: "Fragments remain under local thresholds and timing norms." },
+      { phase: "PIVOT", title: "Pressure changes route", observable: "Declines cause coordinated provider or corridor substitution." },
+      { phase: "RECONVERGE", title: "Destinations reconnect", observable: "Downstream wallets or beneficiaries reveal conserved value flow." }
+    ],
+    defenses: ["Cross-provider corridor graph", "Currency-flow conservation", "Outcome-conditioned route model"]
+  },
+  {
+    id: "PAYROLL_WHISPER_021", codename: "Payroll Whisper", name: "Employee-agent destination redirection", base_scenario_id: "PAYROLL_001",
+    ai_enabler: "Language agents imitate employee communication and HR workflow context",
+    thesis: "A payroll change is semantically convincing but destination ownership, communication provenance, and employee behavior do not share the same history.",
+    channels: ["PAYROLL", "HR WORKFLOW", "BANK TRANSFER"], graph_motif: "EMPLOYEE_DESTINATION_BREAK", novelty: 95, difficulty: 90,
+    fingerprint: { intent: 99, identity: 94, graph: 77, velocity: 31, merchant: 20, sequence: 92 },
+    kill_chain: [
+      { phase: "CONTEXT", title: "Employee style is mirrored", observable: "Change language resembles prior internal communication." },
+      { phase: "REQUEST", title: "Destination changes", observable: "A new account enters an otherwise stable payroll relationship." },
+      { phase: "CONFIRM", title: "Workflow reinforces itself", observable: "Machine-readable approvals share the same unverified source context." },
+      { phase: "PAY", title: "Cohort risk appears", observable: "Destination accounts connect to other redirected employees or cash-out paths." }
+    ],
+    defenses: ["Out-of-band employee confirmation", "Payroll destination ownership", "Change-cohort graph"]
+  },
+  {
+    id: "GIFT_CASCADE_022", codename: "Gift Cascade", name: "Adaptive stored-value conversion", base_scenario_id: "GIFT_001",
+    ai_enabler: "Agents optimize denominations, merchants, and redemption timing from payment outcomes",
+    thesis: "Many small gift-card purchases and redemptions appear unrelated until value lineage exposes a coordinated conversion cascade.",
+    channels: ["GIFT CARD", "ECOMMERCE", "WALLET"], graph_motif: "STORED_VALUE_CASCADE", novelty: 90, difficulty: 87,
+    fingerprint: { intent: 52, identity: 71, graph: 96, velocity: 94, merchant: 89, sequence: 90 },
+    kill_chain: [
+      { phase: "ACQUIRE", title: "Denominations diversify", observable: "Purchases spread across values, merchants, and accounts." },
+      { phase: "TRANSFER", title: "Ownership fragments", observable: "Stored-value instruments move through loosely linked identities." },
+      { phase: "REDEEM", title: "Endpoints repeat", observable: "Redemptions converge on related fulfilment or wallet entities." },
+      { phase: "ADAPT", title: "Portfolio rebalances", observable: "Merchant and denomination choices change after friction." }
+    ],
+    defenses: ["Stored-value lineage", "Redemption endpoint graph", "Denomination sequence scoring"]
+  },
+  {
+    id: "RETURN_SYNTH_023", codename: "Phantom Return", name: "Generative return-evidence fraud", base_scenario_id: "REFUND_001",
+    ai_enabler: "Multimodal generation fabricates mutually consistent return and support evidence",
+    thesis: "Images, messages, and shipment narratives agree inside one claim while cross-claim artifacts and refund destinations reveal reuse.",
+    channels: ["REFUND", "SUPPORT", "ECOMMERCE"], graph_motif: "EVIDENCE_TEMPLATE_REUSE", novelty: 91, difficulty: 89,
+    fingerprint: { intent: 82, identity: 60, graph: 88, velocity: 64, merchant: 91, sequence: 86 },
+    kill_chain: [
+      { phase: "CLAIM", title: "Evidence bundle agrees", observable: "Text, image, and order details have unusually low contradiction." },
+      { phase: "PERSUADE", title: "Support path is optimized", observable: "Claim language changes systematically after policy responses." },
+      { phase: "REFUND", title: "Value leaves merchant", observable: "Refund destinations or replacement addresses recur across claims." },
+      { phase: "REUSE", title: "Templates resurface", observable: "Latent visual or narrative structure links apparently unrelated customers." }
+    ],
+    defenses: ["Cross-claim evidence similarity", "Refund destination graph", "Multimodal provenance"]
+  },
+  {
+    id: "SESSION_CHORUS_024", codename: "Device Chorus", name: "Emulated wallet-session swarm", base_scenario_id: "TOKEN_001",
+    ai_enabler: "Multi-agent device emulation coordinates provisioning and low-risk usage histories",
+    thesis: "Wallet sessions appear device-diverse while timing, attestation residue, and token-use sequences reveal a shared orchestration layer.",
+    channels: ["WALLET", "TOKEN", "MOBILE"], graph_motif: "EMULATOR_ATTESTATION_COMMUNITY", novelty: 94, difficulty: 98,
+    fingerprint: { intent: 45, identity: 95, graph: 99, velocity: 86, merchant: 52, sequence: 97 },
+    kill_chain: [
+      { phase: "EMULATE", title: "Device identities diversify", observable: "Surface fingerprints vary while deeper attestation residue repeats." },
+      { phase: "PROVISION", title: "Tokens enter quietly", observable: "Provisioning is distributed across plausible time windows." },
+      { phase: "SEASON", title: "Sessions build trust", observable: "Low-risk usage histories follow coordinated but varied scripts." },
+      { phase: "CHORUS", title: "Swarm acts together", observable: "Token and merchant behavior synchronizes across the hidden device community." }
+    ],
+    defenses: ["Attestation-residue graph", "Provisioning cohort model", "Session-sequence diversity test"]
   }
 ]);
 
@@ -177,8 +345,8 @@ export const CHALLENGE_COVERAGE = Object.freeze({
   title: "Challenge proof ledger",
   brief: "Build an end-to-end adversarial AI system that identifies novel GenAI payment fraud, simulates it at scale, and detects, flags, and mitigates it.",
   pillars: [
-    { id: "IDENTIFY", label: "Identify", score: 92, proof: ["12 AI-native campaigns", "AI enabler + payment channel", "Kill chain + observable telemetry", "Novelty and difficulty scores"], endpoint: "/api/v1/campaign/catalog" },
-    { id: "GENERATE", label: "Generate", score: 88, proof: ["Seeded agent orchestration", "Counterfactual normal/attack worlds", "Entity graph + event sequence", "Versioned provenance + fidelity gates"], endpoint: "/api/v1/arena/run" },
+    { id: "IDENTIFY", label: "Identify", score: 94, proof: ["24 AI-native campaigns", "22 payment attack families", "Kill chain + observable telemetry", "Novelty and difficulty scores"], endpoint: "/api/v1/campaign/catalog" },
+    { id: "GENERATE", label: "Generate", score: 91, proof: ["Seeded agent orchestration", "Counterfactual normal/attack worlds", "Entity graph + event sequence", "Versioned provenance + fidelity gates"], endpoint: "/api/v1/arena/run" },
     { id: "DEFEND", label: "Defend", score: 90, proof: ["Transaction + graph fusion", "Allow / step-up / review / block", "Explainable decision receipts", "Latency and customer-friction metrics"], endpoint: "/api/v1/score" },
     { id: "LEARN", label: "Closed loop", score: 82, proof: ["False-negative mining", "Defense-guided mutation", "Unseen-family holdout", "Human-gated promotion"], endpoint: "/api/v1/learn/mutate" }
   ],

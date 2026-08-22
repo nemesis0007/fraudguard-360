@@ -8,7 +8,7 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 
 ## What is working now
 
-- 10 versioned attack families across account takeover, CNP, mule networks, bots, refund abuse, instant-payment scams, synthetic identity, layering, promotion abuse, and friendly fraud.
+- 22 versioned attack families spanning account and recovery takeover, CNP, token provisioning, QR substitution, mule and remittance networks, bots, BNPL bust-out, refund and loyalty abuse, instant-payment scams, synthetic identity, merchant laundering, subscriptions, contactless relay, payroll and invoice redirection, gift-card conversion, layering, promotion abuse, and friendly fraud.
 - Deterministic seeded transaction generation with monotonic event time, provenance, synthetic-data flags, and controlled hard negatives.
 - A committed synthetic-fidelity report with 12 automated gates covering reproducibility, schema, class balance, overlap, correlation, feature ranges, and privacy.
 - Stateful velocity, amount, device, graph-proxy, account, merchant, payee, and geography features.
@@ -23,7 +23,7 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 - Quantified prevented-value lift, exposure reduction, customer friction, defender/attacker advantage, and decision receipts.
 - A realistic company site and interactive entity graph backed by the live API rather than hard-coded demo numbers.
 - A shared versioned API envelope and explicit hybrid-data provenance manifest.
-- A 12-campaign AI-native threat atlas with named AI enablers, payment surfaces, four-stage observable kill chains, novelty/difficulty scores, signal fingerprints, and expected controls.
+- A 24-campaign AI-native threat atlas with named AI enablers, payment surfaces, four-stage observable kill chains, novelty/difficulty scores, signal fingerprints, and expected controls.
 - A visible challenge proof ledger mapping the working prototype to Identify, Generate, Defend, and the closed learning loop.
 - Zero runtime dependencies, Node tests, Docker image, Compose health check, and GitHub Actions CI.
 
@@ -85,7 +85,7 @@ The response contains three comparable rounds, an entity graph, a forensic timel
 
 ## AI-native campaign atlas
 
-The arena deliberately avoids presenting old fraud categories as if they were novel. Twelve higher-order campaigns compose AI capability, payment surface, temporal sequence, and hidden entity behavior:
+The arena deliberately avoids presenting old fraud categories as if they were novel. Twenty-four higher-order campaigns compose AI capability, payment surface, temporal sequence, and hidden entity behavior:
 
 1. **Ghost Cart** — delegated-commerce intent hijacking.
 2. **Consent Mirage** — deepfake consent relayed across inconsistent channels.
@@ -99,6 +99,18 @@ The arena deliberately avoids presenting old fraud categories as if they were no
 10. **Hive Coupon** — cooperative low-value account swarms with emergent community behavior.
 11. **Trust Ladder** — beneficiaries warmed gradually before coordinated value movement.
 12. **Semantic Switch** — enterprise payment agents agreeing on manipulated invoice intent.
+13. **Recovery Ghost** — conversational recovery agents creating a cross-channel identity fracture.
+14. **Chameleon Code** — context-matched QR surfaces resolving to unrelated settlement destinations.
+15. **Limit Loom** — coordinated credit stacking across isolated BNPL providers.
+16. **Point Doppel** — loyalty redemptions that mimic customer preferences but share endpoints.
+17. **Trial Constellation** — synthetic subscription personas with synchronized lifecycle behavior.
+18. **Merchant Mask** — generative catalogs and descriptors concealing stable settlement infrastructure.
+19. **Tap Shadow** — contactless sessions with impossible combined proximity evidence.
+20. **Corridor Composer** — adaptive value routing across providers, currencies, and borders.
+21. **Payroll Whisper** — employee-style workflow messages redirecting payroll destinations.
+22. **Gift Cascade** — stored-value fragments reconverging at shared redemption endpoints.
+23. **Phantom Return** — generated return evidence reused across customers and refund paths.
+24. **Device Chorus** — emulated wallet sessions sharing hidden attestation residue.
 
 Each campaign is a safe defensive abstraction. It describes observable telemetry and mitigations, never victim targeting, credential theft, or instructions for interacting with live rails.
 
@@ -143,17 +155,17 @@ npm test
 
 The exporter calls the same [FeatureEngine](src/features.js) used during API inference. It assigns all transactions for a customer/scenario pair to a single split and excludes `LAUNDER_001` completely as the novel-family holdout. The generated dataset stays under `data/runtime/`; the small, versioned model artifact is committed under `models/`.
 
-The default export contains 90,000 rows: 10,000 transactions for each of nine training scenarios. Use `npm run data:generate -- --rows <count>` to choose between 200 and 50,000 rows per scenario when running smaller experiments or larger stress tests.
+The default export contains 210,000 rows: 10,000 transactions for each of 21 training scenarios, with `LAUNDER_001` held out completely. Use `npm run data:generate -- --rows <count>` to choose between 200 and 50,000 rows per scenario when running smaller experiments or larger stress tests.
 
 Current locked synthetic benchmark:
 
 | Evaluation | Precision | Recall | F1 | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Entity-aware test split | 75.3% | 73.3% | 74.3% | 7.9% |
-| Novel holdout, ensemble | 66.9% | 87.7% | 75.9% | 14.0% |
+| Entity-aware test split | 77.2% | 77.3% | 77.3% | 7.6% |
+| Novel holdout, ensemble | 68.8% | 86.9% | 76.8% | 12.7% |
 | Novel holdout, fallback | 76.6% | 59.0% | 66.7% | 5.8% |
 
-Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. The resulting tradeoff is less flattering but more credible: the unseen-family ensemble gains 9.2 F1 points and 28.7 recall points over fallback, at an 8.2-point false-positive-rate cost. These remain synthetic results, not production claims.
+Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. The resulting tradeoff is less flattering but more credible: the unseen-family ensemble gains 10.1 F1 points and 27.9 recall points over fallback, at a 6.9-point false-positive-rate cost. These remain synthetic results, not production claims.
 
 ## Architecture decision
 
@@ -172,7 +184,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the migration path and design constra
 
 ### Dataset
 
-The current runnable dataset is generated by `src/generator.js` from ten governed scenarios. Every row is fictional, labeled `synthetic`, seeded for reproducibility, and includes provenance. Benign hard negatives deliberately resemble fraud. `src/twin-engine.js` creates a separate baseline and attacked branch so the dashboard can compare what would have happened without the attack and after a graph-aware response.
+The current runnable dataset is generated by `src/generator.js` from 22 governed scenarios. Every row is fictional, labeled `synthetic`, seeded for reproducibility, and includes provenance. Benign hard negatives deliberately resemble fraud. `src/twin-engine.js` creates a separate baseline and attacked branch so the dashboard can compare what would have happened without the attack and after a graph-aware response.
 
 Public sources such as the Fraud Detection Handbook simulator and IBM AMLSim / AML-Data are listed as **reference-only** in `src/evidence.js`. They are useful future anchors for temporal, imbalance, and graph diagnostics, but they are not silently blended into the current benchmark. A real pilot should ingest only authorized aggregates, then recalibrate distributions and business costs without bringing raw card data into this lab.
 

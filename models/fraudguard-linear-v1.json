@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "model_type": "logistic_regression",
-  "model_version": "fg-linear-d0ef65422d",
+  "model_version": "fg-linear-45d1965319",
   "feature_version": "features-1.0",
-  "created_at": "2026-08-22T09:04:01.629144+00:00",
+  "created_at": "2026-08-22T09:21:33.405105+00:00",
   "feature_order": [
     "velocity_1h",
     "amount_deviation",
@@ -19,47 +19,47 @@
   ],
   "normalization": {
     "means": [
-      1.0098427996,
-      3.5164203176,
-      0.0611106722,
-      0.6938620744,
-      0.4176791216,
-      0.0625799826,
-      0.0303025515,
-      0.2504621218,
-      0.0606840983,
-      0.0234615688,
-      0.2109817521
+      1.0094763839,
+      2.4301785343,
+      0.1062742777,
+      2.1007911726,
+      0.4419682034,
+      0.0795458411,
+      0.0517357497,
+      0.249528902,
+      0.0534296618,
+      0.0301978952,
+      0.2210424022
     ],
     "scales": [
-      0.0993595047,
-      43.0063934863,
-      0.2395332085,
-      0.4608877261,
-      0.4931767158,
-      0.2422059628,
-      0.1714185139,
-      0.4332791795,
-      0.2387499497,
-      0.1513642086,
-      0.1724026665
+      0.0975142733,
+      23.7296352337,
+      0.3081883444,
+      8.0990112187,
+      0.4966208922,
+      0.2705888029,
+      0.221493029,
+      0.4327403714,
+      0.2248887126,
+      0.1711314767,
+      0.1863212594
     ]
   },
   "weights": [
-    0.0078088356,
-    -0.1438658001,
-    0.4992923833,
-    -0.145947701,
-    0.1651148112,
-    0.9105305494,
-    0.4754029097,
-    0.0112171553,
-    0.7644240775,
-    0.6719853517,
-    0.8285551215
+    0.0063763504,
+    -0.0654431512,
+    0.4723494504,
+    0.0670477233,
+    0.3071556387,
+    0.8366346355,
+    0.6903228546,
+    0.0031335881,
+    0.6867571868,
+    0.8537861288,
+    0.9155604876
   ],
-  "bias": -0.3922786832,
-  "decision_threshold": 0.69,
+  "bias": -0.4135361987,
+  "decision_threshold": 0.63,
   "training_manifest": {
     "schema_version": "1.0",
     "feature_version": "features-1.0",
@@ -77,89 +77,101 @@
       "UPI_001",
       "SYNID_001",
       "PROMO_001",
-      "FRIENDLY_001"
+      "FRIENDLY_001",
+      "SIMSWAP_001",
+      "TOKEN_001",
+      "QR_001",
+      "BNPL_001",
+      "INVOICE_001",
+      "LOYALTY_001",
+      "SUBSCRIPTION_001",
+      "MERCHANT_001",
+      "NFC_001",
+      "REMIT_001",
+      "PAYROLL_001",
+      "GIFT_001"
     ],
     "holdout_scenarios": [
       "LAUNDER_001"
     ],
     "split_strategy": "customer-entity hash: 70% train / 10% validation / 20% test",
     "examples": {
-      "train": 63295,
-      "validation": 8906,
-      "test": 17799
+      "train": 146997,
+      "validation": 20865,
+      "test": 42138
     },
-    "positive_rate": 0.251047
+    "positive_rate": 0.251196
   },
   "metrics": {
     "validation": {
-      "precision": 0.753355,
-      "recall": 0.728412,
-      "f1": 0.740673,
-      "false_positive_rate": 0.079898,
+      "precision": 0.766229,
+      "recall": 0.773778,
+      "f1": 0.769985,
+      "false_positive_rate": 0.079938,
       "confusion_matrix": {
-        "tp": 1628,
-        "fp": 533,
-        "tn": 6138,
-        "fn": 607
+        "tp": 4084,
+        "fp": 1246,
+        "tn": 14341,
+        "fn": 1194
       }
     },
     "test": {
-      "precision": 0.753135,
-      "recall": 0.733047,
-      "f1": 0.742955,
-      "false_positive_rate": 0.079477,
+      "precision": 0.772181,
+      "recall": 0.772986,
+      "f1": 0.772583,
+      "false_positive_rate": 0.076168,
       "confusion_matrix": {
-        "tp": 3243,
-        "fp": 1063,
-        "tn": 12312,
-        "fn": 1181
+        "tp": 8155,
+        "fp": 2406,
+        "tn": 29182,
+        "fn": 2395
       }
     }
   },
   "coefficient_explanations": [
     {
-      "feature": "new_payee",
-      "coefficient": 0.910531
-    },
-    {
       "feature": "merchant_risk",
-      "coefficient": 0.828555
-    },
-    {
-      "feature": "new_account",
-      "coefficient": 0.764424
+      "coefficient": 0.91556
     },
     {
       "feature": "identity_mismatch",
-      "coefficient": 0.671985
+      "coefficient": 0.853786
     },
     {
-      "feature": "new_device",
-      "coefficient": 0.499292
+      "feature": "new_payee",
+      "coefficient": 0.836635
     },
     {
       "feature": "card_not_present",
-      "coefficient": 0.475403
+      "coefficient": 0.690323
+    },
+    {
+      "feature": "new_account",
+      "coefficient": 0.686757
+    },
+    {
+      "feature": "new_device",
+      "coefficient": 0.472349
     },
     {
       "feature": "location_shift",
-      "coefficient": 0.165115
+      "coefficient": 0.307156
     },
     {
       "feature": "shared_device_count",
-      "coefficient": -0.145948
+      "coefficient": 0.067048
     },
     {
       "feature": "amount_deviation",
-      "coefficient": -0.143866
-    },
-    {
-      "feature": "unusual_hour",
-      "coefficient": 0.011217
+      "coefficient": -0.065443
     },
     {
       "feature": "velocity_1h",
-      "coefficient": 0.007809
+      "coefficient": 0.006376
+    },
+    {
+      "feature": "unusual_hour",
+      "coefficient": 0.003134
     }
   ],
   "limitations": [

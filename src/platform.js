@@ -29,7 +29,15 @@ export class FraudGuardPlatform {
   }
 
   campaigns() {
-    return CAMPAIGN_CATALOG;
+    return CAMPAIGN_CATALOG.map((campaign) => {
+      const scenario = ATTACK_CATALOG.find((item) => item.id === campaign.base_scenario_id);
+      return {
+        ...campaign,
+        base_family: scenario?.family ?? "UNKNOWN",
+        base_scenario_name: scenario?.name ?? "Unknown scenario",
+        severity: scenario?.severity ?? "UNKNOWN"
+      };
+    });
   }
 
   challengeCoverage() {

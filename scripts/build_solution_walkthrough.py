@@ -438,7 +438,7 @@ def build():
         ["Submission artifact", "Current prototype"],
         [
             ("System shape", "Modular monolith with offline training and deterministic real-time scoring"),
-            ("Dataset", "90,000 traceable synthetic training transactions plus one unseen attack-family holdout"),
+            ("Dataset", "210,000 traceable synthetic training transactions plus one unseen attack-family holdout"),
             ("Model", f"Regularized logistic regression + transparent rules ({MODEL['model_version']})"),
             ("Safety", "Synthetic-only data, no real credentials, no GenAI in the authorization path"),
         ],
@@ -505,6 +505,18 @@ def build():
         ("LAUNDER_001", "Transaction layering", "Split/merge behavior, graph density, new payee"),
         ("PROMO_001", "Promotion abuse", "Shared device, new accounts, small bursts"),
         ("FRIENDLY_001", "Friendly fraud", "Stable device, amount anomaly, merchant context"),
+        ("SIMSWAP_001", "Recovery-channel takeover", "New device, identity mismatch, location shift"),
+        ("TOKEN_001", "Token provisioning abuse", "Device novelty, shared infrastructure, remote use"),
+        ("QR_001", "QR destination substitution", "New payee, merchant mismatch, geography"),
+        ("BNPL_001", "Cross-provider credit bust-out", "New account, velocity, high-value deviation"),
+        ("INVOICE_001", "Business payment redirection", "New beneficiary, amount shift, merchant context"),
+        ("LOYALTY_001", "Loyalty value theft", "New device, redemption velocity, small-value bursts"),
+        ("SUBSCRIPTION_001", "Synthetic subscription farm", "Shared device, remote payment, new accounts"),
+        ("MERCHANT_001", "Transaction laundering", "Merchant risk, graph density, amount distribution"),
+        ("NFC_001", "Contactless proximity relay", "Location contradiction, stable device, amount shift"),
+        ("REMIT_001", "Remittance corridor abuse", "Cross-border paths, new payees, graph density"),
+        ("PAYROLL_001", "Payroll redirection", "New destination, amount shift, identity mismatch"),
+        ("GIFT_001", "Gift-card conversion cascade", "Small-value bursts, velocity, merchant risk"),
     ]
     add_table(doc, ["ID", "Attack family", "Observable defensive signals"], attacks, [1400, 3000, 4960], font_size=9)
     doc.add_heading("Scenario governance", level=2)
@@ -538,8 +550,8 @@ def build():
         doc,
         ["Property", "Implementation"],
         [
-            ("Size", "90,000 training/validation/test feature rows"),
-            ("Coverage", "Nine training attack families; LAUNDER_001 excluded as holdout"),
+            ("Size", "210,000 training/validation/test feature rows"),
+            ("Coverage", "21 training attack families; LAUNDER_001 excluded as holdout"),
             ("Class balance", "Approximately 25% fraud per scenario for the current controlled benchmark"),
             ("Reproducibility", "Fixed seeds, generator version, feature version, and scenario provenance"),
             ("Privacy", "All identifiers and events are fictional; rows are marked synthetic"),
@@ -675,7 +687,7 @@ def build():
         ["Evaluation", "Precision", "Recall", "F1", "False-positive rate"],
         [
             ("Entity-aware test split", f"{test_metrics['precision']:.3f}", f"{test_metrics['recall']:.3f}", f"{test_metrics['f1']:.3f}", f"{test_metrics['false_positive_rate']:.3f}"),
-            ("Novel holdout ensemble", "0.673", "0.877", "0.762", "0.138"),
+            ("Novel holdout ensemble", "0.688", "0.869", "0.768", "0.127"),
             ("Novel holdout safe fallback", "0.766", "0.590", "0.667", "0.058"),
         ],
         [3000, 1500, 1500, 1400, 1960],
@@ -685,7 +697,7 @@ def build():
     add_list(
         doc,
         [
-            ("Test split - ", "measures held-out customers within the nine known attack families."),
+            ("Test split - ", "measures held-out customers within the 21 known attack families."),
             ("Novel holdout - ", "uses LAUNDER_001, which is absent from the training dataset."),
             ("Fallback - ", "shows the deterministic rules-only result if the model cannot be used."),
             ("Lift - ", "shows whether the trained ensemble improves the unseen-family defense and at what false-positive cost."),
@@ -798,7 +810,7 @@ def build():
         doc,
         [
             ("0:00-0:35 - Problem. ", "Explain why GenAI changes the speed and variety of payment fraud."),
-            ("0:35-1:10 - Identify. ", "Show ten attack families and select the unseen layering scenario."),
+            ("0:35-1:10 - Identify. ", "Show 22 attack families, the 24-campaign threat atlas, and the unseen layering scenario."),
             ("1:10-1:55 - Generate. ", "Launch a seeded synthetic replay and explain provenance and fidelity controls."),
             ("1:55-2:50 - Defend. ", "Show precision, recall, F1, false positives, decision latency, and reason codes."),
             ("2:50-3:40 - Learn. ", "Generate a governed mutation batch from observed holdout misses."),

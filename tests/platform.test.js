@@ -22,6 +22,17 @@ test("synthetic generation includes labeled benign hard negatives", () => {
   assert.ok(hardNegatives.every((row) => row.synthetic === true));
 });
 
+test("expanded attack catalog covers distinct payment rails and behaviors", () => {
+  const platform = new FraudGuardPlatform();
+  const catalog = platform.catalog();
+  assert.equal(catalog.length, 22);
+  assert.equal(new Set(catalog.map((item) => item.family)).size, 22);
+  const expected = ["SIMSWAP_001", "TOKEN_001", "QR_001", "BNPL_001", "INVOICE_001", "LOYALTY_001", "SUBSCRIPTION_001", "MERCHANT_001", "NFC_001", "REMIT_001", "PAYROLL_001", "GIFT_001"];
+  assert.ok(expected.every((id) => catalog.some((item) => item.id === id)));
+  assert.equal(platform.simulate({ scenarioId: "QR_001", volume: 20, seed: 12 }).transactions[0].channel, "QR_PAY");
+  assert.equal(platform.simulate({ scenarioId: "BNPL_001", volume: 20, seed: 12 }).transactions[0].channel, "BNPL");
+});
+
 test("offline exports scale beyond the guarded live simulation limit", () => {
   const platform = new FraudGuardPlatform();
   const liveDataset = platform.simulate({ scenarioId: "ATO_001", volume: 1200, seed: 91 });
@@ -95,10 +106,11 @@ test("hybrid evidence stack labels active, reference, and pilot data truthfully"
 test("AI-native campaign catalog exposes novelty, kill chain, and observable defenses", () => {
   const platform = new FraudGuardPlatform();
   const campaigns = platform.campaigns();
-  assert.equal(campaigns.length, 12);
+  assert.equal(campaigns.length, 24);
   assert.ok(campaigns.every((item) => item.ai_enabler && item.kill_chain.length === 4));
   assert.ok(campaigns.every((item) => item.novelty >= 80 && item.difficulty >= 80));
   assert.ok(campaigns.every((item) => Object.keys(item.fingerprint).length === 6));
+  assert.ok(campaigns.every((item) => item.base_family && item.base_scenario_name && item.severity));
 });
 
 test("campaign arena returns agent orchestration and challenge-scale evidence", () => {

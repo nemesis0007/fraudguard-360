@@ -3,6 +3,23 @@ import { pick, seededRandom } from "./random.js";
 
 const merchants = ["M_GROCERY", "M_TRAVEL", "M_ELECTRONICS", "M_FASHION", "M_GAMING"];
 const countries = ["IN", "IN", "IN", "SG", "AE"];
+const channelByFamily = Object.freeze({
+  INSTANT_PAYMENT_SCAM: "UPI",
+  QR_DESTINATION_SUBSTITUTION: "QR_PAY",
+  TOKEN_PROVISIONING_ABUSE: "WALLET_TOKEN",
+  CREDIT_BUST_OUT: "BNPL",
+  BUSINESS_PAYMENT_REDIRECTION: "BANK_TRANSFER",
+  LOYALTY_VALUE_THEFT: "LOYALTY",
+  SUBSCRIPTION_FARM: "SUBSCRIPTION",
+  TRANSACTION_LAUNDERING: "MERCHANT_ACQUIRING",
+  CONTACTLESS_RELAY: "CONTACTLESS",
+  REMITTANCE_CORRIDOR_ABUSE: "REMITTANCE",
+  PAYROLL_REDIRECTION: "PAYROLL",
+  GIFT_CARD_CASHOUT: "GIFT_CARD"
+});
+const smallValueFamilies = new Set(["BOT_TESTING", "PROMOTION_ABUSE", "LOYALTY_VALUE_THEFT", "SUBSCRIPTION_FARM", "GIFT_CARD_CASHOUT"]);
+const remoteFamilies = new Set(["CARD_NOT_PRESENT", "TOKEN_PROVISIONING_ABUSE", "SUBSCRIPTION_FARM", "LOYALTY_VALUE_THEFT"]);
+const highValueFamilies = new Set(["CREDIT_BUST_OUT", "BUSINESS_PAYMENT_REDIRECTION", "PAYROLL_REDIRECTION"]);
 
 function round(value) {
   return Math.round(value * 100) / 100;
@@ -37,11 +54,16 @@ function generateTransactionsWithLimit({
     const normalAmount = 120 + random() * 4200;
     const attackMultiplier = isFraud ? 1.25 + random() * 4 : isHardNegative ? 1.2 + random() * 1.8 : 1;
     const family = scenario.family;
-    const smallBurst = family === "BOT_TESTING" || family === "PROMOTION_ABUSE";
-    const amount = smallBurst && isFraud ? 1 + random() * 49 : normalAmount * attackMultiplier;
+    const smallBurst = smallValueFamilies.has(family);
+    const highValue = highValueFamilies.has(family);
+    const amount = smallBurst && isFraud ? 1 + random() * 149
+      : highValue && isFraud ? normalAmount * (4 + random() * 7)
+        : normalAmount * attackMultiplier;
     const newDevice = activates("NEW_DEVICE");
+    const sharedDevice = activates("SHARED_DEVICE");
     const deviceId = newDevice
       ? `${isFraud ? "D_NEW" : "D_BENIGN_NEW"}_${i}`
+      : sharedDevice ? `D_SHARED_${1 + Math.floor(random() * Math.max(2, Math.ceil(count / 250)))}`
       : `D_${String(customerNumber).padStart(4, "0")}`;
     elapsedMs += isFraud || isHardNegative ? 8_000 + Math.floor(random() * 55_000) : 90_000 + Math.floor(random() * 240_000);
     const timestamp = new Date(start + elapsedMs).toISOString();
@@ -50,7 +72,7 @@ function generateTransactionsWithLimit({
     const newAccount = activates("NEW_ACCOUNT");
     const identityMismatch = isFraud && activates("IDENTITY_MISMATCH");
     const merchantRisk = activates("MERCHANT_RISK");
-    const cardNotPresent = family === "CARD_NOT_PRESENT" && (isFraud ? random() < strength : isHardNegative && random() < 0.45);
+    const cardNotPresent = remoteFamilies.has(family) && (isFraud ? random() < strength : isHardNegative && random() < 0.45);
     rows.push({
       transaction_id: `TX_${seed}_${String(i + 1).padStart(5, "0")}`,
       customer_id: customerId,
@@ -58,7 +80,7 @@ function generateTransactionsWithLimit({
       device_id: deviceId,
       amount: round(amount),
       currency: "INR",
-      channel: family === "INSTANT_PAYMENT_SCAM" ? "UPI" : "CARD",
+      channel: channelByFamily[family] ?? "CARD",
       timestamp,
       country: locationShift ? pick(random, ["SG", "AE"]) : pick(random, countries),
       card_present: !cardNotPresent,

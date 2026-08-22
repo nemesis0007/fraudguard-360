@@ -55,7 +55,19 @@ The catalog in src/catalog.js currently covers:
 7. synthetic identity;
 8. transaction layering;
 9. promotion abuse;
-10. friendly fraud.
+10. friendly fraud;
+11. recovery-channel identity takeover;
+12. wallet-token provisioning abuse;
+13. QR destination substitution;
+14. cross-provider credit bust-out;
+15. business invoice redirection;
+16. loyalty balance conversion;
+17. synthetic subscription farms;
+18. merchant transaction laundering;
+19. contactless proximity relay;
+20. remittance corridor hopping;
+21. payroll destination redirection;
+22. gift-card conversion cascades.
 
 Each scenario has a stable ID, name, family, severity, and expected observable signals. Scenarios are defensive specifications and never contain real credentials or instructions for attacking payment systems.
 
@@ -69,14 +81,14 @@ npm run data:generate
 
 The exporter:
 
-- generates 10,000 fictional transactions for each of nine training scenarios;
+- generates 10,000 fictional transactions for each of 21 training scenarios;
 - uses fixed seeds for reproducibility;
 - records scenario version and provenance;
 - explicitly marks every row synthetic;
 - calls the same FeatureEngine used by live inference;
 - keeps each customer/scenario pair within a single split;
 - excludes LAUNDER_001 as a fully unseen holdout family;
-- writes 90,000 feature rows under ignored data/runtime/.
+- writes 210,000 feature rows under ignored data/runtime/.
 - labels controlled benign edge cases as `HARD_NEGATIVE` and expresses attack signals probabilistically;
 - generates timestamps cumulatively so every scenario replay is time ordered.
 
@@ -164,11 +176,11 @@ Current synthetic benchmark:
 
 | Evaluation | Precision | Recall | F1 | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Entity-aware test split | 0.753 | 0.733 | 0.743 | 0.079 |
-| Novel holdout ensemble | 0.669 | 0.877 | 0.759 | 0.140 |
+| Entity-aware test split | 0.772 | 0.773 | 0.773 | 0.076 |
+| Novel holdout ensemble | 0.688 | 0.869 | 0.768 | 0.127 |
 | Novel holdout fallback | 0.766 | 0.590 | 0.667 | 0.058 |
 
-Generator version `synthetic-1.1` introduces hard negatives and partial signal expression. The unseen-family ensemble improves F1 by 0.092 and recall by 0.287 over fallback, while increasing the false-positive rate by 0.082. This makes the security/customer-friction tradeoff visible. It still does not prove production performance on real payment traffic.
+Generator version `synthetic-1.1` introduces hard negatives and partial signal expression. The unseen-family ensemble improves F1 by 0.101 and recall by 0.279 over fallback, while increasing the false-positive rate by 0.069. This makes the security/customer-friction tradeoff visible. It still does not prove production performance on real payment traffic.
 
 ## 8. Runtime decision engine
 
@@ -282,7 +294,7 @@ Only approved misses should enter retraining. The arena can propose mutated stre
 
 ## 16. From basic fraud families to AI-native campaigns
 
-The low-level generator still uses ten tested payment-fraud primitives. `src/campaigns.js` adds the missing threat-intelligence layer above them. A campaign composes:
+The low-level generator now uses 22 tested payment-fraud primitives. `src/campaigns.js` adds the threat-intelligence layer above them. A campaign composes:
 
 - the AI capability that changes the threat;
 - the payment channels and trust boundary involved;
@@ -294,13 +306,13 @@ The low-level generator still uses ten tested payment-fraud primitives. `src/cam
 
 This separation avoids pretending that a familiar category such as account takeover is itself novel. Novelty comes from how an AI-enabled actor changes planning, coordination, adaptation, channels, and the defender's evidence.
 
-The current campaign set includes delegated-agent intent hijacking, deepfake consent relay, policy-oracle learning swarms, synthetic-identity maturation, autonomous storefront meshes, cross-rail micro-splintering, delayed-label laundering, synthetic KYC consensus, token-lifecycle parasitism, cooperative incentive swarms, beneficiary trust warming, and agent-to-agent invoice redirection.
+The 24-campaign set includes delegated-agent intent hijacking, deepfake consent relay, policy-oracle learning swarms, synthetic-identity maturation, autonomous storefront meshes, cross-rail micro-splintering, delayed-label laundering, synthetic KYC consensus, token-lifecycle parasitism, cooperative incentive swarms, beneficiary trust warming, agent-to-agent invoice redirection, adaptive recovery takeover, QR substitution, cross-provider credit stacking, loyalty drains, subscription farms, merchant laundering, contactless relay, corridor hopping, payroll redirection, stored-value conversion, generated return evidence, and emulated wallet-session swarms.
 
 ## 17. Challenge traceability
 
 `GET /api/v1/challenge/coverage` and the website's Challenge Proof Ledger make the brief visible:
 
-- **Identify:** 12 structured AI-native campaigns with rationale, channels, observables, novelty, and difficulty.
+- **Identify:** 24 structured AI-native campaigns over 22 payment-fraud primitives, with rationale, channels, observables, novelty, and difficulty.
 - **Generate:** seeded red-team agents, fictional actors, event sequences, entity graphs, counterfactual worlds, and provenance.
 - **Defend:** transaction/graph fusion, four policy actions, reason codes, latency, exposure, and customer-friction evidence.
 - **Closed loop:** false-negative mining, defense-guided mutation, an unseen-family holdout, and human-gated promotion.

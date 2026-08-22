@@ -169,6 +169,7 @@ function renderSpotlight(campaign) {
   $("#spotlightThesis").textContent = campaign.thesis;
   $("#spotlightEnabler").textContent = campaign.ai_enabler;
   $("#spotlightChannels").textContent = campaign.channels.join(" · ");
+  $("#spotlightFamily").textContent = campaign.base_scenario_name ?? campaign.base_family?.replaceAll("_", " ") ?? campaign.base_scenario_id;
   renderKillChain(campaign, "#spotlightChain");
   document.querySelectorAll(".campaign-card").forEach((card) => card.classList.toggle("active", card.dataset.campaignId === campaign.id));
 }
