@@ -4,10 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="FraudGuard 360 is an engineering workspace for synthetic payment-fraud simulation, model evaluation, decision testing, and architecture review.">
-  <meta name="theme-color" content="#071014">
+  <meta name="theme-color" content="#f5f5f7">
   <meta property="og:title" content="FraudGuard 360 — Payment fraud engineering workspace">
   <meta property="og:description" content="Versioned scenarios, synthetic datasets, model evaluation, graph-aware decisions, and reproducible red-team experiments.">
-  <meta property="og:image" content="/fraudguard-agent-lab-social.png">
+  <meta property="og:image" content="/og-fraudguard-v3.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FraudGuard 360 — Engineering Workspace">
+  <meta name="twitter:description" content="Payment fraud simulation and decision testing.">
+  <meta name="twitter:image" content="/og-fraudguard-v3.png">
   <title>FraudGuard 360 — Engineering Workspace</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -17,27 +21,40 @@
       <span class="brand-symbol" aria-hidden="true"><i></i><i></i></span>
       <span>FRAUDGUARD <b>360</b></span>
     </a>
-    <nav aria-label="Primary navigation">
-      <a href="#top">Overview</a>
-      <a href="#agent-lab">Mission runner</a>
-      <a href="#threats">Threats</a>
-      <a href="#arena">Arena</a>
-      <a href="#dataset">Dataset</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#team">Engineering</a>
-    </nav>
-    <a class="header-cta" href="#agent-lab">Run experiment <span>↗</span></a>
+    <div class="header-context"><span class="header-status"><i></i> Synthetic environment</span><span>Fraud defense workspace</span></div>
+    <button class="header-control" id="openViewOptions" type="button" aria-expanded="false" aria-controls="viewOptions"><span aria-hidden="true">···</span> View options</button>
   </header>
 
+  <div class="workspace-chrome">
+    <div class="workspace-chrome-inner shell">
+      <nav class="workspace-tabs" role="tablist" aria-label="FraudGuard workspaces">
+        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Overview</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">Missions</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="threats">Threat library</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulation</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Data</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">System</button>
+      </nav>
+      <button class="workspace-primary" id="globalRun" type="button" disabled>New simulation</button>
+    </div>
+    <aside class="view-options" id="viewOptions" aria-label="Workspace view options" hidden>
+      <div class="view-options-head"><div><small>VIEW OPTIONS</small><b>Make the workspace yours</b></div><button id="closeViewOptions" type="button" aria-label="Close view options">×</button></div>
+      <fieldset><legend>Appearance</legend><div class="segmented-control" data-preference="theme"><button type="button" data-value="light">Light</button><button type="button" data-value="dark">Dark</button><button type="button" data-value="auto">Auto</button></div></fieldset>
+      <fieldset><legend>Information density</legend><div class="segmented-control" data-preference="density"><button type="button" data-value="comfortable">Comfortable</button><button type="button" data-value="compact">Compact</button></div></fieldset>
+      <label class="preference-toggle"><span><b>Reduce motion</b><small>Keep diagrams and transitions still.</small></span><input id="reduceMotion" type="checkbox"><i></i></label>
+      <label class="preference-toggle"><span><b>Automatic preview</b><small>Run a comparison when the app opens.</small></span><input id="autoPreview" type="checkbox"><i></i></label>
+    </aside>
+  </div>
+
   <main id="top">
-    <section class="hero shell">
+    <section class="hero shell" data-workspace-view="overview">
       <div class="hero-copy">
         <div class="release-pill"><span></span> Engineering build · Synthetic sandbox · GFF 2026</div>
         <h1>Payment fraud simulation<br><em>and decision testing.</em></h1>
         <p>Run versioned fraud campaigns through a synthetic payment network, inspect model and graph signals, compare defensive policies, and reproduce every result from committed data and code.</p>
         <div class="hero-actions">
           <button class="button button-primary" id="heroRun">Run a simulation <span>→</span></button>
-          <a href="#architecture">Review the architecture</a>
+          <button class="text-button" type="button" data-open-workspace="system">Review the architecture</button>
         </div>
         <div class="trust-line">
           <span>BUILT FOR</span>
@@ -53,7 +70,7 @@
       </div>
     </section>
 
-    <section class="proof-strip">
+    <section class="proof-strip" data-workspace-view="overview">
       <div class="shell proof-grid">
         <div><strong>22</strong><span>attack families</span></div>
         <div><strong id="modelMetric">READY</strong><span>locked model artifact</span></div>
@@ -63,7 +80,7 @@
       </div>
     </section>
 
-    <section class="agent-lab-section" id="agent-lab">
+    <section class="agent-lab-section" id="agent-lab" data-workspace-view="missions">
       <div class="shell">
         <div class="section-intro agent-lab-intro">
           <div><p class="kicker red-kicker">RED-TEAM MISSION RUNNER</p><h2>Run repeatable<br>adversarial experiments.</h2></div>
@@ -72,7 +89,7 @@
 
         <div class="mission-app">
           <header class="mission-bar">
-            <div class="mission-title"><span class="mission-mark">AI</span><div><b>Local Agent Operations</b><small id="missionId">RUNTIME READY · NO EXTERNAL MODEL REQUIRED</small></div></div>
+            <div class="mission-title"><span class="mission-mark">LAB</span><div><b>Policy Mission Lab</b><small id="missionId">LOCAL RUNTIME · NO EXTERNAL MODEL REQUIRED</small></div></div>
             <div class="mission-runtime"><i></i><span>LOCAL POLICY ENGINE</span></div>
             <button class="mission-run" id="runMission">Launch mission <span>▶</span></button>
           </header>
@@ -117,7 +134,7 @@
       </div>
     </section>
 
-    <section class="platform shell" id="platform">
+    <section class="platform shell" id="platform" data-workspace-view="overview">
       <div class="section-intro">
         <div><p class="kicker">SYSTEM COMPONENTS</p><h2>One workflow from<br>scenario to decision.</h2></div>
         <p>The system joins counterfactual simulation, transaction features, entity-graph context, locked-model inference, deterministic policy, and governed feedback.</p>
@@ -147,14 +164,14 @@
       </div>
     </section>
 
-    <section class="threat-atlas shell" id="threats">
+    <section class="threat-atlas shell" id="threats" data-workspace-view="threats">
       <div class="section-intro threat-intro">
         <div><p class="kicker red-kicker">VERSIONED THREAT REGISTRY</p><h2>Campaign definitions<br>with observable evidence.</h2></div>
         <p>Each entry records the enabling capability, affected payment surfaces, four-stage observable sequence, signal fingerprint, generator primitive, and expected controls.</p>
       </div>
-      <div class="atlas-metrics" aria-label="Expanded attack coverage"><span><b>24</b> AI-native campaigns</span><span><b>22</b> payment attack families</span><span><b>39</b> channel contexts</span><span><b>4</b> observable stages each</span></div>
+      <div class="atlas-metrics" aria-label="Expanded attack coverage"><span><b>24</b> adaptive campaigns</span><span><b>22</b> payment attack families</span><span><b>39</b> channel contexts</span><span><b>4</b> observable stages each</span></div>
       <div class="atlas-shell">
-        <div class="atlas-index" id="campaignCards" aria-label="AI-native attack campaigns"></div>
+        <div class="atlas-index" id="campaignCards" aria-label="Adaptive attack campaigns"></div>
         <article class="atlas-spotlight">
           <div class="spotlight-head"><span id="spotlightIndex">01 / 24</span><b id="spotlightNovelty">NOVELTY 96</b></div>
           <p class="spotlight-code" id="spotlightCodename">GHOST CART</p>
@@ -164,20 +181,20 @@
             <div class="attack-visual-head"><span>LIVE ATTACK ANATOMY</span><small id="attackVisualStatus">4 observable stages · synthetic replay</small></div>
             <div class="attack-path" id="attackDiagram"></div>
             <div class="attack-explainer">
-              <div><small>WHAT AI CHANGES</small><b id="attackAiMove">Delegated intent is altered without breaking the payment mandate.</b></div>
+              <div><small>ADAPTIVE BEHAVIOR</small><b id="attackAiMove">Delegated intent is altered without breaking the payment mandate.</b></div>
               <div><small>HIDDEN CONNECTION</small><b id="attackGraphClue">Delegation drift links the merchant, payee, and retry sequence.</b></div>
               <div class="blue-explainer"><small>WHERE BLUE INTERCEPTS</small><b id="attackDefenseMove">Intent attestation exposes the mismatch before settlement.</b></div>
             </div>
             <div class="attack-signal-map" id="attackSignalMap"></div>
           </section>
-          <div class="spotlight-meta"><div><small>AI ENABLER</small><b id="spotlightEnabler">Prompt injection against delegated commerce</b></div><div><small>PAYMENT SURFACE</small><b id="spotlightChannels">Agentic commerce · Instant pay · Card</b></div><div><small>FRAUD PRIMITIVE</small><b id="spotlightFamily">Instant-payment scam</b></div></div>
+          <div class="spotlight-meta"><div><small>ADAPTATION MECHANISM</small><b id="spotlightEnabler">Prompt injection against delegated commerce</b></div><div><small>PAYMENT SURFACE</small><b id="spotlightChannels">Agentic commerce · Instant pay · Card</b></div><div><small>FRAUD PRIMITIVE</small><b id="spotlightFamily">Instant-payment scam</b></div></div>
           <div class="spotlight-chain" id="spotlightChain"></div>
           <button class="atlas-launch" id="launchSpotlight">Load campaign into arena <span>→</span></button>
         </article>
       </div>
     </section>
 
-    <section class="arena-section" id="arena">
+    <section class="arena-section" id="arena" data-workspace-view="simulation">
       <div class="shell">
         <div class="section-intro arena-intro">
           <div><p class="kicker red-kicker">COUNTERFACTUAL REPLAY WORKSPACE</p><h2>Compare baseline, attack,<br>and adapted defense.</h2></div>
@@ -200,7 +217,7 @@
 
           <div class="command-deck">
             <div class="command-primary">
-              <div class="rail-label"><span></span><div><b>RED TEAM / CAMPAIGN</b><small>AI-native adversary policy</small></div></div>
+              <div class="rail-label"><span></span><div><b>RED TEAM / CAMPAIGN</b><small>Adaptive adversary policy</small></div></div>
               <label for="scenario">Attack operation<select id="scenario"></select></label>
             </div>
             <div class="command-slider"><label for="aggression">Aggression <output id="aggressionValue">72%</output><input id="aggression" type="range" min="20" max="100" value="72"></label></div>
@@ -212,7 +229,7 @@
           <section class="campaign-brief">
             <div class="campaign-identity"><small id="campaignNumber">CAMPAIGN 01 / 24</small><span id="campaignCodename">GHOST CART</span><h3 id="campaignName">Agent intent hijack</h3><p id="campaignThesis">Loading campaign intelligence…</p></div>
             <div class="campaign-stats"><div><small>NOVELTY</small><strong id="campaignNovelty">96</strong></div><div><small>DIFFICULTY</small><strong id="campaignDifficulty">91</strong></div><div><small>SIMULATED BUDGET</small><strong id="attackerBudget">₹151K</strong></div></div>
-            <div class="campaign-policy"><small>AI ENABLER</small><b id="activeTactic">Prompt injection against a delegated commerce agent</b><div id="campaignChannels" class="channel-chips"></div></div>
+            <div class="campaign-policy"><small>ADAPTATION MECHANISM</small><b id="activeTactic">Prompt injection against a delegated commerce agent</b><div id="campaignChannels" class="channel-chips"></div></div>
           </section>
 
           <section class="kill-chain-panel">
@@ -261,7 +278,7 @@
       </div>
     </section>
 
-    <section class="dataset-section" id="dataset">
+    <section class="dataset-section" id="dataset" data-workspace-view="data">
       <div class="shell">
         <div class="section-intro dataset-intro">
           <div><p class="kicker">THE ACTUAL DATASET</p><h2>Download it.<br>Inspect every row.</h2></div>
@@ -298,9 +315,9 @@
       </div>
     </section>
 
-    <section class="system-architecture shell" id="architecture">
+    <section class="system-architecture shell" id="architecture" data-workspace-view="system">
       <div class="section-intro architecture-intro">
-        <div><p class="kicker">CLOSED-LOOP SYSTEM ARCHITECTURE</p><h2>AI discovers offline.<br>Deterministic defense decides live.</h2></div>
+        <div><p class="kicker">CLOSED-LOOP SYSTEM ARCHITECTURE</p><h2>Discovery happens offline.<br>Decisions stay deterministic.</h2></div>
         <p>The reference architecture is now reflected in executable service boundaries. Follow the data from red-team research to synthetic generation, registries, the sub-100 ms decision path, simulated payment outcome, and governed feedback.</p>
       </div>
       <div class="architecture-board">
@@ -329,7 +346,7 @@
       </div>
     </section>
 
-    <section class="team-handoff shell" id="team">
+    <section class="team-handoff shell" id="team" data-workspace-view="system">
       <div class="section-intro team-intro">
         <div><p class="kicker">ENGINEERING HANDOFF</p><h2>Everything the team<br>needs to work safely.</h2></div>
         <p>Start with the engineering guide, inspect the API contracts, follow the contribution workflow, and use the operations runbook for local or hosted environments.</p>
@@ -344,7 +361,7 @@
       </div>
     </section>
 
-    <section class="evidence shell" id="evidence">
+    <section class="evidence shell" id="evidence" data-workspace-view="data">
       <div class="section-intro evidence-intro">
         <div><p class="kicker">EVIDENCE, NOT THEATER</p><h2>A hybrid data strategy<br>with honest boundaries.</h2></div>
         <p>Fully synthetic data is useful for novel attacks but weak as proof of realism. Real-only data cannot show attacks that have not happened. FraudGuard combines the strengths without blurring their provenance.</p>
@@ -359,7 +376,7 @@
       </div>
     </section>
 
-    <section class="proof-ledger shell" id="challenge-proof">
+    <section class="proof-ledger shell" id="challenge-proof" data-workspace-view="overview">
       <div class="section-intro proof-intro">
         <div><p class="kicker">CHALLENGE PROOF LEDGER</p><h2>Every requirement.<br>Visible and testable.</h2></div>
         <p>The brief is translated into product evidence. A judge can see the threat intelligence, the agents generating the world, the defense response, and the governed learning loop without reading the code first.</p>
@@ -368,7 +385,7 @@
       <div class="ledger-gaps"><span>BEFORE A REAL PILOT</span><div id="pilotGaps"></div></div>
     </section>
 
-    <section class="final-cta shell">
+    <section class="final-cta shell" data-workspace-view="overview">
       <p class="kicker">TEAM-READY RESEARCH WORKSPACE</p>
       <h2>Run the experiment. Inspect the evidence. Review the change.</h2>
       <p>Every scenario, dataset, model artifact, decision, and limitation is versioned for reproducible team review.</p>
@@ -379,7 +396,7 @@
   <footer class="site-footer shell">
     <a class="brand" href="#top"><span class="brand-symbol"><i></i><i></i></span><span>FRAUDGUARD <b>360</b></span></a>
     <p>Payment-fraud simulation and decision testing.<br><span>Technical research prototype · Synthetic data only</span></p>
-    <div><a href="#architecture">Architecture</a><a href="#dataset">Dataset</a><a href="/guide.html">Guide</a><a href="https://github.com/nemesis0007/fraudguard-360">Repository</a></div>
+    <div><a href="#architecture" data-open-workspace="system">Architecture</a><a href="#dataset" data-open-workspace="data">Dataset</a><a href="/guide.html">Guide</a><a href="https://github.com/nemesis0007/fraudguard-360">Repository</a></div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="/app.js"></script>

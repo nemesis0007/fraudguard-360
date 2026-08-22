@@ -87,7 +87,7 @@ test("challenge endpoints and site expose expanded campaign intelligence", () =>
   assert.equal(campaigns.data.find((item) => item.id === "CORRIDOR_COMPOSER_020").base_family, "REMITTANCE_CORRIDOR_ABUSE");
   assert.equal(coverage.data.pillars.length, 4);
   assert.deepEqual(coverage.data.pillars.map((item) => item.id), ["IDENTIFY", "GENERATE", "DEFEND", "LEARN"]);
-  assert.match(homepage, /24<\/b> AI-native campaigns/);
+  assert.match(homepage, /24<\/b> adaptive campaigns/);
   assert.match(homepage, /22<\/b> payment attack families/);
 }));
 
@@ -126,6 +126,10 @@ test("site exposes attack anatomy and direct GitHub dataset access", () => withS
   const homepage = await fetch(base).then((response) => response.text());
   assert.match(homepage, /Payment fraud simulation[\s\S]*and decision testing/);
   assert.match(homepage, /ENGINEERING HANDOFF/);
+  assert.match(homepage, /role="tablist"/);
+  assert.match(homepage, /data-workspace-tab="simulation"/);
+  assert.match(homepage, /Make the workspace yours/);
+  assert.match(homepage, /og-fraudguard-v3\.png/);
   assert.doesNotMatch(homepage, /Watch AI attack/);
   assert.match(homepage, /LIVE ATTACK ANATOMY/);
   assert.match(homepage, /id="attackDiagram"/);

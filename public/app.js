@@ -1,6 +1,101 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], health: null, agentHealth: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0 };
+const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", data: "#dataset", system: "#architecture" };
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+function getPreference(key, fallback) {
+  try { return localStorage.getItem(`fraudguard:${key}`) ?? fallback; }
+  catch { return fallback; }
+}
+
+function setPreference(key, value) {
+  try { localStorage.setItem(`fraudguard:${key}`, value); }
+  catch { /* Preferences remain session-only when storage is unavailable. */ }
+}
+
+function resolvedTheme(preference) {
+  if (preference !== "auto") return preference;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyWorkspacePreferences() {
+  const theme = getPreference("theme", "light");
+  const density = getPreference("density", "comfortable");
+  const reduced = getPreference("motion", window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "reduced" : "full");
+  document.documentElement.dataset.theme = resolvedTheme(theme);
+  document.documentElement.dataset.themePreference = theme;
+  document.documentElement.dataset.density = density;
+  document.documentElement.dataset.motion = reduced;
+  document.querySelectorAll('[data-preference="theme"] button').forEach((button) => button.classList.toggle("active", button.dataset.value === theme));
+  document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.classList.toggle("active", button.dataset.value === density));
+  $("#reduceMotion").checked = reduced === "reduced";
+  $("#autoPreview").checked = getPreference("auto-preview", "off") === "on";
+}
+
+function workspaceForHash(hashValue) {
+  if (["#agent-lab"].includes(hashValue)) return "missions";
+  if (["#threats"].includes(hashValue)) return "threats";
+  if (["#arena"].includes(hashValue)) return "simulation";
+  if (["#dataset", "#evidence"].includes(hashValue)) return "data";
+  if (["#architecture", "#team"].includes(hashValue)) return "system";
+  return "overview";
+}
+
+function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
+  const selected = workspaceTargets[view] ? view : "overview";
+  document.querySelectorAll("[data-workspace-view]").forEach((section) => section.classList.toggle("workspace-view-hidden", section.dataset.workspaceView !== selected));
+  document.querySelectorAll("[data-workspace-tab]").forEach((button) => {
+    const active = button.dataset.workspaceTab === selected;
+    button.setAttribute("aria-selected", String(active));
+    button.tabIndex = active ? 0 : -1;
+  });
+  document.body.dataset.workspace = selected;
+  setPreference("workspace", selected);
+  if (updateHistory) history.replaceState(null, "", workspaceTargets[selected]);
+  if (scroll) {
+    const target = document.querySelector(workspaceTargets[selected]);
+    target?.scrollIntoView({ behavior: document.documentElement.dataset.motion === "reduced" ? "auto" : "smooth", block: "start" });
+  }
+}
+
+function bindWorkspaceControls() {
+  applyWorkspacePreferences();
+  const requestedView = window.location.hash ? workspaceForHash(window.location.hash) : getPreference("workspace", "overview");
+  activateWorkspace(requestedView, { updateHistory: false, scroll: false });
+
+  const tabs = [...document.querySelectorAll("[data-workspace-tab]")];
+  tabs.forEach((button, index) => {
+    button.addEventListener("click", () => activateWorkspace(button.dataset.workspaceTab));
+    button.addEventListener("keydown", (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next].focus(); tabs[next].click();
+    });
+  });
+
+  const options = $("#viewOptions");
+  const setOptionsOpen = (open) => { options.hidden = !open; $("#openViewOptions").setAttribute("aria-expanded", String(open)); };
+  $("#openViewOptions").addEventListener("click", () => setOptionsOpen(options.hidden));
+  $("#closeViewOptions").addEventListener("click", () => setOptionsOpen(false));
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOptionsOpen(false); });
+  document.addEventListener("click", (event) => { if (!options.hidden && !options.contains(event.target) && !$("#openViewOptions").contains(event.target)) setOptionsOpen(false); });
+
+  document.querySelectorAll('[data-preference="theme"] button').forEach((button) => button.addEventListener("click", () => { setPreference("theme", button.dataset.value); applyWorkspacePreferences(); }));
+  document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.addEventListener("click", () => { setPreference("density", button.dataset.value); applyWorkspacePreferences(); }));
+  $("#reduceMotion").addEventListener("change", (event) => { setPreference("motion", event.target.checked ? "reduced" : "full"); applyWorkspacePreferences(); });
+  $("#autoPreview").addEventListener("change", (event) => setPreference("auto-preview", event.target.checked ? "on" : "off"));
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (getPreference("theme", "light") === "auto") applyWorkspacePreferences(); });
+
+  document.querySelectorAll("[data-open-workspace]").forEach((button) => button.addEventListener("click", () => activateWorkspace(button.dataset.openWorkspace)));
+  document.querySelectorAll('a[href^="#"]:not([data-open-workspace])').forEach((link) => link.addEventListener("click", (event) => {
+    const nextView = workspaceForHash(link.getAttribute("href"));
+    if (!workspaceTargets[nextView]) return;
+    event.preventDefault(); activateWorkspace(nextView);
+  }));
+  window.addEventListener("hashchange", () => activateWorkspace(workspaceForHash(window.location.hash), { updateHistory: false }));
+  $("#globalRun").addEventListener("click", () => { activateWorkspace("simulation"); if (state.catalog.length) window.setTimeout(runArena, 250); });
+}
 
 async function api(path, options = {}) {
   const response = await fetch(path, { headers: { "content-type": "application/json" }, ...options });
@@ -48,6 +143,7 @@ function drawHero(time = 0) {
   const canvas = $("#heroCanvas");
   if (!canvas) return;
   const { context, width, height } = sizeCanvas(canvas);
+  const motionTime = document.documentElement.dataset.motion === "reduced" ? 0 : time;
   context.clearRect(0, 0, width, height);
   const center = { x: width * .5, y: height * .51 };
   const points = Array.from({ length: 18 }, (_, index) => {
@@ -65,11 +161,11 @@ function drawHero(time = 0) {
     }
   }
   points.forEach((point, index) => {
-    const pulse = point.hot ? 2 + Math.sin(time / 430 + index) * 1.3 : 0;
+    const pulse = point.hot ? 2 + Math.sin(motionTime / 430 + index) * 1.3 : 0;
     context.beginPath(); context.arc(point.x, point.y, (point.hot ? 4 : 2.4) + pulse, 0, Math.PI * 2);
     context.fillStyle = point.hot ? "rgba(255,102,95,.85)" : index % 3 === 0 ? "rgba(113,216,223,.75)" : "rgba(158,230,202,.64)"; context.fill();
   });
-  const moving = (time / 3500) % 1;
+  const moving = document.documentElement.dataset.motion === "reduced" ? .58 : (motionTime / 3500) % 1;
   const a = points[1], b = points[8];
   context.beginPath(); context.arc(a.x + (b.x - a.x) * moving, a.y + (b.y - a.y) * moving, 2.2, 0, Math.PI * 2); context.fillStyle = "#ff817a"; context.fill();
   requestAnimationFrame(drawHero);
@@ -91,6 +187,7 @@ function drawGraph(time = 0) {
   const canvas = $("#graphCanvas");
   if (!canvas) return;
   const { context, width, height } = sizeCanvas(canvas);
+  const motionTime = document.documentElement.dataset.motion === "reduced" ? 0 : time;
   context.clearRect(0, 0, width, height);
   if (!state.arena) { state.animation = requestAnimationFrame(drawGraph); return; }
   const nodes = layoutGraph(state.arena.graph.nodes, width, height);
@@ -103,7 +200,7 @@ function drawGraph(time = 0) {
     context.lineWidth = edge.blocked ? 1.2 : .7;
     context.strokeStyle = edge.risk >= 55 ? "rgba(255,102,95,.28)" : edge.blocked ? "rgba(113,216,223,.23)" : "rgba(100,139,135,.13)"; context.stroke();
     if (edge.risk >= 55 && index < 12) {
-      const progress = ((time / 1700) + index * .17) % 1;
+      const progress = ((motionTime / 1700) + index * .17) % 1;
       context.beginPath(); context.arc(source.x + (target.x - source.x) * progress, source.y + (target.y - source.y) * progress, 1.7, 0, Math.PI * 2);
       context.fillStyle = edge.blocked ? "#71d8df" : "#ff665f"; context.fill();
     }
@@ -111,7 +208,7 @@ function drawGraph(time = 0) {
   nodes.forEach((node) => {
     const hot = node.risk >= 60;
     if (hot) {
-      context.beginPath(); context.arc(node.x, node.y, 11 + Math.sin(time / 350 + hash(node.id)) * 2, 0, Math.PI * 2); context.fillStyle = "rgba(255,102,95,.055)"; context.fill();
+      context.beginPath(); context.arc(node.x, node.y, 11 + Math.sin(motionTime / 350 + hash(node.id)) * 2, 0, Math.PI * 2); context.fillStyle = "rgba(255,102,95,.055)"; context.fill();
     }
     context.beginPath(); context.arc(node.x, node.y, hot ? 4.8 : 3.2, 0, Math.PI * 2);
     context.fillStyle = hot ? "#ff665f" : node.type === "merchant" ? "#f1a25d" : node.type === "device" ? "#71d8df" : "#9ee6ca"; context.fill();
@@ -359,6 +456,7 @@ async function initialize() {
     api("/api/v1/campaign/catalog"), api("/api/v1/model/health"), api("/api/v1/agents/health")
   ]);
   state.catalog = catalog; state.health = health; state.agentHealth = agentHealth;
+  $("#globalRun").disabled = false;
   $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
   $("#scenario").value = catalog[0].id;
   $("#agentCampaign").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
@@ -381,7 +479,7 @@ async function initialize() {
   }
   if (coverageResult.status === "fulfilled") renderCoverage(coverageResult.value);
   if (architectureResult.status === "fulfilled") renderArchitecture(architectureResult.value);
-  await runArena();
+  if ($("#autoPreview").checked) await runArena();
   if (window.location.hash) {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" })));
   }
@@ -409,10 +507,10 @@ function bindControls() {
     const campaign = state.catalog.find((item) => item.id === card.dataset.campaignId);
     if (campaign) { $("#scenario").value = campaign.id; $("#agentCampaign").value = campaign.id; renderSpotlight(campaign); renderCampaignPreview(campaign); }
   });
-  $("#launchSpotlight").addEventListener("click", () => { $("#agent-lab").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runAgentMission, 450); });
+  $("#launchSpotlight").addEventListener("click", () => { activateWorkspace("simulation"); window.setTimeout(runArena, 350); });
   $("#runMission").addEventListener("click", runAgentMission);
   $("#runArena").addEventListener("click", runArena);
-  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { $("#agent-lab").scrollIntoView({ behavior: "smooth" }); window.setTimeout(runAgentMission, 450); }));
+  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { activateWorkspace("missions"); window.setTimeout(runAgentMission, 350); }));
   $("#graphCanvas").addEventListener("click", (event) => {
     if (!state.arena) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -424,6 +522,7 @@ function bindControls() {
   });
 }
 
+bindWorkspaceControls();
 bindControls();
 requestAnimationFrame(drawHero);
 requestAnimationFrame(drawGraph);
