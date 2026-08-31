@@ -22,11 +22,11 @@
         <span>MASTERCARD <b>GFF 2026</b></span>
       </a>
       <nav class="workspace-tabs" role="tablist" aria-label="Mastercard GFF workspaces">
-        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Start</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">AI lab</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulator</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">Evidence</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
+        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Overview</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">1 · Discover</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">2 · Defend</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">3 · Prove</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">Architecture</button>
       </nav>
       <div class="header-actions">
         <div class="header-theme" data-preference="theme" role="group" aria-label="Color theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button></div>
@@ -89,12 +89,12 @@
     </section>
 
     <section class="proof-strip" data-workspace-view="overview">
-      <div class="shell proof-grid">
-        <div><strong>22</strong><span>attack families</span></div>
-        <div><strong id="modelMetric">READY</strong><span>locked model artifact</span></div>
-        <div><strong id="fidelityMetric">12 / 12</strong><span>fidelity gates passed</span></div>
-        <div><strong id="agentMetric">HUMAN</strong><span>approval before simulation</span></div>
-        <p>GenAI proposes defensive scenario metadata offline. It has no live-payment access, and an operator must approve every draft before synthetic events can be generated.</p>
+      <div class="shell proof-grid workflow-grid">
+        <div><strong>01</strong><span>Discover AI-enabled attacks</span></div>
+        <div><strong id="agentMetric">HUMAN</strong><span>Approve synthetic scenarios</span></div>
+        <div><strong id="modelMetric">READY</strong><span>Defend with locked XGBoost</span></div>
+        <div><strong id="fidelityMetric">12 / 12</strong><span>Prove results and learn</span></div>
+        <p><b>How to use the demo:</b> move left to right through the numbered tabs. Each stage shows its evidence before the next begins.</p>
       </div>
     </section>
 

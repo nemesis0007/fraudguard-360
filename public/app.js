@@ -1,14 +1,15 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal" };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", evidence: "#evaluation", data: "#dataset", system: "#architecture" };
-const workspaceNames = { overview: "Start", missions: "AI lab", threats: "Attacks", simulation: "Simulator", evidence: "Evidence", data: "Dataset", system: "How it works" };
+const workspaceNames = { overview: "Overview", missions: "Discover", simulation: "Defend", evidence: "Prove", system: "Architecture" };
+const workspaceGroups = { overview: ["overview"], missions: ["missions", "threats"], simulation: ["simulation"], evidence: ["evidence", "data"], system: ["system"] };
 const workspaceGuides = {
   missions: {
-    eyebrow: "AI LAB / SAFE EXPERIMENTS",
-    title: "See how an attack learns—inside a sandbox.",
-    description: "GenAI proposes safe synthetic threat metadata, a human approves it, and local agents test bounded variations against fictional payments.",
-    steps: ["Describe a defense gap", "Review the AI draft", "Approve before simulation"],
-    action: "Open the AI lab"
+    eyebrow: "STEP 1 / DISCOVER & GENERATE",
+    title: "Turn attack ideas into governed test scenarios.",
+    description: "Start with the attack catalogue, let GenAI propose safe synthetic metadata, then require human approval before generating any fictional payment.",
+    steps: ["Choose an attack", "Review the AI proposal", "Approve synthetic generation"],
+    action: "Start discovery"
   },
   threats: {
     eyebrow: "ATTACK LIBRARY / PLAIN ENGLISH",
@@ -18,18 +19,18 @@ const workspaceGuides = {
     action: "Explore the attacks"
   },
   simulation: {
-    eyebrow: "LIVE SIMULATOR / GUIDED REPLAY",
-    title: "Watch one attack become one decision.",
+    eyebrow: "STEP 2 / SIMULATE & DEFEND",
+    title: "Watch an attack become a payment decision.",
     description: "Choose an attack and press Run. The GFF lab creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
     steps: ["Select an attack", "Run fictional payments", "Inspect the decision"],
     action: "Open the simulator"
   },
   evidence: {
-    eyebrow: "EVIDENCE / WHAT THE MODEL PROVES",
-    title: "Judge the detector by its misses, not its headline.",
-    description: "Compare the baseline and XGBoost on the same test set, inspect every error count, then rerun a completely excluded attack family without retraining the model.",
-    steps: ["Compare like-for-like models", "Inspect false positives and misses", "Rerun the unseen-family proof"],
-    action: "Review model evidence"
+    eyebrow: "STEP 3 / PROVE & LEARN",
+    title: "Connect the dataset, model results, and feedback loop.",
+    description: "Inspect where the 210,000 synthetic records came from, compare models on the same test set, and turn misses into human-reviewed retraining candidates.",
+    steps: ["Verify dataset lineage", "Inspect errors and holdout results", "Queue reviewed improvements"],
+    action: "Review the proof"
   },
   data: {
     eyebrow: "DATASET / WHAT IT ACTUALLY CONTAINS",
@@ -88,7 +89,8 @@ function workspaceForHash(hashValue) {
 }
 
 function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
-  const selected = workspaceTargets[view] ? view : "overview";
+  const requested = view === "threats" ? "missions" : view === "data" ? "evidence" : view;
+  const selected = workspaceGroups[requested] ? requested : "overview";
   const guide = $("#workspaceGuide");
   const guideContent = workspaceGuides[selected];
   guide.hidden = true;
@@ -102,7 +104,7 @@ function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   }
   const visibleSections = [];
   document.querySelectorAll("[data-workspace-view]").forEach((section) => {
-    const active = section.dataset.workspaceView === selected;
+    const active = workspaceGroups[selected].includes(section.dataset.workspaceView);
     section.classList.toggle("workspace-view-hidden", !active);
     if (active) visibleSections.push(section);
   });
