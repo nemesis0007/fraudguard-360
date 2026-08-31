@@ -4,5 +4,12 @@ data/sample/
 docs/
 ml/
 .review-temp/
+.model-audit-venv/
+auralis-risk-ai-defense-lab/
+fallback-model-extract/
+fallback-model.zip
+remote-model-inspect/
+remote-model-upgrade.zip
+team-fraudguard/
 *.docx
 *.log
