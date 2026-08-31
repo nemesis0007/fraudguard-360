@@ -1,15 +1,15 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal" };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", evidence: "#evaluation", data: "#dataset", system: "#architecture" };
-const workspaceNames = { overview: "Overview", missions: "Discover", simulation: "Defend", evidence: "Prove", system: "Architecture" };
+const workspaceNames = { overview: "Home", missions: "Generate fraud test", simulation: "Test defense", evidence: "See results", system: "How it works" };
 const workspaceGroups = { overview: ["overview"], missions: ["missions", "threats"], simulation: ["simulation"], evidence: ["evidence", "data"], system: ["system"] };
 const workspaceGuides = {
   missions: {
-    eyebrow: "STEP 1 / DISCOVER & GENERATE",
-    title: "Turn attack ideas into governed test scenarios.",
-    description: "Start with the attack catalogue, let GenAI propose safe synthetic metadata, then require human approval before generating any fictional payment.",
-    steps: ["Choose an attack", "Review the AI proposal", "Approve synthetic generation"],
-    action: "Start discovery"
+    eyebrow: "STEP 1 / GENERATE A SAFE FRAUD TEST",
+    title: "Create fictional fraud behavior for the model to detect.",
+    description: "This does not attack a real payment system. Choose a known fraud pattern, generate a synthetic test scenario, review what the AI proposed, and approve it before any fictional payments are created.",
+    steps: ["Choose a fraud pattern", "Generate and review the test", "Approve it for simulation"],
+    action: "Generate a fraud test"
   },
   threats: {
     eyebrow: "ATTACK LIBRARY / PLAIN ENGLISH",

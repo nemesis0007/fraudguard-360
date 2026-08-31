@@ -24,7 +24,7 @@
       </a>
       <nav class="workspace-tabs" role="tablist" aria-label="Mastercard GFF workspaces">
         <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Home</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">1 · Create attack</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">1 · Generate fraud test</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">2 · Test defense</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">3 · See results</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
@@ -112,7 +112,7 @@
               <label for="threatBase">Known attack anchor<select id="threatBase"></select></label>
               <label for="threatSurface">Payment surface<select id="threatSurface"><option>CARD</option><option>UPI</option><option>WALLET</option><option>BANK_TRANSFER</option><option>BNPL</option><option>REMITTANCE</option><option>MERCHANT_ACQUIRING</option><option>LOYALTY</option></select></label>
             </div>
-            <button class="mission-run threat-discover" id="discoverThreat" type="button">Generate review draft <span>→</span></button>
+            <button class="mission-run threat-discover" id="discoverThreat" type="button">Generate synthetic fraud scenario <span>→</span></button>
             <p class="threat-safety-note">Only synthetic, aggregate observables and bounded parameters are accepted. Operational abuse instructions are rejected.</p>
           </div>
           <div class="threat-review-result" id="threatReviewResult">
