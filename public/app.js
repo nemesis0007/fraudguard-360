@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal" };
+const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal", modelContext: null };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", evidence: "#evaluation", data: "#dataset", system: "#architecture" };
 const workspaceNames = { overview: "Home", missions: "Generate fraud test", simulation: "Test defense", evidence: "See results", system: "How it works" };
 const workspaceGroups = { overview: ["overview"], missions: ["missions", "threats"], simulation: ["simulation"], evidence: ["evidence", "data"], system: ["system"] };
@@ -589,6 +589,7 @@ async function actOnThreat(event) {
 }
 
 function populateModelForm(features) {
+  state.modelContext = { ...features };
   $("#modelVelocity").value = features.velocity_1h;
   $("#modelDeviation").value = features.amount_deviation;
   $("#modelShared").value = features.shared_device_count;
@@ -635,7 +636,8 @@ function inspectHeroPayment() {
 
 async function classifyWithTeamModel(event) {
   event.preventDefault();
-  const features = { velocity_1h: Number($("#modelVelocity").value), amount_deviation: Number($("#modelDeviation").value), new_device: Number($("#modelNewDevice").checked), shared_device_count: Number($("#modelShared").value), location_shift: Number($("#modelLocation").checked), new_payee: 0, card_not_present: 1, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: Number($("#modelRelationship").value) };
+  const context = state.modelContext || heroPresets.normal.features;
+  const features = { ...context, velocity_1h: Number($("#modelVelocity").value), amount_deviation: Number($("#modelDeviation").value), new_device: Number($("#modelNewDevice").checked), shared_device_count: Number($("#modelShared").value), location_shift: Number($("#modelLocation").checked), merchant_risk: Number($("#modelRelationship").value) };
   const output = $("#modelResult"); output.innerHTML = "<small>MODEL OUTPUT</small><strong>SCORING…</strong><span>Sending the canonical 11-feature vector.</span>";
   try { const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features }) }); const level = result.prediction.startsWith("HIGH") ? "high" : result.prediction.startsWith("MEDIUM") ? "medium" : "low"; output.innerHTML = `<small>MODEL OUTPUT · ${escapeHtml(result.provider)}</small><strong class="${level}">${escapeHtml(result.prediction.replaceAll("_", " "))}</strong><span>${Math.round(result.fraud_probability * 1000) / 10}% fraud probability · risk ${result.risk_score}/100</span><b>${escapeHtml(result.model_version)} · ${result.latency_ms} ms</b>`; }
   catch (error) { output.innerHTML = `<small>MODEL OUTPUT</small><strong>UNAVAILABLE</strong><span>${escapeHtml(error.message)}. The locked local artifact could not be loaded, so no model claim is shown.</span>`; }
