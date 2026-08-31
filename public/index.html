@@ -32,18 +32,11 @@
       </nav>
       <div class="header-actions">
         <span class="header-status"><i></i> Sandbox</span>
-        <button class="header-control" id="openViewOptions" type="button" aria-expanded="false" aria-controls="viewOptions"><span class="control-glyph" aria-hidden="true"><i></i><i></i><i></i></span><b>Display</b></button>
+        <div class="header-theme" data-preference="theme" role="group" aria-label="Color theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button></div>
         <button class="workspace-primary" id="globalRun" type="button" disabled>Run demo</button>
       </div>
     </div>
     <div class="workspace-progress" aria-hidden="true"><i id="workspaceProgress"></i></div>
-    <aside class="view-options" id="viewOptions" aria-label="Workspace view options" hidden>
-      <div class="view-options-head"><div><small>VIEW OPTIONS</small><b>Make the workspace yours</b></div><button id="closeViewOptions" type="button" aria-label="Close view options">×</button></div>
-      <fieldset><legend>Appearance</legend><div class="segmented-control" data-preference="theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button><button type="button" data-value="auto">Auto</button></div></fieldset>
-      <fieldset><legend>Information density</legend><div class="segmented-control" data-preference="density"><button type="button" data-value="comfortable">Comfortable</button><button type="button" data-value="compact">Compact</button></div></fieldset>
-      <label class="preference-toggle"><span><b>Reduce motion</b><small>Keep diagrams and transitions still.</small></span><input id="reduceMotion" type="checkbox"><i></i></label>
-      <label class="preference-toggle"><span><b>Automatic preview</b><small>Run a comparison when the app opens.</small></span><input id="autoPreview" type="checkbox"><i></i></label>
-    </aside>
   </header>
   <div class="sr-only" id="viewAnnouncer" role="status" aria-live="polite"></div>
 

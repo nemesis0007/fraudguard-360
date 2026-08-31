@@ -70,16 +70,11 @@ function resolvedTheme(preference) {
 
 function applyWorkspacePreferences() {
   const theme = getPreference("theme", "dark");
-  const density = getPreference("density", "comfortable");
   const reduced = getPreference("motion", window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "reduced" : "full");
   document.documentElement.dataset.theme = resolvedTheme(theme);
   document.documentElement.dataset.themePreference = theme;
-  document.documentElement.dataset.density = density;
   document.documentElement.dataset.motion = reduced;
   document.querySelectorAll('[data-preference="theme"] button').forEach((button) => button.classList.toggle("active", button.dataset.value === theme));
-  document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.classList.toggle("active", button.dataset.value === density));
-  $("#reduceMotion").checked = reduced === "reduced";
-  $("#autoPreview").checked = getPreference("auto-preview", "off") === "on";
 }
 
 function workspaceForHash(hashValue) {
@@ -159,18 +154,7 @@ function bindWorkspaceControls() {
     });
   });
 
-  const options = $("#viewOptions");
-  const setOptionsOpen = (open) => { options.hidden = !open; $("#openViewOptions").setAttribute("aria-expanded", String(open)); };
-  $("#openViewOptions").addEventListener("click", () => setOptionsOpen(options.hidden));
-  $("#closeViewOptions").addEventListener("click", () => setOptionsOpen(false));
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOptionsOpen(false); });
-  document.addEventListener("click", (event) => { if (!options.hidden && !options.contains(event.target) && !$("#openViewOptions").contains(event.target)) setOptionsOpen(false); });
-
   document.querySelectorAll('[data-preference="theme"] button').forEach((button) => button.addEventListener("click", () => { setPreference("theme", button.dataset.value); applyWorkspacePreferences(); }));
-  document.querySelectorAll('[data-preference="density"] button').forEach((button) => button.addEventListener("click", () => { setPreference("density", button.dataset.value); applyWorkspacePreferences(); }));
-  $("#reduceMotion").addEventListener("change", (event) => { setPreference("motion", event.target.checked ? "reduced" : "full"); applyWorkspacePreferences(); });
-  $("#autoPreview").addEventListener("change", (event) => setPreference("auto-preview", event.target.checked ? "on" : "off"));
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (getPreference("theme", "dark") === "auto") applyWorkspacePreferences(); });
 
   document.querySelectorAll("[data-open-workspace]").forEach((button) => button.addEventListener("click", () => activateWorkspace(button.dataset.openWorkspace)));
   document.querySelectorAll('a[href^="#"]:not([data-open-workspace])').forEach((link) => link.addEventListener("click", (event) => {
@@ -733,7 +717,6 @@ async function initialize() {
   if (coverageResult.status === "fulfilled") renderCoverage(coverageResult.value);
   if (architectureResult.status === "fulfilled") renderArchitecture(architectureResult.value);
   await scoreHeroPreset("normal");
-  if ($("#autoPreview").checked) await runArena();
   if (window.location.hash) {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" })));
   }
