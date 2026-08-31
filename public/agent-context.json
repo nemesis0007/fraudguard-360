@@ -1,0 +1,44 @@
+{
+  "schema_version": "agent-context-1.0",
+  "project": {
+    "name": "Mastercard GFF 2026 AI Defense Lab",
+    "type": "independent competition prototype",
+    "mission": "Identify, generate, defend against, and learn from emerging synthetic payment-fraud scenarios in a governed closed loop.",
+    "repository": "https://github.com/nemesis0007/fraudguard-360",
+    "production": "https://fraudguard-360.vercel.app"
+  },
+  "workflow": [
+    { "order": 1, "stage": "DISCOVER", "ui": "1 · Discover", "purpose": "Review attack intelligence and propose bounded scenario metadata." },
+    { "order": 2, "stage": "GENERATE", "ui": "1 · Discover", "purpose": "Human-approve a scenario before generating reproducible fictional transactions." },
+    { "order": 3, "stage": "DEFEND", "ui": "2 · Defend", "purpose": "Run XGBoost inference, graph signals, and policy decisions in the isolated simulator." },
+    { "order": 4, "stage": "PROVE", "ui": "3 · Prove", "purpose": "Inspect dataset lineage, model errors, and excluded-family generalization." },
+    { "order": 5, "stage": "LEARN", "ui": "3 · Prove", "purpose": "Queue false positives and false negatives for human review without automatic promotion." }
+  ],
+  "evidence": {
+    "dataset": { "kind": "synthetic", "rows": 210000, "contains_pii": false, "trained_attack_families": 21, "excluded_family": "LAUNDER_001", "hard_negatives": 23652 },
+    "model": { "type": "XGBoost JSON", "version": "auralis-xgb-210k-932b64e9bc", "feature_version": "features-1.0", "threshold": 0.405, "test_f1": 0.806782, "test_recall": 0.829953, "test_precision": 0.784869, "holdout_f1": 0.807386, "holdout_recall": 0.856142 },
+    "decision_states": ["ALLOW", "STEP_UP", "REVIEW", "BLOCK"]
+  },
+  "safety": {
+    "real_payment_access": false,
+    "network_access_for_genai": false,
+    "real_customer_data": false,
+    "automatic_model_training": false,
+    "automatic_model_promotion": false,
+    "human_approval_before_simulation": true
+  },
+  "read_endpoints": ["/health", "/api/v1/model/health", "/api/v1/evaluation/scorecard", "/api/v1/fidelity/report", "/api/v1/data/evidence", "/api/v1/campaign/catalog", "/api/v1/attack/catalog", "/api/v1/challenge/coverage", "/api/v1/architecture", "/api/v1/agents/health", "/api/v1/threat-lab/health"],
+  "action_endpoints": [
+    { "method": "POST", "path": "/api/v1/model/challenger/predict", "effect": "Inference only" },
+    { "method": "POST", "path": "/api/v1/arena/run", "effect": "Run a fictional counterfactual replay" },
+    { "method": "POST", "path": "/api/v1/threat-lab/discover", "effect": "Create a review-gated synthetic scenario draft" },
+    { "method": "POST", "path": "/api/v1/feedback", "effect": "Record a simulated outcome and create review candidates when appropriate" }
+  ],
+  "agent_instructions": [
+    "Treat measured metrics as synthetic-benchmark evidence, not production performance.",
+    "Never imply that public benchmark references were ingested unless an artifact proves it.",
+    "Never generate operational fraud instructions, access live payments, or bypass human review.",
+    "Prefer read endpoints for grounding before invoking an action endpoint.",
+    "Preserve model, scenario, feature, and dataset version identifiers in explanations."
+  ]
+}

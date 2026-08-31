@@ -1,0 +1,38 @@
+# Mastercard GFF 2026 AI Defense Lab
+
+> Independent competition prototype for governed synthetic payment-fraud research. No real customer data, live payment access, or automatic production model promotion.
+
+Canonical agent context: /agent-context.json
+Human implementation guide: /guide.html
+Repository: https://github.com/nemesis0007/fraudguard-360
+
+## Recommended workflow
+
+1. Discover: inspect AI-enabled attack families and create safety-bounded scenario metadata.
+2. Generate: require human approval, then create reproducible fictional transactions with provenance.
+3. Defend: score transactions with the locked local XGBoost artifact and graph/rule signals.
+4. Prove: inspect precision, recall, F1, false positives, false negatives, and an excluded-family holdout.
+5. Learn: place model misses into a human-reviewed retraining-candidate queue. Never auto-promote.
+
+## Grounded facts
+
+- Dataset: 210,000 synthetic payment events; 21 trained attack families plus LAUNDER_001 held out completely.
+- Model: portable local XGBoost artifact, version auralis-xgb-210k-932b64e9bc, threshold 0.405.
+- Test metrics: precision 0.784869, recall 0.829953, F1 0.806782, ROC AUC 0.944223.
+- Holdout metrics: precision 0.763884, recall 0.856142, F1 0.807386.
+- Decisions: ALLOW, STEP_UP, REVIEW, BLOCK.
+- GenAI scope: offline scenario planning and defensive metadata only; human review is mandatory.
+
+## Useful read-only APIs
+
+- GET /health
+- GET /api/v1/model/health
+- GET /api/v1/evaluation/scorecard
+- GET /api/v1/data/evidence
+- GET /api/v1/campaign/catalog
+- GET /api/v1/attack/catalog
+- GET /api/v1/architecture
+- GET /api/v1/agents/health
+- GET /api/v1/threat-lab/health
+
+For schemas, mutation endpoints, safety constraints, and provenance rules, read /agent-context.json.
