@@ -60,6 +60,16 @@
         <div class="hero-ambient hero-ambient-one" aria-hidden="true"></div><div class="hero-ambient hero-ambient-two" aria-hidden="true"></div>
         <div class="visual-top"><span>PAYMENT DEFENSE / LIVE MODEL</span><b><i></i> ARTIFACT LOCKED</b></div>
         <div class="card-risk-stage">
+          <div class="hero-card-column">
+          <div class="hero-tuner" aria-label="Tune bounded payment features">
+            <header><b>Tune payment</b><span>Bounded model inputs</span></header>
+            <div class="hero-tuner-grid">
+              <label>Velocity <output id="heroVelocityValue">1</output><input id="heroVelocity" type="range" min="0" max="12" step="1" value="1"></label>
+              <label>Amount deviation <output id="heroDeviationValue">0.3×</output><input id="heroDeviation" type="range" min="0" max="6" step="0.1" value="0.3"></label>
+              <label>Merchant risk <output id="heroMerchantRiskValue">8%</output><input id="heroMerchantRisk" type="range" min="0" max="1" step="0.01" value="0.08"></label>
+            </div>
+            <div class="hero-tuner-switches"><label><input id="heroNewDevice" type="checkbox"><span></span>New device</label><label><input id="heroOnline" type="checkbox"><span></span>Online payment</label></div>
+          </div>
           <article class="auralis-card" id="auralisCard" aria-label="Synthetic Mastercard GFF demonstration card">
             <div class="card-sheen" aria-hidden="true"></div>
             <header><span class="card-mark" aria-hidden="true"><i></i><i></i></span><b>MASTERCARD GFF</b><small>AI DEFENSE LAB</small></header>
@@ -68,6 +78,7 @@
             <p class="card-number">5412&nbsp;&nbsp;8794&nbsp;&nbsp;0036&nbsp;&nbsp;2026</p>
             <footer><span><small>CARDHOLDER</small><b>SYNTHETIC CUSTOMER</b></span><span><small>VALID THRU</small><b>08/30</b></span><em>AI</em></footer>
           </article>
+          </div>
           <div class="risk-beam" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
           <aside class="payment-receipt">
             <div class="receipt-head"><span>LIVE AUTHORIZATION</span><i id="heroReceiptPulse"></i></div>

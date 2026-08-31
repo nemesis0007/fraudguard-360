@@ -150,12 +150,14 @@ test("site exposes attack anatomy and direct GitHub dataset access", () => withS
   assert.match(homepage, /data-hero-preset="normal"[\s\S]*Normal payment/);
   assert.match(homepage, /data-hero-preset="coordinated"/);
   assert.match(homepage, /11 preset features → live locked XGBoost score/);
+  assert.match(homepage, /id="heroVelocity"[\s\S]*min="0" max="12"[\s\S]*id="heroMerchantRisk"[\s\S]*max="1"/);
   assert.doesNotMatch(homepage, /data-hero-preset="device"/);
   assert.match(homepage, />Home<[\s\S]*1 · Generate fraud test[\s\S]*2 · Test defense[\s\S]*3 · See results[\s\S]*How it works/);
   assert.match(homepage, /CHOOSE FRAUD TYPE[\s\S]*Fraud pattern[\s\S]*Generate synthetic fraud scenario/);
   assert.match(homepage, /Advanced settings[\s\S]*Advanced agent experiment[\s\S]*Browse the full fraud library/);
   assert.match(appSource, /state\.modelContext = \{ \.\.\.features \}/);
   assert.doesNotMatch(appSource, /const features = \{ velocity_1h:[^\n]+card_not_present: 1/);
+  assert.match(appSource, /function tuneHeroPayment\(\)[\s\S]*setTimeout\(\(\) => scoreHeroFeatures\(features\), 280\)/);
   assert.doesNotMatch(homepage, /Watch AI attack/);
   assert.match(homepage, /LIVE ATTACK ANATOMY/);
   assert.match(homepage, /id="attackDiagram"/);

@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal", modelContext: null };
+const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal", heroFeatures: null, heroScoreRequest: 0, modelContext: null };
 const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", evidence: "#evaluation", data: "#dataset", system: "#architecture" };
 const workspaceNames = { overview: "Home", missions: "Generate fraud test", simulation: "Test defense", evidence: "See results", system: "How it works" };
 const workspaceGroups = { overview: ["overview"], missions: ["missions", "threats"], simulation: ["simulation"], evidence: ["evidence", "data"], system: ["system"] };
@@ -598,20 +598,49 @@ function populateModelForm(features) {
   $("#modelLocation").checked = Boolean(features.location_shift);
 }
 
-async function scoreHeroPreset(name) {
-  const preset = heroPresets[name] || heroPresets.normal;
-  state.heroPreset = name;
-  document.querySelectorAll("[data-hero-preset]").forEach((button) => button.classList.toggle("active", button.dataset.heroPreset === name));
-  $("#heroMerchant").textContent = preset.merchant;
-  $("#heroMerchantGlyph").textContent = preset.glyph;
-  $("#heroChannel").textContent = preset.channel;
-  $("#heroAmount").textContent = preset.amount;
-  $("#heroReasons").innerHTML = preset.reasons.map((reason) => `<span>${escapeHtml(reason)}</span>`).join("");
+function syncHeroTuner(features) {
+  $("#heroVelocity").value = features.velocity_1h;
+  $("#heroVelocityValue").textContent = features.velocity_1h;
+  $("#heroDeviation").value = features.amount_deviation;
+  $("#heroDeviationValue").textContent = `${Number(features.amount_deviation).toFixed(1)}×`;
+  $("#heroMerchantRisk").value = features.merchant_risk;
+  $("#heroMerchantRiskValue").textContent = `${Math.round(features.merchant_risk * 100)}%`;
+  $("#heroNewDevice").checked = Boolean(features.new_device);
+  $("#heroOnline").checked = Boolean(features.card_not_present);
+}
+
+function readHeroTuner() {
+  return { ...(state.heroFeatures || heroPresets.normal.features), velocity_1h: Number($("#heroVelocity").value), amount_deviation: Number($("#heroDeviation").value), merchant_risk: Number($("#heroMerchantRisk").value), new_device: Number($("#heroNewDevice").checked), card_not_present: Number($("#heroOnline").checked) };
+}
+
+let heroTuneTimer;
+function tuneHeroPayment() {
+  const features = readHeroTuner();
+  state.heroFeatures = features;
+  state.heroPreset = "custom";
+  document.querySelectorAll("[data-hero-preset]").forEach((button) => button.classList.remove("active"));
+  $("#heroVelocityValue").textContent = features.velocity_1h;
+  $("#heroDeviationValue").textContent = `${features.amount_deviation.toFixed(1)}×`;
+  $("#heroMerchantRiskValue").textContent = `${Math.round(features.merchant_risk * 100)}%`;
+  $("#heroMerchant").textContent = "Custom payment";
+  $("#heroMerchantGlyph").textContent = "C";
+  $("#heroChannel").textContent = `${features.card_not_present ? "Online" : "Card present"} · User tuned`;
+  const reasons = [features.new_device ? "New device" : "Known device", features.velocity_1h >= 5 ? "Velocity spike" : "Normal velocity", features.merchant_risk >= .6 ? "Higher-risk merchant" : "Low-risk merchant"];
+  $("#heroReasons").innerHTML = reasons.map((reason) => `<span>${reason}</span>`).join("");
+  clearTimeout(heroTuneTimer);
+  heroTuneTimer = setTimeout(() => scoreHeroFeatures(features), 280);
+}
+
+async function scoreHeroFeatures(features) {
+  state.heroFeatures = { ...features };
+  state.modelContext = { ...features };
+  const request = ++state.heroScoreRequest;
   $("#heroReceiptPulse").classList.add("scoring");
   $("#heroDecision").className = "";
   $("#heroDecision").textContent = "SCORING";
   try {
-    const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features: preset.features }) });
+    const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features }) });
+    if (request !== state.heroScoreRequest) return;
     const level = result.prediction.startsWith("HIGH") ? "high" : result.prediction.startsWith("MEDIUM") ? "medium" : "low";
     $("#heroDecision").className = level;
     $("#heroDecision").textContent = result.prediction.replaceAll("_", " ");
@@ -625,11 +654,24 @@ async function scoreHeroPreset(name) {
     $("#heroDecision").textContent = "SAFE FALLBACK";
     $("#heroProbability").textContent = "Unavailable";
     $("#heroModelVersion").textContent = "MODEL ENDPOINT UNAVAILABLE";
-  } finally { $("#heroReceiptPulse").classList.remove("scoring"); }
+  } finally { if (request === state.heroScoreRequest) $("#heroReceiptPulse").classList.remove("scoring"); }
+}
+
+async function scoreHeroPreset(name) {
+  const preset = heroPresets[name] || heroPresets.normal;
+  state.heroPreset = name;
+  document.querySelectorAll("[data-hero-preset]").forEach((button) => button.classList.toggle("active", button.dataset.heroPreset === name));
+  $("#heroMerchant").textContent = preset.merchant;
+  $("#heroMerchantGlyph").textContent = preset.glyph;
+  $("#heroChannel").textContent = preset.channel;
+  $("#heroAmount").textContent = preset.amount;
+  $("#heroReasons").innerHTML = preset.reasons.map((reason) => `<span>${escapeHtml(reason)}</span>`).join("");
+  syncHeroTuner(preset.features);
+  await scoreHeroFeatures(preset.features);
 }
 
 function inspectHeroPayment() {
-  populateModelForm(heroPresets[state.heroPreset].features);
+  populateModelForm(state.heroFeatures || heroPresets[state.heroPreset].features);
   activateWorkspace("simulation");
   window.setTimeout(() => $("#modelInputForm").requestSubmit(), 320);
 }
@@ -750,6 +792,8 @@ function bindControls() {
   $("#modelInputForm").addEventListener("submit", classifyWithTeamModel);
   $("#runHoldoutProof").addEventListener("click", runHoldoutProof);
   document.querySelectorAll("[data-hero-preset]").forEach((button) => button.addEventListener("click", () => scoreHeroPreset(button.dataset.heroPreset)));
+  ["#heroVelocity", "#heroDeviation", "#heroMerchantRisk"].forEach((selector) => $(selector).addEventListener("input", tuneHeroPayment));
+  ["#heroNewDevice", "#heroOnline"].forEach((selector) => $(selector).addEventListener("change", tuneHeroPayment));
   $("#heroInspect").addEventListener("click", inspectHeroPayment);
   $("#runArena").addEventListener("click", runArena);
   $("#bottomRun")?.addEventListener("click", () => { activateWorkspace("missions"); window.setTimeout(runAgentMission, 350); });
