@@ -24,16 +24,12 @@
       <nav class="workspace-tabs" role="tablist" aria-label="Mastercard GFF workspaces">
         <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Start</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">AI lab</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="threats">Attacks</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulator</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">Evidence</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Dataset</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
       </nav>
       <div class="header-actions">
-        <span class="header-status"><i></i> Sandbox</span>
         <div class="header-theme" data-preference="theme" role="group" aria-label="Color theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button></div>
-        <button class="workspace-primary" id="globalRun" type="button" disabled>Run demo</button>
       </div>
     </div>
     <div class="workspace-progress" aria-hidden="true"><i id="workspaceProgress"></i></div>
@@ -59,7 +55,6 @@
         <p>Test synthetic fraud attacks, score payments with XGBoost, and turn model misses into human-reviewed improvements.</p>
         <div class="hero-actions">
           <button class="button button-primary" id="heroRun">Run the guided demo <span>→</span></button>
-          <button class="text-button" type="button" data-open-workspace="system">Explore the system</button>
         </div>
       </div>
       <div class="hero-visual" aria-label="Interactive card-payment risk check">
@@ -245,7 +240,7 @@
         <div class="model-console">
           <div class="model-console-copy"><p class="kicker">LIVE XGBOOST CLASSIFIER</p><h3>Test one feature vector.</h3><p>This locked challenger was trained only on the canonical 210,000-row synthetic benchmark. The result is inference only; it never updates the model.</p><span id="teamModelState">Checking model artifact</span></div>
           <form class="model-inputs" id="modelInputForm">
-            <label>Transactions in 60 min<input id="modelVelocity" type="number" min="0" max="20" value="6"></label><label>Amount deviation ratio<input id="modelDeviation" type="number" min="0" max="12" step="0.1" value="2.8"></label><label>Shared-device accounts<input id="modelShared" type="number" min="0" max="20" value="5"></label><label>Merchant risk<input id="modelRelationship" type="number" min="0" max="1" step="0.01" value="0.76"></label><label class="model-check"><input id="modelNewDevice" type="checkbox" checked><span>New device</span></label><label class="model-check"><input id="modelNewMerchant" type="checkbox" checked><span>New payee</span></label><label class="model-check"><input id="modelLocation" type="checkbox"><span>Location shift</span></label>
+            <label>Transactions in 60 min<input id="modelVelocity" type="number" min="0" max="20" value="6"></label><label>Amount deviation ratio<input id="modelDeviation" type="number" min="0" max="12" step="0.1" value="2.8"></label><label>Shared-device accounts<input id="modelShared" type="number" min="0" max="20" value="5"></label><label>Merchant risk<input id="modelRelationship" type="number" min="0" max="1" step="0.01" value="0.76"></label><label class="model-check"><input id="modelNewDevice" type="checkbox" checked><span>New device</span></label><label class="model-check"><input id="modelLocation" type="checkbox"><span>Location shift</span></label>
             <button class="run-button" type="submit">Classify with XGBoost <span>→</span></button>
           </form>
           <div class="model-result" id="modelResult"><small>MODEL OUTPUT</small><strong>AWAITING INPUT</strong><span>Probability, risk and model version will appear here.</span></div>
@@ -387,7 +382,7 @@
               <div class="dataset-kpis"><div><strong>210,000</strong><span>labeled rows</span></div><div><strong>21 + 1</strong><span>train families + holdout</span></div><div><strong>23,652</strong><span>hard negatives</span></div><div><strong>11</strong><span>model features</span></div></div>
               <div class="split-visual"><span class="split-train" style="--share:70%"><b>TRAIN</b><small>146,997</small></span><span class="split-validation" style="--share:10%"><b>VALIDATE</b><small>20,865</small></span><span class="split-test" style="--share:20%"><b>TEST</b><small>42,138</small></span></div>
               <p><b>Novel-family holdout:</b> <code>LAUNDER_001</code> is excluded completely from training so the benchmark measures generalization rather than memorization.</p>
-              <div class="dataset-actions"><a class="dataset-primary" href="https://github.com/nemesis0007/fraudguard-360/blob/main/data/releases/fraudguard-360-synthetic-dataset-210k.zip?raw=1">Download full dataset <span>↓</span></a><a href="https://github.com/nemesis0007/fraudguard-360/blob/main/data/sample/training-dataset.sample.jsonl">Browse sample <span>↗</span></a><a href="https://github.com/nemesis0007/fraudguard-360/tree/main/data">Lineage & checksum <span>↗</span></a></div>
+              <div class="dataset-actions"><a class="dataset-primary" href="https://github.com/nemesis0007/fraudguard-360/blob/main/data/releases/fraudguard-360-synthetic-dataset-210k.zip?raw=1">Download dataset <span>↓</span></a><a href="https://github.com/nemesis0007/fraudguard-360/tree/main/data">Verify lineage <span>↗</span></a></div>
             </section>
             <section class="dataset-record">
               <div class="record-head"><span>ROW PREVIEW / JSONL</span><b>FICTIONAL CUSTOMER C0003</b></div>

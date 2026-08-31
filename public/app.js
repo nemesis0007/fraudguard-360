@@ -163,7 +163,6 @@ function bindWorkspaceControls() {
     event.preventDefault(); activateWorkspace(nextView);
   }));
   window.addEventListener("hashchange", () => activateWorkspace(workspaceForHash(window.location.hash), { updateHistory: false }));
-  $("#globalRun").addEventListener("click", () => { activateWorkspace("simulation"); if (state.catalog.length) window.setTimeout(runArena, 250); });
   $("#workspaceGuideAction").addEventListener("click", (event) => {
     const target = document.querySelector(event.currentTarget.dataset.target);
     target?.scrollIntoView({ behavior: document.documentElement.dataset.motion === "reduced" ? "auto" : "smooth", block: "start" });
@@ -595,7 +594,6 @@ function populateModelForm(features) {
   $("#modelShared").value = features.shared_device_count;
   $("#modelRelationship").value = features.merchant_risk;
   $("#modelNewDevice").checked = Boolean(features.new_device);
-  $("#modelNewMerchant").checked = Boolean(features.new_payee);
   $("#modelLocation").checked = Boolean(features.location_shift);
 }
 
@@ -637,7 +635,7 @@ function inspectHeroPayment() {
 
 async function classifyWithTeamModel(event) {
   event.preventDefault();
-  const features = { velocity_1h: Number($("#modelVelocity").value), amount_deviation: Number($("#modelDeviation").value), new_device: Number($("#modelNewDevice").checked), shared_device_count: Number($("#modelShared").value), location_shift: Number($("#modelLocation").checked), new_payee: Number($("#modelNewMerchant").checked), card_not_present: 1, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: Number($("#modelRelationship").value) };
+  const features = { velocity_1h: Number($("#modelVelocity").value), amount_deviation: Number($("#modelDeviation").value), new_device: Number($("#modelNewDevice").checked), shared_device_count: Number($("#modelShared").value), location_shift: Number($("#modelLocation").checked), new_payee: 0, card_not_present: 1, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: Number($("#modelRelationship").value) };
   const output = $("#modelResult"); output.innerHTML = "<small>MODEL OUTPUT</small><strong>SCORING…</strong><span>Sending the canonical 11-feature vector.</span>";
   try { const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features }) }); const level = result.prediction.startsWith("HIGH") ? "high" : result.prediction.startsWith("MEDIUM") ? "medium" : "low"; output.innerHTML = `<small>MODEL OUTPUT · ${escapeHtml(result.provider)}</small><strong class="${level}">${escapeHtml(result.prediction.replaceAll("_", " "))}</strong><span>${Math.round(result.fraud_probability * 1000) / 10}% fraud probability · risk ${result.risk_score}/100</span><b>${escapeHtml(result.model_version)} · ${result.latency_ms} ms</b>`; }
   catch (error) { output.innerHTML = `<small>MODEL OUTPUT</small><strong>UNAVAILABLE</strong><span>${escapeHtml(error.message)}. The locked local artifact could not be loaded, so no model claim is shown.</span>`; }
@@ -688,7 +686,6 @@ async function initialize() {
     api("/api/v1/campaign/catalog"), api("/api/v1/attack/catalog"), api("/api/v1/model/health"), api("/api/v1/evaluation/scorecard"), api("/api/v1/agents/health"), api("/api/v1/threat-lab/health")
   ]);
   state.catalog = catalog; state.attacks = attacks; state.health = health; state.agentHealth = agentHealth; state.threatHealth = threatHealth;
-  $("#globalRun").disabled = false;
   $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
   $("#scenario").value = catalog[0].id;
   $("#agentCampaign").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
