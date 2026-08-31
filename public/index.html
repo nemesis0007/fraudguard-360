@@ -99,27 +99,30 @@
     <section class="agent-lab-section" id="agent-lab" data-workspace-view="missions">
       <div class="shell">
         <div class="section-intro agent-lab-intro">
-          <div><p class="kicker red-kicker">HUMAN-GOVERNED GENAI LAB</p><h2>Discover safely.<br>Approve deliberately.</h2></div>
-          <p>Use a hosted LLM or the safe offline analyst to propose observable attack telemetry. Strict validation and a human decision separate every draft from the synthetic simulator.</p>
+          <div><p class="kicker red-kicker">STEP 1</p><h2>Generate a fraud test.</h2></div>
+          <p>Choose a fraud type. The system creates a fictional scenario for you to review before it can enter the simulator.</p>
         </div>
 
         <div class="threat-review-lab">
           <div class="threat-review-compose">
-            <div class="mission-panel-title"><span>01 / ANALYST BRIEF</span><small id="threatProvider">Checking provider</small></div>
-            <label for="threatFocus">What defensive gap should the analyst explore?</label>
-            <textarea id="threatFocus" rows="3" maxlength="240">Adaptive cross-channel fraud that looks normal per transaction but forms a coordinated entity graph</textarea>
-            <div class="threat-review-fields">
-              <label for="threatBase">Known attack anchor<select id="threatBase"></select></label>
-              <label for="threatSurface">Payment surface<select id="threatSurface"><option>CARD</option><option>UPI</option><option>WALLET</option><option>BANK_TRANSFER</option><option>BNPL</option><option>REMITTANCE</option><option>MERCHANT_ACQUIRING</option><option>LOYALTY</option></select></label>
-            </div>
+            <div class="mission-panel-title"><span>CHOOSE FRAUD TYPE</span><small id="threatProvider">Checking generator</small></div>
+            <label for="threatBase">Fraud pattern<select id="threatBase"></select></label>
+            <details class="advanced-options">
+              <summary>Advanced settings <span>Optional</span></summary>
+              <label for="threatFocus">Custom test goal</label>
+              <textarea id="threatFocus" rows="3" maxlength="240">Adaptive cross-channel fraud that looks normal per transaction but forms a coordinated entity graph</textarea>
+              <label for="threatSurface">Payment type<select id="threatSurface"><option>CARD</option><option>UPI</option><option>WALLET</option><option>BANK_TRANSFER</option><option>BNPL</option><option>REMITTANCE</option><option>MERCHANT_ACQUIRING</option><option>LOYALTY</option></select></label>
+            </details>
             <button class="mission-run threat-discover" id="discoverThreat" type="button">Generate synthetic fraud scenario <span>→</span></button>
-            <p class="threat-safety-note">Only synthetic, aggregate observables and bounded parameters are accepted. Operational abuse instructions are rejected.</p>
+            <p class="threat-safety-note">Uses fictional data only. Nothing is sent to a real payment system.</p>
           </div>
           <div class="threat-review-result" id="threatReviewResult">
-            <div class="threat-empty"><span>02</span><b>No draft yet</b><p>Generate a scenario, inspect its evidence and parameters, then approve or reject it.</p></div>
+            <div class="threat-empty"><span>02</span><b>Your test will appear here</b><p>Generate it, review the summary, then approve or reject it.</p></div>
           </div>
         </div>
 
+        <details class="optional-lab">
+          <summary><b>Advanced agent experiment</b><span>Optional: evolve multiple synthetic policies</span></summary>
         <div class="mission-app">
           <header class="mission-bar">
             <div class="mission-title"><span class="mission-mark">LAB</span><div><b>Policy Mission Lab</b><small id="missionId">LOCAL RUNTIME · NO EXTERNAL MODEL REQUIRED</small></div></div>
@@ -164,6 +167,7 @@
             <p id="missionHandoff">The winning policy will load into the manual arena with a sealed audit trail.</p>
           </footer>
         </div>
+        </details>
       </div>
     </section>
 
@@ -198,6 +202,8 @@
     </section>
 
     <section class="threat-atlas shell" id="threats" data-workspace-view="threats">
+      <details class="optional-lab optional-library">
+        <summary><b>Browse the full fraud library</b><span>Optional: explore all test patterns and signals</span></summary>
       <div class="section-intro threat-intro">
         <div><p class="kicker red-kicker">VERSIONED THREAT REGISTRY</p><h2>Campaign definitions<br>with observable evidence.</h2></div>
         <p>Each entry records the enabling capability, affected payment surfaces, four-stage observable sequence, signal fingerprint, generator primitive, and expected controls.</p>
@@ -225,6 +231,7 @@
           <button class="atlas-launch" id="launchSpotlight">Open in simulation <span>→</span></button>
         </article>
       </div>
+      </details>
     </section>
 
     <section class="arena-section" id="arena" data-workspace-view="simulation">
