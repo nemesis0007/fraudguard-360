@@ -11,6 +11,5 @@ export function buildServer() {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT ?? 8080);
   const { server } = buildServer();
-  server.listen(port, "0.0.0.0", () => console.log(`FraudGuard 360 running at http://localhost:${port}`));
+  server.listen(port, "0.0.0.0", () => console.log(`Auralis Risk AI Defense Lab running at http://localhost:${port}`));
 }
-

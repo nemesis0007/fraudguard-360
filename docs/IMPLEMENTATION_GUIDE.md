@@ -1,4 +1,4 @@
-# FraudGuard 360 — Step-by-Step Implementation Guide
+# Auralis Risk — Step-by-Step Implementation Guide
 
 ## 1. The actual competition problem
 
@@ -22,7 +22,7 @@ The required submission contains a complete runnable GitHub repository, a DOCX s
 
 ## 2. System boundary
 
-FraudGuard separates the system into two paths.
+Auralis separates the system into two paths.
 
 **Offline / nearline**
 

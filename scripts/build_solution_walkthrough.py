@@ -6,15 +6,17 @@ from pathlib import Path
 from docx import Document
 from docx.enum.section import WD_SECTION
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "FraudGuard_360_Solution_Walkthrough.docx"
-MODEL = json.loads((ROOT / "models" / "fraudguard-linear-v1.json").read_text(encoding="utf-8"))
+OUTPUT = ROOT / "Auralis_Risk_Solution_Walkthrough.docx"
+MODEL = json.loads((ROOT / "models" / "auralis-xgb-210k-v1.json").read_text(encoding="utf-8"))
+HOLDOUT = json.loads((ROOT / "models" / "auralis-xgb-210k-holdout.json").read_text(encoding="utf-8"))
+BASELINE = json.loads((ROOT / "models" / "fraudguard-linear-v1.json").read_text(encoding="utf-8"))
 
 NAVY = "0B2545"
 BLUE = "2E74B5"
@@ -372,7 +374,10 @@ def add_section_title(doc, number, title, lead):
 
 
 def add_page_break(doc, even_page=False):
-    doc.add_page_break()
+    # Attach the break to the final paragraph so a nearly full page cannot push
+    # an empty break paragraph onto the next page and create a blank sheet.
+    paragraph = doc.paragraphs[-1] if doc.paragraphs else doc.add_paragraph()
+    paragraph.add_run().add_break(WD_BREAK.PAGE)
 
 
 def build():
@@ -395,14 +400,14 @@ def build():
     header = section.header
     paragraph = header.paragraphs[0]
     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    run = paragraph.add_run("FRAUDGUARD 360  |  MASTERCARD INNOVATION CHALLENGE 2026")
+    run = paragraph.add_run("AURALIS RISK  |  MASTERCARD INNOVATION CHALLENGE 2026")
     set_font(run, size=8.5, color=MUTED, bold=True)
     add_page_number(section.footer.paragraphs[0])
 
     even_header = section.even_page_header
     paragraph = even_header.paragraphs[0]
     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    run = paragraph.add_run("FRAUDGUARD 360  |  MASTERCARD INNOVATION CHALLENGE 2026")
+    run = paragraph.add_run("AURALIS RISK  |  MASTERCARD INNOVATION CHALLENGE 2026")
     set_font(run, size=8.5, color=MUTED, bold=True)
     add_page_number(section.even_page_footer.paragraphs[0])
 
@@ -415,7 +420,7 @@ def build():
 
     title = doc.add_paragraph(style="Title")
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    title.add_run("FraudGuard 360")
+    title.add_run("Auralis Risk")
     subtitle = doc.add_paragraph(style="Subtitle")
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
     subtitle.add_run("Identify. Generate. Defend. Learn.")
@@ -428,7 +433,7 @@ def build():
     add_callout(
         doc,
         "One-line pitch",
-        "FraudGuard 360 turns emerging fraud into a controlled synthetic moving target so the defense learns before an attack reaches the payment decision path.",
+        "Auralis Risk turns emerging fraud into a governed synthetic moving target so defenders can discover, test, detect, and learn before an attack reaches the payment decision path.",
         fill="EAF5F7",
         accent=CYAN,
     )
@@ -439,18 +444,18 @@ def build():
         [
             ("System shape", "Modular monolith with offline training and deterministic real-time scoring"),
             ("Dataset", "210,000 traceable synthetic training transactions plus one unseen attack-family holdout"),
-            ("Model", f"Regularized logistic regression + transparent rules ({MODEL['model_version']})"),
-            ("Safety", "Synthetic-only data, no real credentials, no GenAI in the authorization path"),
+            ("Model", f"Portable 280-tree XGBoost + transparent rules ({MODEL['model_version']})"),
+            ("Safety", "Synthetic-only data; human-approved GenAI scenarios; no LLM in the authorization path"),
         ],
         [2300, 7060],
         font_size=9.5,
     )
 
-    add_page_break(doc, even_page=True)
+    add_page_break(doc)
     doc.add_heading("Executive Summary", level=1)
     p = doc.add_paragraph(
         "Generative AI makes payment fraud cheaper to vary, faster to scale, and harder for static defenses to anticipate. "
-        "FraudGuard 360 answers the competition brief with one measurable closed loop: discover plausible attack families, "
+        "Auralis Risk answers the competition brief with one measurable closed loop: discover plausible attack families, "
         "generate safe synthetic payment behavior, score it through a live-style defense, identify misses and false positives, "
         "and route those gaps into reviewed hardening work."
     )
@@ -463,10 +468,10 @@ def build():
     add_list(
         doc,
         [
-            ("Attack diversity - ", "ten structured families spanning identity, device, merchant, network, bot, and payment behavior."),
+            ("Attack diversity - ", "22 structured families spanning identity, device, merchant, network, bot, and payment behavior."),
             ("Simulation fidelity - ", "seeded, constrained transactions with provenance, time order, fictional entities, and explicit synthetic labels."),
             ("Detection efficacy - ", "precision, recall, F1, false-positive rate, confusion matrix, reason codes, and latency."),
-            ("Novelty - ", "an attack-family holdout and a safe fallback comparison create measurable evidence of generalization."),
+            ("Novelty - ", "a completely excluded attack-family holdout and a linear-baseline comparison create measurable evidence of generalization."),
             ("Live-payment feasibility - ", "a dependency-light synchronous API keeps generative AI outside the authorization path."),
         ],
         False,
@@ -487,7 +492,6 @@ def build():
         [1500, 3500, 4360],
     )
 
-    add_page_break(doc)
     add_section_title(
         doc,
         1,
@@ -537,8 +541,29 @@ def build():
         fill="FBEFEF",
         accent=RED,
     )
+    doc.add_heading("Governed GenAI threat discovery", level=2)
+    add_list(
+        doc,
+        [
+            "An optional Groq-hosted analyst proposes strictly structured, defensive simulation drafts; a labeled local analyst fallback keeps the demo reproducible without an API key.",
+            "Every response is schema-validated, safety-filtered, bounded to synthetic parameters, and stored with provider/model provenance.",
+            "A new draft starts as PENDING_REVIEW. Simulation remains disabled until a human explicitly approves it; rejected drafts cannot run.",
+            "False negatives can seed new reviewed drafts, but neither GenAI nor feedback can train or promote a production model automatically.",
+        ],
+        False,
+    )
+    genai_image = ROOT / "docs" / "assets" / "auralis-genai-review.png"
+    genai_paragraph = doc.add_paragraph()
+    genai_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    genai_shape = genai_paragraph.add_run().add_picture(str(genai_image), width=Inches(6.25))
+    genai_shape._inline.docPr.set("name", "Auralis Risk governed GenAI threat review")
+    genai_shape._inline.docPr.set("descr", "Threat analyst draft marked pending review, with approval, rejection, and disabled simulation controls.")
+    genai_caption = doc.add_paragraph()
+    genai_caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    genai_caption.paragraph_format.space_after = Pt(0)
+    set_font(genai_caption.add_run("Figure 1. A threat draft cannot generate evidence before human approval."), size=9, color=MUTED, italic=True)
 
-    add_page_break(doc, even_page=True)
+    add_page_break(doc)
     add_section_title(
         doc,
         2,
@@ -555,7 +580,7 @@ def build():
             ("Class balance", "Approximately 25% fraud per scenario for the current controlled benchmark"),
             ("Reproducibility", "Fixed seeds, generator version, feature version, and scenario provenance"),
             ("Privacy", "All identifiers and events are fictional; rows are marked synthetic"),
-            ("Storage", "Runtime JSONL is ignored by Git; only the small model artifact is committed"),
+            ("Storage", "The versioned 210,000-row release archive, manifest, model artifact, and evaluation evidence are committed"),
         ],
         [2200, 7160],
     )
@@ -622,20 +647,20 @@ def build():
         False,
     )
 
-    add_page_break(doc, even_page=True)
+    add_page_break(doc)
     add_section_title(
         doc,
         4,
         "Defend: train an explainable model and safe policy",
-        "The first trained benchmark is intentionally simple, inspectable, and inexpensive to serve.",
+        "A compact nonlinear detector improves recall while remaining inexpensive and reproducible to serve.",
     )
-    doc.add_heading("Why logistic regression first", level=2)
+    doc.add_heading("Why portable XGBoost", level=2)
     add_list(
         doc,
         [
-            "Transparent coefficients make the benchmark easy to inspect and challenge.",
-            "A small JSON artifact supports dependency-free inference in the Node service.",
-            "Deterministic training creates a stable baseline for later LightGBM/XGBoost experiments.",
+            "Gradient-boosted trees capture nonlinear interactions between velocity, deviation, device, graph, identity, and merchant signals.",
+            "A portable JSON artifact supports dependency-light inference in the Node service without a separate Python runtime.",
+            "Deterministic training on the locked 210,000-row release makes the comparison against the original linear baseline reproducible.",
             "If the artifact is missing or invalid, the system continues with transparent rule scoring.",
         ],
         False,
@@ -645,11 +670,10 @@ def build():
         doc,
         [
             "Load versioned feature rows.",
-            "Calculate means and standard deviations using training rows only.",
-            "Balance fraud and legitimate examples.",
-            "Train regularized logistic regression with deterministic gradient descent.",
+            "Preserve customer-entity train, validation, and test partitions to reduce leakage.",
+            "Train a 280-tree XGBoost classifier with fixed seed and controlled class weighting.",
             "Select a validation threshold under a false-positive constraint.",
-            "Evaluate the untouched test set and save a locked artifact.",
+            "Evaluate the untouched test split and the completely excluded LAUNDER_001 family, then save locked artifacts.",
         ],
         True,
     )
@@ -674,7 +698,6 @@ def build():
         "Every response records probability, rule score, reason codes, feature/model versions, scoring mode, and latency."
     )
 
-    add_page_break(doc)
     add_section_title(
         doc,
         5,
@@ -682,13 +705,15 @@ def build():
         "F1 and recall matter, but false positives, explainability, and latency are equally visible in the prototype.",
     )
     test_metrics = MODEL["metrics"]["test"]
+    holdout_metrics = HOLDOUT["metrics"]
+    baseline_metrics = BASELINE["metrics"]["test"]
     add_table(
         doc,
         ["Evaluation", "Precision", "Recall", "F1", "False-positive rate"],
         [
             ("Entity-aware test split", f"{test_metrics['precision']:.3f}", f"{test_metrics['recall']:.3f}", f"{test_metrics['f1']:.3f}", f"{test_metrics['false_positive_rate']:.3f}"),
-            ("Novel holdout ensemble", "0.688", "0.869", "0.768", "0.127"),
-            ("Novel holdout safe fallback", "0.766", "0.590", "0.667", "0.058"),
+            ("Excluded LAUNDER_001 holdout", f"{holdout_metrics['precision']:.3f}", f"{holdout_metrics['recall']:.3f}", f"{holdout_metrics['f1']:.3f}", f"{holdout_metrics['false_positive_rate']:.3f}"),
+            ("Original linear test baseline", f"{baseline_metrics['precision']:.3f}", f"{baseline_metrics['recall']:.3f}", f"{baseline_metrics['f1']:.3f}", f"{baseline_metrics['false_positive_rate']:.3f}"),
         ],
         [3000, 1500, 1500, 1400, 1960],
         font_size=9,
@@ -699,8 +724,8 @@ def build():
         [
             ("Test split - ", "measures held-out customers within the 21 known attack families."),
             ("Novel holdout - ", "uses LAUNDER_001, which is absent from the training dataset."),
-            ("Fallback - ", "shows the deterministic rules-only result if the model cannot be used."),
-            ("Lift - ", "shows whether the trained ensemble improves the unseen-family defense and at what false-positive cost."),
+            ("Holdout - ", "measures 10,000 LAUNDER_001 rows from a family completely absent from training."),
+            ("Measured lift - ", "XGBoost improves test F1 by 3.42 points and recall by 5.70 points over the linear baseline with essentially unchanged false-positive rate."),
         ],
         False,
     )
@@ -712,21 +737,21 @@ def build():
         accent=GOLD,
     )
     doc.add_heading("Prototype evidence", level=2)
-    image_path = ROOT / "docs" / "assets" / "dashboard-holdout.png"
+    image_path = ROOT / "docs" / "assets" / "auralis-xgboost-console.png"
     paragraph = doc.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = paragraph.add_run()
     shape = run.add_picture(str(image_path), width=Inches(6.25))
     doc_pr = shape._inline.docPr
-    doc_pr.set("name", "FraudGuard 360 holdout evaluation dashboard")
-    doc_pr.set("descr", "Dashboard showing a novel holdout evaluation, red team scenario controls, blue team metrics, and explainable decision stream.")
+    doc_pr.set("name", "Auralis Risk holdout evaluation dashboard")
+    doc_pr.set("descr", "Live feature-vector form showing a high-risk classification, fraud probability, risk score, model version, and inference latency.")
     caption = doc.add_paragraph()
     caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
     caption.paragraph_format.space_after = Pt(0)
-    run = caption.add_run("Figure 1. Interactive holdout comparison and explainable transaction decisions.")
+    run = caption.add_run("Figure 2. Browser-verified local XGBoost inference with explicit artifact version and latency.")
     set_font(run, size=9, color=MUTED, italic=True)
 
-    add_page_break(doc, even_page=True)
+    add_page_break(doc)
     add_section_title(
         doc,
         6,
@@ -785,7 +810,7 @@ def build():
         doc,
         [
             "Module boundaries allow feature, model, generator, and monitoring components to split into independent services when scale requires it.",
-            "The model adapter can replace the linear artifact with LightGBM/XGBoost or a Python service without changing the score API.",
+            "The model adapter now serves the portable XGBoost artifact locally and can later call a separately governed model service without changing the score API.",
             "Redis can hold online feature state, PostgreSQL can persist scenarios and feedback, and a queue can carry nearline events.",
             "The hot path remains deterministic, versioned, observable, and independent of generative-model availability.",
         ],
@@ -804,15 +829,15 @@ def build():
         False,
     )
 
-    add_page_break(doc, even_page=True)
+    add_page_break(doc)
     doc.add_heading("Five-minute Demonstration", level=1)
     add_list(
         doc,
         [
             ("0:00-0:35 - Problem. ", "Explain why GenAI changes the speed and variety of payment fraud."),
-            ("0:35-1:10 - Identify. ", "Show 22 attack families, the 24-campaign threat atlas, and the unseen layering scenario."),
-            ("1:10-1:55 - Generate. ", "Launch a seeded synthetic replay and explain provenance and fidelity controls."),
-            ("1:55-2:50 - Defend. ", "Show precision, recall, F1, false positives, decision latency, and reason codes."),
+            ("0:35-1:20 - Identify. ", "Generate a GenAI threat draft, show the blocked simulation button, approve it, then run the safe synthetic scenario."),
+            ("1:20-2:00 - Generate. ", "Launch a seeded replay and explain provenance, 210,000-row lineage, and fidelity controls."),
+            ("2:00-2:55 - Defend. ", "Enter a feature vector in the website and show the live XGBoost probability, decision, model version, and latency."),
             ("2:50-3:40 - Learn. ", "Generate a governed mutation batch from observed holdout misses."),
             ("3:40-4:30 - Feasibility. ", "Explain deterministic hot path, fallback, staged deployment, and human approval."),
             ("4:30-5:00 - Close. ", "State limitations and the defense-guided mutation roadmap."),
@@ -826,7 +851,7 @@ def build():
         [
             ("P0", "Candidate training", "Before/after artifact on approved mutation batches"),
             ("P0", "Reference fidelity", "Compare against authorized aggregate distributions when available"),
-            ("P1", "Nonlinear model benchmark", "LightGBM/XGBoost comparison on locked data"),
+            ("P1", "Calibration benchmark", "Probability calibration and cost-sensitive threshold comparison on locked data"),
             ("P1", "Graph intelligence", "Shared-entity and ring-density lift"),
             ("P1", "Observability", "Drift test, metrics endpoint, durable audit trail"),
         ],
@@ -849,14 +874,14 @@ def build():
     sources = [
         "Mastercard Innovation Challenge 2026 private Kaggle overview (accessed 22 August 2026): https://www.kaggle.com/competitions/mastercard-innovation-challenge-2026",
         "Mastercard Innovation Challenge @ GFF 2026 public Luma brief (accessed 22 August 2026): https://luma.com/kyz978xv",
-        "FraudGuard 360 repository implementation, model artifact, automated tests, and browser-verified prototype.",
-        "User-provided planning documents: FraudGuard 360 Team Work Plan and Mastercard GFF 2026 AI Defense Lab Project Report.",
+        "Auralis Risk repository implementation, portable XGBoost artifact, automated tests, and browser-verified prototype.",
+        "User-provided planning documents: team work plan and Mastercard GFF 2026 AI Defense Lab Project Report.",
     ]
     add_list(doc, sources, False)
 
-    doc.core_properties.title = "FraudGuard 360 Solution Walkthrough"
+    doc.core_properties.title = "Auralis Risk Solution Walkthrough"
     doc.core_properties.subject = "Mastercard Innovation Challenge 2026 - AI Defense Lab for Payment Security"
-    doc.core_properties.author = "FraudGuard 360 Team"
+    doc.core_properties.author = "Auralis Risk Team"
     doc.core_properties.keywords = "fraud detection, synthetic data, red team, blue team, payment security"
     doc.save(OUTPUT)
     print(OUTPUT)
