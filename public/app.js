@@ -20,7 +20,7 @@ const workspaceGuides = {
   simulation: {
     eyebrow: "LIVE SIMULATOR / GUIDED REPLAY",
     title: "Watch one attack become one decision.",
-    description: "Choose an attack and press Run. Auralis creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
+    description: "Choose an attack and press Run. The GFF lab creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
     steps: ["Select an attack", "Run fictional payments", "Inspect the decision"],
     action: "Open the simulator"
   },
@@ -601,7 +601,7 @@ async function actOnThreat(event) {
   if (!action || !state.threatDraft) return;
   try {
     if (action === "SIMULATE") { const dataset = await api(`/api/v1/threat-lab/scenarios/${state.threatDraft.scenario_id}/simulate`, { method: "POST", body: JSON.stringify({ volume: 160, seed: 2026 }) }); toast(`${dataset.rows} approved synthetic events generated with full provenance`); const campaign = state.catalog.find((item) => item.base_scenario_id === state.threatDraft.candidate.base_scenario_id); if (campaign) { $("#scenario").value = campaign.id; $("#agentCampaign").value = campaign.id; } return; }
-    const updated = await api(`/api/v1/threat-lab/scenarios/${state.threatDraft.scenario_id}/review`, { method: "POST", body: JSON.stringify({ decision: action, reviewer: "dashboard-operator", notes: "Reviewed in the Auralis operator console" }) }); renderThreatDraft(updated); toast(action === "APPROVE" ? "Scenario approved; simulation is now unlocked" : "Scenario rejected and sealed");
+    const updated = await api(`/api/v1/threat-lab/scenarios/${state.threatDraft.scenario_id}/review`, { method: "POST", body: JSON.stringify({ decision: action, reviewer: "dashboard-operator", notes: "Reviewed in the Mastercard GFF operator console" }) }); renderThreatDraft(updated); toast(action === "APPROVE" ? "Scenario approved; simulation is now unlocked" : "Scenario rejected and sealed");
   } catch (error) { toast(error.message); }
 }
 
