@@ -750,7 +750,7 @@ function bindControls() {
   document.querySelectorAll("[data-hero-preset]").forEach((button) => button.addEventListener("click", () => scoreHeroPreset(button.dataset.heroPreset)));
   $("#heroInspect").addEventListener("click", inspectHeroPayment);
   $("#runArena").addEventListener("click", runArena);
-  ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { activateWorkspace("missions"); window.setTimeout(runAgentMission, 350); }));
+  $("#bottomRun")?.addEventListener("click", () => { activateWorkspace("missions"); window.setTimeout(runAgentMission, 350); });
   $("#graphCanvas").addEventListener("click", (event) => {
     if (!state.arena) return;
     const rect = event.currentTarget.getBoundingClientRect();

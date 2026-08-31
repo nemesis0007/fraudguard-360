@@ -146,7 +146,10 @@ test("site exposes attack anatomy and direct GitHub dataset access", () => withS
   assert.match(homepage, /class="header-theme"[\s\S]*data-value="dark"[\s\S]*data-value="light"/);
   assert.match(homepage, /Mastercard GFF 2026 — AI Defense Lab/);
   assert.match(homepage, /class="auralis-card"/);
+  assert.match(homepage, /data-hero-preset="normal"[\s\S]*Normal payment/);
   assert.match(homepage, /data-hero-preset="coordinated"/);
+  assert.doesNotMatch(homepage, /data-hero-preset="device"/);
+  assert.match(homepage, />Home<[\s\S]*1 · Create attack[\s\S]*2 · Test defense[\s\S]*3 · See results[\s\S]*How it works/);
   assert.doesNotMatch(homepage, /Watch AI attack/);
   assert.match(homepage, /LIVE ATTACK ANATOMY/);
   assert.match(homepage, /id="attackDiagram"/);

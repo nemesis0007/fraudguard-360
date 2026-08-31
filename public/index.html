@@ -23,11 +23,11 @@
         <span>MASTERCARD <b>GFF 2026</b></span>
       </a>
       <nav class="workspace-tabs" role="tablist" aria-label="Mastercard GFF workspaces">
-        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Overview</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">1 · Discover</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">2 · Defend</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">3 · Prove</button>
-        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">Architecture</button>
+        <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Home</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">1 · Create attack</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">2 · Test defense</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">3 · See results</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
       </nav>
       <div class="header-actions">
         <div class="header-theme" data-preference="theme" role="group" aria-label="Color theme"><button type="button" data-value="dark">Dark</button><button type="button" data-value="light">Light</button></div>
@@ -53,9 +53,7 @@
       <div class="hero-copy">
         <h1>Fraud changes shape.<br><em>Your defense should too.</em></h1>
         <p>Test synthetic fraud attacks, score payments with XGBoost, and turn model misses into human-reviewed improvements.</p>
-        <div class="hero-actions">
-          <button class="button button-primary" id="heroRun">Run the guided demo <span>→</span></button>
-        </div>
+        <p class="hero-quick-flow"><b>1</b> Choose an example <span>→</span> <b>2</b> Read the decision <span>→</span> <b>3</b> Open details if needed</p>
       </div>
       <div class="hero-visual" aria-label="Interactive card-payment risk check">
         <canvas id="heroCanvas" width="1240" height="620" aria-hidden="true"></canvas>
@@ -77,13 +75,12 @@
             <div class="risk-meter"><span><i id="heroRiskFill"></i></span><div><small>MODEL RISK</small><b id="heroRiskScore">12 / 100</b></div></div>
             <div class="receipt-decision"><span><small>DECISION</small><strong id="heroDecision">ALLOW</strong></span><span><small>FRAUD PROBABILITY</small><b id="heroProbability">12.0%</b></span></div>
             <div class="receipt-reasons" id="heroReasons"><span>Known device</span><span>Stable amount</span></div>
-            <button type="button" id="heroInspect">Inspect this payment <span>→</span></button>
+            <button type="button" id="heroInspect">Open detailed simulator <span>→</span></button>
           </aside>
         </div>
-        <div class="hero-scenario-picker"><p><b>Choose a transaction</b><span>Select one to preview its risk decision</span></p><div class="hero-scenarios" role="group" aria-label="Choose a synthetic card scenario">
-          <button type="button" class="active" data-hero-preset="normal"><span></span><b>Everyday purchase</b><small>Low expected risk</small></button>
-          <button type="button" data-hero-preset="device"><span></span><b>New device</b><small>Step-up candidate</small></button>
-          <button type="button" data-hero-preset="coordinated"><span></span><b>Coordinated burst</b><small>Graph + velocity risk</small></button>
+        <div class="hero-scenario-picker"><p><b>Choose one example</b><span>The model result updates immediately</span></p><div class="hero-scenarios" role="group" aria-label="Choose a synthetic card scenario">
+          <button type="button" class="active" data-hero-preset="normal"><span></span><b>Normal payment</b><small>See why it is allowed</small></button>
+          <button type="button" data-hero-preset="coordinated"><span></span><b>Suspicious payment</b><small>See why it is blocked</small></button>
         </div></div>
         <div class="visual-foot"><span id="heroModelVersion">XGBOOST / LOADING</span></div>
       </div>
