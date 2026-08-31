@@ -28,3 +28,12 @@ test("missing artifacts fail safely into fallback state", () => {
   assert.equal(adapter.health().status, "FALLBACK");
 });
 
+test("portable XGBoost inference matches Python export parity cases", () => {
+  const adapter = new ModelAdapter("models/auralis-xgb-210k-v1.json");
+  assert.equal(adapter.available, true);
+  assert.equal(adapter.health().model_type, "xgboost_json");
+  assert.equal(adapter.health().holdout_metrics.f1, 0.807386);
+  for (const sample of adapter.artifact.parity_cases) {
+    assert.ok(Math.abs(adapter.predict(sample.features) - sample.probability) < 0.005);
+  }
+});

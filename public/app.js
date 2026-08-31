@@ -1,13 +1,13 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { catalog: [], health: null, agentHealth: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0 };
-const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", data: "#dataset", system: "#architecture" };
-const workspaceNames = { overview: "Start", missions: "AI lab", threats: "Attacks", simulation: "Simulator", data: "Dataset", system: "How it works" };
+const state = { catalog: [], attacks: [], health: null, scorecard: null, agentHealth: null, threatHealth: null, threatDraft: null, mission: null, missionTimer: null, arena: null, graphNodes: [], animation: 0, heroPreset: "normal" };
+const workspaceTargets = { overview: "#top", missions: "#agent-lab", threats: "#threats", simulation: "#arena", evidence: "#evaluation", data: "#dataset", system: "#architecture" };
+const workspaceNames = { overview: "Start", missions: "AI lab", threats: "Attacks", simulation: "Simulator", evidence: "Evidence", data: "Dataset", system: "How it works" };
 const workspaceGuides = {
   missions: {
     eyebrow: "AI LAB / SAFE EXPERIMENTS",
     title: "See how an attack learns—inside a sandbox.",
-    description: "Local AI agents try different fraud strategies against fictional payments. They cannot reach real accounts, credentials, or payment systems.",
-    steps: ["Choose a goal", "Agents test variations", "Review the winning strategy"],
+    description: "GenAI proposes safe synthetic threat metadata, a human approves it, and local agents test bounded variations against fictional payments.",
+    steps: ["Describe a defense gap", "Review the AI draft", "Approve before simulation"],
     action: "Open the AI lab"
   },
   threats: {
@@ -20,9 +20,16 @@ const workspaceGuides = {
   simulation: {
     eyebrow: "LIVE SIMULATOR / GUIDED REPLAY",
     title: "Watch one attack become one decision.",
-    description: "Choose an attack and press Run. FraudGuard creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
+    description: "Choose an attack and press Run. Auralis creates fictional payments, scores their risk, then shows why each payment was allowed, challenged, reviewed, or blocked.",
     steps: ["Select an attack", "Run fictional payments", "Inspect the decision"],
     action: "Open the simulator"
+  },
+  evidence: {
+    eyebrow: "EVIDENCE / WHAT THE MODEL PROVES",
+    title: "Judge the detector by its misses, not its headline.",
+    description: "Compare the baseline and XGBoost on the same test set, inspect every error count, then rerun a completely excluded attack family without retraining the model.",
+    steps: ["Compare like-for-like models", "Inspect false positives and misses", "Rerun the unseen-family proof"],
+    action: "Review model evidence"
   },
   data: {
     eyebrow: "DATASET / WHAT IT ACTUALLY CONTAINS",
@@ -38,6 +45,11 @@ const workspaceGuides = {
     steps: ["Receive a payment", "Calculate risk", "Allow, challenge, review, or block"],
     action: "View the architecture"
   }
+};
+const heroPresets = {
+  normal: { merchant: "Aster Market", glyph: "A", channel: "Card present · Mumbai", amount: "₹2,480", reasons: ["Known device", "Stable amount", "Local merchant"], features: { velocity_1h: 1, amount_deviation: .32, new_device: 0, shared_device_count: 0, location_shift: 0, new_payee: 0, card_not_present: 0, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: .08 } },
+  device: { merchant: "Northstar Travel", glyph: "N", channel: "Online · Singapore", amount: "₹18,900", reasons: ["New device", "Location shift", "Remote payment"], features: { velocity_1h: 2, amount_deviation: 1.35, new_device: 1, shared_device_count: 1, location_shift: 1, new_payee: 0, card_not_present: 1, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: .31 } },
+  coordinated: { merchant: "Orbit Digital", glyph: "O", channel: "Online · Cross-channel", amount: "₹74,200", reasons: ["Velocity burst", "Shared device", "New beneficiary"], features: { velocity_1h: 8, amount_deviation: 4.2, new_device: 1, shared_device_count: 7, location_shift: 1, new_payee: 1, card_not_present: 1, unusual_hour: 1, new_account: 1, identity_mismatch: 1, merchant_risk: .82 } }
 };
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
@@ -74,6 +86,7 @@ function workspaceForHash(hashValue) {
   if (["#agent-lab"].includes(hashValue)) return "missions";
   if (["#threats"].includes(hashValue)) return "threats";
   if (["#arena"].includes(hashValue)) return "simulation";
+  if (["#evaluation"].includes(hashValue)) return "evidence";
   if (["#dataset", "#evidence"].includes(hashValue)) return "data";
   if (["#architecture", "#team"].includes(hashValue)) return "system";
   return "overview";
@@ -83,7 +96,7 @@ function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   const selected = workspaceTargets[view] ? view : "overview";
   const guide = $("#workspaceGuide");
   const guideContent = workspaceGuides[selected];
-  guide.hidden = !guideContent;
+  guide.hidden = true;
   if (guideContent) {
     $("#workspaceGuideEyebrow").textContent = guideContent.eyebrow;
     $("#workspaceGuideTitle").textContent = guideContent.title;
@@ -569,22 +582,144 @@ async function runArena() {
   finally { button.disabled = false; button.firstChild.textContent = "Run simulation "; }
 }
 
+function renderThreatDraft(draft) {
+  state.threatDraft = draft;
+  const candidate = draft.candidate;
+  const statusClass = draft.status === "APPROVED" ? "approved" : draft.status === "REJECTED" ? "rejected" : "";
+  $("#threatReviewResult").innerHTML = `<div class="draft-head"><div><small>${escapeHtml(draft.scenario_id)} · ${escapeHtml(draft.generated_by)}</small><h3>${escapeHtml(candidate.title)}</h3></div><span class="draft-status ${statusClass}">${escapeHtml(draft.status.replaceAll("_", " "))}</span></div><p class="draft-hypothesis">${escapeHtml(candidate.hypothesis)}</p><div class="draft-scores"><div><small>NOVELTY</small><b>${candidate.novelty_score} / 100</b></div><div><small>DIFFICULTY</small><b>${candidate.difficulty_score} / 100</b></div><div><small>ANCHOR</small><b>${escapeHtml(candidate.base_scenario_id)}</b></div></div><div class="draft-signals">${candidate.observable_signals.map((signal) => `<span>${escapeHtml(signal)}</span>`).join("")}</div><div class="draft-actions"><button class="approve" type="button" data-threat-action="APPROVE" ${draft.status !== "PENDING_REVIEW" ? "disabled" : ""}>Approve for simulation</button><button type="button" data-threat-action="REJECT" ${draft.status !== "PENDING_REVIEW" ? "disabled" : ""}>Reject</button><button class="simulate" type="button" data-threat-action="SIMULATE" ${draft.status !== "APPROVED" ? "disabled" : ""}>Generate synthetic evidence</button></div>`;
+}
+
+async function discoverThreat() {
+  const button = $("#discoverThreat"); button.disabled = true; button.firstChild.textContent = "Analysing safely ";
+  try { const draft = await api("/api/v1/threat-lab/discover", { method: "POST", body: JSON.stringify({ focus: $("#threatFocus").value, base_scenario_id: $("#threatBase").value, payment_surface: $("#threatSurface").value }) }); renderThreatDraft(draft); toast(`${draft.generated_by}: draft awaiting human review`); }
+  catch (error) { toast(error.message); }
+  finally { button.disabled = false; button.firstChild.textContent = "Generate review draft "; }
+}
+
+async function actOnThreat(event) {
+  const action = event.target.closest("[data-threat-action]")?.dataset.threatAction;
+  if (!action || !state.threatDraft) return;
+  try {
+    if (action === "SIMULATE") { const dataset = await api(`/api/v1/threat-lab/scenarios/${state.threatDraft.scenario_id}/simulate`, { method: "POST", body: JSON.stringify({ volume: 160, seed: 2026 }) }); toast(`${dataset.rows} approved synthetic events generated with full provenance`); const campaign = state.catalog.find((item) => item.base_scenario_id === state.threatDraft.candidate.base_scenario_id); if (campaign) { $("#scenario").value = campaign.id; $("#agentCampaign").value = campaign.id; } return; }
+    const updated = await api(`/api/v1/threat-lab/scenarios/${state.threatDraft.scenario_id}/review`, { method: "POST", body: JSON.stringify({ decision: action, reviewer: "dashboard-operator", notes: "Reviewed in the Auralis operator console" }) }); renderThreatDraft(updated); toast(action === "APPROVE" ? "Scenario approved; simulation is now unlocked" : "Scenario rejected and sealed");
+  } catch (error) { toast(error.message); }
+}
+
+function populateModelForm(features) {
+  $("#modelVelocity").value = features.velocity_1h;
+  $("#modelDeviation").value = features.amount_deviation;
+  $("#modelShared").value = features.shared_device_count;
+  $("#modelRelationship").value = features.merchant_risk;
+  $("#modelNewDevice").checked = Boolean(features.new_device);
+  $("#modelNewMerchant").checked = Boolean(features.new_payee);
+  $("#modelLocation").checked = Boolean(features.location_shift);
+}
+
+async function scoreHeroPreset(name) {
+  const preset = heroPresets[name] || heroPresets.normal;
+  state.heroPreset = name;
+  document.querySelectorAll("[data-hero-preset]").forEach((button) => button.classList.toggle("active", button.dataset.heroPreset === name));
+  $("#heroMerchant").textContent = preset.merchant;
+  $("#heroMerchantGlyph").textContent = preset.glyph;
+  $("#heroChannel").textContent = preset.channel;
+  $("#heroAmount").textContent = preset.amount;
+  $("#heroReasons").innerHTML = preset.reasons.map((reason) => `<span>${escapeHtml(reason)}</span>`).join("");
+  $("#heroReceiptPulse").classList.add("scoring");
+  $("#heroDecision").className = "";
+  $("#heroDecision").textContent = "SCORING";
+  try {
+    const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features: preset.features }) });
+    const level = result.prediction.startsWith("HIGH") ? "high" : result.prediction.startsWith("MEDIUM") ? "medium" : "low";
+    $("#heroDecision").className = level;
+    $("#heroDecision").textContent = result.prediction.replaceAll("_", " ");
+    $("#heroProbability").textContent = `${(result.fraud_probability * 100).toFixed(1)}%`;
+    $("#heroRiskScore").textContent = `${result.risk_score} / 100`;
+    $("#heroRiskFill").style.width = `${Math.max(4, result.risk_score)}%`;
+    $("#heroRiskFill").style.background = level === "high" ? "linear-gradient(90deg,#ff9a62,#ff5964)" : level === "medium" ? "linear-gradient(90deg,#ffd36b,#ff9a5a)" : "linear-gradient(90deg,#61e6c5,#38c9e9)";
+    $("#auralisCard").className = `auralis-card risk-${level}`;
+    $("#heroModelVersion").textContent = `${result.model_version.toUpperCase()} · ${result.latency_ms} MS`;
+  } catch (error) {
+    $("#heroDecision").textContent = "SAFE FALLBACK";
+    $("#heroProbability").textContent = "Unavailable";
+    $("#heroModelVersion").textContent = "MODEL ENDPOINT UNAVAILABLE";
+  } finally { $("#heroReceiptPulse").classList.remove("scoring"); }
+}
+
+function inspectHeroPayment() {
+  populateModelForm(heroPresets[state.heroPreset].features);
+  activateWorkspace("simulation");
+  window.setTimeout(() => $("#modelInputForm").requestSubmit(), 320);
+}
+
+async function classifyWithTeamModel(event) {
+  event.preventDefault();
+  const features = { velocity_1h: Number($("#modelVelocity").value), amount_deviation: Number($("#modelDeviation").value), new_device: Number($("#modelNewDevice").checked), shared_device_count: Number($("#modelShared").value), location_shift: Number($("#modelLocation").checked), new_payee: Number($("#modelNewMerchant").checked), card_not_present: 1, unusual_hour: 0, new_account: 0, identity_mismatch: 0, merchant_risk: Number($("#modelRelationship").value) };
+  const output = $("#modelResult"); output.innerHTML = "<small>MODEL OUTPUT</small><strong>SCORING…</strong><span>Sending the canonical 11-feature vector.</span>";
+  try { const result = await api("/api/v1/model/challenger/predict", { method: "POST", body: JSON.stringify({ features }) }); const level = result.prediction.startsWith("HIGH") ? "high" : result.prediction.startsWith("MEDIUM") ? "medium" : "low"; output.innerHTML = `<small>MODEL OUTPUT · ${escapeHtml(result.provider)}</small><strong class="${level}">${escapeHtml(result.prediction.replaceAll("_", " "))}</strong><span>${Math.round(result.fraud_probability * 1000) / 10}% fraud probability · risk ${result.risk_score}/100</span><b>${escapeHtml(result.model_version)} · ${result.latency_ms} ms</b>`; }
+  catch (error) { output.innerHTML = `<small>MODEL OUTPUT</small><strong>UNAVAILABLE</strong><span>${escapeHtml(error.message)}. The locked local artifact could not be loaded, so no model claim is shown.</span>`; }
+}
+
+function metricPercent(value, digits = 1) {
+  return `${(Number(value) * 100).toFixed(digits)}%`;
+}
+
+function renderEvaluationScorecard(scorecard) {
+  state.scorecard = scorecard;
+  const champion = scorecard.comparisons.find((item) => item.id === "XGBOOST_CHAMPION");
+  const baseline = scorecard.comparisons.find((item) => item.id === "LINEAR_BASELINE");
+  const holdout = scorecard.comparisons.find((item) => item.id === "EXCLUDED_FAMILY");
+  const f1Lift = scorecard.lift_vs_linear.f1 * 100;
+  const recallLift = scorecard.lift_vs_linear.recall * 100;
+  $("#evidenceHeadline").textContent = `XGBoost gains ${f1Lift.toFixed(2)} F1 points and ${recallLift.toFixed(2)} recall points.`;
+  $("#evidenceSummary").textContent = `The false-positive rate moves from ${metricPercent(baseline.metrics.false_positive_rate, 2)} to ${metricPercent(champion.metrics.false_positive_rate, 2)}. ${holdout.scope} retains ${metricPercent(holdout.metrics.recall)} recall.`;
+  $("#modelComparison").innerHTML = scorecard.comparisons.map((item) => {
+    const className = item.id === "XGBOOST_CHAMPION" ? " champion" : item.id === "EXCLUDED_FAMILY" ? " holdout" : "";
+    return `<article class="model-proof-card${className}"><div><small>${escapeHtml(item.scope)}</small><span>${item.id === "XGBOOST_CHAMPION" ? "ACTIVE" : item.id === "EXCLUDED_FAMILY" ? "UNSEEN" : "BASELINE"}</span></div><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.model_version)}</p><dl><div><dt>Recall</dt><dd>${metricPercent(item.metrics.recall)}</dd></div><div><dt>F1</dt><dd>${metricPercent(item.metrics.f1)}</dd></div><div><dt>Precision</dt><dd>${metricPercent(item.metrics.precision)}</dd></div><div><dt>False positive</dt><dd>${metricPercent(item.metrics.false_positive_rate, 2)}</dd></div></dl></article>`;
+  }).join("");
+  const matrix = champion.metrics.confusion_matrix;
+  $("#confusionMatrix").innerHTML = `<div class="matrix-axis matrix-predicted">PREDICTED</div><div class="matrix-axis matrix-actual">ACTUAL</div><article class="matrix-good"><small>TRUE NEGATIVE</small><strong>${matrix.tn.toLocaleString()}</strong><span>safe payments cleared</span></article><article class="matrix-warn"><small>FALSE POSITIVE</small><strong>${matrix.fp.toLocaleString()}</strong><span>safe payments interrupted</span></article><article class="matrix-bad"><small>FALSE NEGATIVE</small><strong>${matrix.fn.toLocaleString()}</strong><span>fraud attempts missed</span></article><article class="matrix-good"><small>TRUE POSITIVE</small><strong>${matrix.tp.toLocaleString()}</strong><span>fraud attempts detected</span></article>`;
+  $("#evidenceGates").innerHTML = scorecard.evidence_gates.map((gate) => `<article class="evidence-gate ${gate.status === "VERIFIED" ? "verified" : "open-gap"}"><i></i><div><b>${escapeHtml(gate.label)}</b><span>${escapeHtml(gate.evidence)}</span></div><small>${gate.status === "VERIFIED" ? "VERIFIED" : "OPEN GAP"}</small></article>`).join("");
+  $("#coverageList").innerHTML = scorecard.attack_coverage.map((item) => `<article class="coverage-item ${item.evaluation_role.toLowerCase().replaceAll("_", "-")}"><div><small>${escapeHtml(item.scenario_id)}</small><b>${escapeHtml(item.name)}</b></div><span>${escapeHtml(item.family.replaceAll("_", " "))}</span><em>${escapeHtml(item.evaluation_role.replaceAll("_", " "))}</em></article>`).join("");
+}
+
+async function runHoldoutProof() {
+  const button = $("#runHoldoutProof");
+  const output = $("#holdoutResult");
+  button.disabled = true;
+  output.className = "holdout-result running";
+  output.innerHTML = "<small>LIVE PROOF STATUS</small><strong>SCORING 600 EVENTS...</strong><span>The active artifact remains locked while the synthetic holdout is replayed.</span>";
+  try {
+    const result = await api("/api/v1/evaluate/holdout", { method: "POST", body: JSON.stringify({ volume: 600, seed: 104729, fraudRate: .25 }) });
+    const metrics = result.ensemble.metrics;
+    output.className = "holdout-result complete";
+    output.innerHTML = `<small>LIVE PROOF COMPLETE · ${escapeHtml(result.scenario_id)}</small><strong>${metricPercent(metrics.recall)} RECALL · ${metricPercent(metrics.f1)} F1</strong><span>${result.ensemble.confusion_matrix.tp} detected · ${result.ensemble.confusion_matrix.fn} missed · ${metricPercent(metrics.false_positive_rate, 2)} false-positive rate · model unchanged</span>`;
+  } catch (error) {
+    output.className = "holdout-result failed";
+    output.innerHTML = `<small>LIVE PROOF STATUS</small><strong>UNAVAILABLE</strong><span>${escapeHtml(error.message)}</span>`;
+  } finally { button.disabled = false; }
+}
+
 async function initialize() {
-  const [catalog, health, agentHealth] = await Promise.all([
-    api("/api/v1/campaign/catalog"), api("/api/v1/model/health"), api("/api/v1/agents/health")
+  const [catalog, attacks, health, scorecard, agentHealth, threatHealth] = await Promise.all([
+    api("/api/v1/campaign/catalog"), api("/api/v1/attack/catalog"), api("/api/v1/model/health"), api("/api/v1/evaluation/scorecard"), api("/api/v1/agents/health"), api("/api/v1/threat-lab/health")
   ]);
-  state.catalog = catalog; state.health = health; state.agentHealth = agentHealth;
+  state.catalog = catalog; state.attacks = attacks; state.health = health; state.agentHealth = agentHealth; state.threatHealth = threatHealth;
   $("#globalRun").disabled = false;
   $("#scenario").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
   $("#scenario").value = catalog[0].id;
   $("#agentCampaign").innerHTML = catalog.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.codename)} · ${escapeHtml(item.name)}</option>`).join("");
   $("#agentCampaign").value = catalog[0].id;
   $("#agentObjective").innerHTML = agentHealth.objectives.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`).join("");
+  $("#threatBase").innerHTML = attacks.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.id)} · ${escapeHtml(item.name)}</option>`).join("");
+  $("#threatProvider").textContent = threatHealth.configured ? `${threatHealth.provider} · ${threatHealth.model}` : "SAFE FALLBACK · ADD GROQ_API_KEY FOR HOSTED GENAI";
+  $("#teamModelState").textContent = `${health.model_type.toUpperCase()} · ${health.test_metrics.f1.toFixed(3)} TEST F1 · 210K ROWS`;
   renderAgentRoster(agentHealth.agents);
   renderCampaignAtlas(catalog);
   renderCampaignPreview(catalog[0]);
+  renderEvaluationScorecard(scorecard);
   $("#modelMetric").textContent = health.status;
-  $("#modelVersion").textContent = health.model_version.replace("fg-linear-", "FG-").slice(0, 14).toUpperCase();
+  $("#modelVersion").textContent = health.model_version.slice(0, 20).toUpperCase();
+  $("#heroModelVersion").textContent = `${health.model_version.toUpperCase()} · READY`;
   const [fidelityResult, evidenceResult, coverageResult, architectureResult] = await Promise.allSettled([
     api("/api/v1/fidelity/report"), api("/api/v1/data/evidence"), api("/api/v1/challenge/coverage"), api("/api/v1/architecture")
   ]);
@@ -597,6 +732,7 @@ async function initialize() {
   }
   if (coverageResult.status === "fulfilled") renderCoverage(coverageResult.value);
   if (architectureResult.status === "fulfilled") renderArchitecture(architectureResult.value);
+  await scoreHeroPreset("normal");
   if ($("#autoPreview").checked) await runArena();
   if (window.location.hash) {
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" })));
@@ -627,6 +763,12 @@ function bindControls() {
   });
   $("#launchSpotlight").addEventListener("click", () => { activateWorkspace("simulation"); window.setTimeout(runArena, 350); });
   $("#runMission").addEventListener("click", runAgentMission);
+  $("#discoverThreat").addEventListener("click", discoverThreat);
+  $("#threatReviewResult").addEventListener("click", actOnThreat);
+  $("#modelInputForm").addEventListener("submit", classifyWithTeamModel);
+  $("#runHoldoutProof").addEventListener("click", runHoldoutProof);
+  document.querySelectorAll("[data-hero-preset]").forEach((button) => button.addEventListener("click", () => scoreHeroPreset(button.dataset.heroPreset)));
+  $("#heroInspect").addEventListener("click", inspectHeroPayment);
   $("#runArena").addEventListener("click", runArena);
   ["#heroRun", "#bottomRun"].forEach((selector) => $(selector).addEventListener("click", () => { activateWorkspace("missions"); window.setTimeout(runAgentMission, 350); }));
   $("#graphCanvas").addEventListener("click", (event) => {

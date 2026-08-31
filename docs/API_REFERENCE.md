@@ -22,6 +22,14 @@ Errors set `data` to `null` and return `error.code` plus `error.message`.
 | `GET` | `/health` | Service readiness and model version |
 | `GET` | `/api/v1/architecture` | Offline, nearline, real-time, feedback, and cross-cutting topology |
 | `GET` | `/api/v1/model/health` | Active artifact, feature version, holdout, and locked metrics |
+| `GET` | `/api/v1/evaluation/scorecard` | Artifact-backed model comparison, confusion matrices, attack coverage, and honest evidence gaps |
+| `POST` | `/api/v1/model/challenger/predict` | Locked 210k XGBoost feature-vector inference |
+| `GET` | `/api/v1/threat-lab/health` | GenAI analyst provider and review-gate status |
+| `GET` | `/api/v1/threat-lab/scenarios` | Current in-process review queue |
+| `POST` | `/api/v1/threat-lab/discover` | Generate a safe, validated `PENDING_REVIEW` draft |
+| `POST` | `/api/v1/threat-lab/scenarios/:id/review` | Human `APPROVE` or `REJECT` decision |
+| `POST` | `/api/v1/threat-lab/scenarios/:id/simulate` | Simulate only an `APPROVED` draft |
+| `POST` | `/api/v1/threat-lab/from-feedback` | Propose a draft from aggregated false-negative gaps |
 | `GET` | `/api/v1/audit/recent?limit=20` | Recent local decision audit records; limit is bounded to 100 |
 | `GET` | `/api/v1/metrics/summary` | Runtime totals, latency, model/fidelity health, recent decisions |
 

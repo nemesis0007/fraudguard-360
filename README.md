@@ -1,12 +1,12 @@
-# FraudGuard 360
+# Auralis Risk AI Defense Lab
 
 [Live engineering workspace](https://fraudguard-360.vercel.app/) · [Synthetic dataset](data/README.md) · [API reference](docs/API_REFERENCE.md)
 
-FraudGuard 360 is an adaptive, privacy-safe red-team / blue-team fraud-defense lab for the Mastercard GFF 2026 challenge. It forks a fictional payment network into normal and attacked worlds, lets an adversary vary pressure and stealth, fuses transaction and graph evidence, explains every intervention, and sends detection gaps into a controlled learning queue.
+Auralis Risk is an adaptive, privacy-safe red-team / blue-team fraud-defense lab for the Mastercard GFF 2026 challenge. It identifies GenAI-enabled fraud patterns, generates synthetic evidence only after human approval, fuses transaction and graph signals, explains every intervention, and sends detection gaps into a controlled learning queue.
 
 > Prototype boundary: this repository uses synthetic data only. It does not connect to real credentials, customer data, or payment authorization systems, and it does not provide instructions for committing fraud.
 
-This competition does not provide a dataset. FraudGuard therefore uses a **hybrid evidence strategy**: the versioned synthetic twin is active now; public fraud/AML simulators are reference anchors for schema and realism checks; restricted institution aggregates are reserved for an authorized shadow-mode pilot. The code never claims that reference or pilot data has already been ingested.
+This competition does not provide a dataset. Auralis therefore uses a **hybrid evidence strategy**: the versioned synthetic twin is active now; public fraud/AML simulators are reference anchors for schema and realism checks; restricted institution aggregates are reserved for an authorized shadow-mode pilot. The code never claims that reference or pilot data has already been ingested.
 
 ## Team entry points
 
@@ -21,6 +21,12 @@ This competition does not provide a dataset. FraudGuard therefore uses a **hybri
 | [Dataset card](data/README.md) | Download, schema, composition, lineage, and checksums |
 
 ## What is working now
+
+- A genuine optional hosted GenAI threat analyst using Groq's OpenAI-compatible API, strict JSON/schema validation, safety filtering, provenance, and `PENDING_REVIEW` / `APPROVED` / `REJECTED` states. Without a key, the same workflow remains demonstrable through a clearly labeled bounded fallback analyst.
+- A hard approval gate: discovered and feedback-derived scenarios cannot enter the simulator until a human reviewer approves them.
+- A portable `auralis-xgb-210k` challenger trained only on the canonical 210,000-row benchmark, loaded directly by the Node runtime without a remote Python dependency.
+- An interactive XGBoost input console on the website showing fraud probability, risk, model version, provider, and latency.
+- An artifact-backed Evidence workspace comparing the linear baseline, active XGBoost model, and completely excluded-family holdout; it exposes every confusion-matrix count, labels open production gaps, and can rerun a seeded holdout proof without retraining.
 
 - 22 versioned attack families spanning account and recovery takeover, CNP, token provisioning, QR substitution, mule and remittance networks, bots, BNPL bust-out, refund and loyalty abuse, instant-payment scams, synthetic identity, merchant laundering, subscriptions, contactless relay, payroll and invoice redirection, gift-card conversion, layering, promotion abuse, and friendly fraud.
 - Deterministic seeded transaction generation with monotonic event time, provenance, synthetic-data flags, and controlled hard negatives.
@@ -82,10 +88,17 @@ All JSON responses use a shared envelope with `request_id`, `status`, `data`, an
 | `GET` | `/api/v1/challenge/coverage` | Visible proof and remaining gaps for each challenge pillar |
 | `GET` | `/api/v1/agents/health` | Local agent roster, objectives, execution mode, and safety boundary |
 | `POST` | `/api/v1/agents/mission` | Run a bounded multi-generation red/blue mission in synthetic twins |
+| `GET` | `/api/v1/threat-lab/health` | GenAI provider, model, approval states, and safety boundary |
+| `POST` | `/api/v1/threat-lab/discover` | Produce a validated scenario draft that is not simulation-ready |
+| `POST` | `/api/v1/threat-lab/scenarios/:id/review` | Approve or reject a generated scenario |
+| `POST` | `/api/v1/threat-lab/scenarios/:id/simulate` | Generate evidence only from an approved scenario |
+| `POST` | `/api/v1/threat-lab/from-feedback` | Convert aggregated false-negative gaps into a new review draft |
+| `POST` | `/api/v1/model/challenger/predict` | Score the canonical feature vector with the locked 210k XGBoost challenger |
 | `POST` | `/api/v1/simulate` | Generate a traceable synthetic dataset |
 | `POST` | `/api/v1/score` | Score a live-style transaction |
 | `POST` | `/api/v1/evaluate` | Run a red-vs-blue evaluation |
 | `POST` | `/api/v1/evaluate/holdout` | Compare the ensemble and fallback on an excluded attack family |
+| `GET` | `/api/v1/evaluation/scorecard` | Baseline, champion, excluded-family metrics, evidence gates, and attack coverage roles |
 | `POST` | `/api/v1/learn/mutate` | Generate reviewed defensive variants from false negatives without retraining or promotion |
 | `POST` | `/api/v1/feedback` | Record predicted vs actual outcome |
 | `GET` | `/api/v1/model/health` | Locked model manifest, feature version, holdout, and test metrics |
@@ -105,7 +118,7 @@ curl -X POST http://localhost:8080/api/v1/agents/mission \
   -d '{"campaignId":"POLICY_ORACLE_003","objective":"GRAPH_EVASION","generations":4,"volume":110,"seed":2026}'
 ```
 
-This is real autonomous orchestration within a deliberately narrow action space—not a connection to a hosted LLM. The scout, planner, operator, critic, evolver, and defender use actual arena results as observations. They can vary only synthetic pressure, stealth, seeds, event volume, and graph-defense strength; they cannot call the network, use credentials, touch customer data, or send payments.
+The policy mission runner remains deterministic autonomous orchestration within a deliberately narrow action space. Separately, the threat lab can use a hosted LLM for offline scenario analysis when `GROQ_API_KEY` is configured. Both paths are restricted to synthetic metadata and simulation; neither can use credentials, customer data, or live payment rails.
 
 Example arena request:
 
@@ -177,29 +190,30 @@ Example score request:
 
 ## Rebuild the model
 
-Training is offline and requires Python 3.11+ with NumPy. The Node runtime remains dependency-free.
+Training is offline and requires Python 3.11+ with NumPy, scikit-learn, and XGBoost. The deployed Node runtime remains dependency-free because the trees are exported into a portable JSON artifact.
 
 ```bash
 python -m pip install -r ml/requirements.txt
 npm run data:generate
 npm run data:fidelity
-python ml/train.py
+python ml/train_xgboost.py
+npm run model:holdout
 npm test
 ```
 
 The exporter calls the same [FeatureEngine](src/features.js) used during API inference. It assigns all transactions for a customer/scenario pair to a single split and excludes `LAUNDER_001` completely as the novel-family holdout. The reproducible working copy stays under ignored `data/runtime/`; GitHub contains the complete compressed benchmark under [`data/releases/`](data/releases/), a sample under [`data/sample/`](data/sample/), and the versioned model artifact under [`models/`](models/).
 
-The default export contains 210,000 rows: 10,000 transactions for each of 21 training scenarios, with `LAUNDER_001` held out completely. Use `npm run data:generate -- --rows <count>` to choose between 200 and 50,000 rows per scenario when running smaller experiments or larger stress tests.
+The canonical export contains exactly 210,000 rows: 10,000 transactions for each of 21 training scenarios, with `LAUNDER_001` held out completely. The challenge artifact and metrics below use this dataset only.
 
 Current locked synthetic benchmark:
 
 | Evaluation | Precision | Recall | F1 | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Entity-aware test split | 77.2% | 77.3% | 77.3% | 7.6% |
-| Novel holdout, ensemble | 68.8% | 86.9% | 76.8% | 12.7% |
-| Novel holdout, fallback | 76.6% | 59.0% | 66.7% | 5.8% |
+| XGBoost, entity-aware test split | 78.5% | 83.0% | 80.7% | 7.6% |
+| XGBoost, excluded `LAUNDER_001` family | 76.4% | 85.6% | 80.7% | 8.5% |
+| Linear baseline, entity-aware test split | 77.2% | 77.3% | 77.3% | 7.6% |
 
-Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. The resulting tradeoff is less flattering but more credible: the unseen-family ensemble gains 10.1 F1 points and 27.9 recall points over fallback, at a 6.9-point false-positive-rate cost. These remain synthetic results, not production claims.
+Generator version `synthetic-1.1` deliberately introduces benign transactions that resemble fraud and probabilistic attack-signal expression. Against the same entity-aware test split, the XGBoost challenger improves F1 by 3.42 points and recall by 5.70 points over the linear baseline while keeping the false-positive rate essentially unchanged. The excluded-family result is generated separately with a fixed seed and never enters training. These remain synthetic results, not production claims.
 
 ## Architecture decision
 
@@ -223,6 +237,8 @@ The current runnable dataset is generated by `src/generator.js` from 22 governed
 Public sources such as the Fraud Detection Handbook simulator and IBM AMLSim / AML-Data are listed as **reference-only** in `src/evidence.js`. They are useful future anchors for temporal, imbalance, and graph diagnostics, but they are not silently blended into the current benchmark. A real pilot should ingest only authorized aggregates, then recalibrate distributions and business costs without bringing raw card data into this lab.
 
 ### Model
+
+The public model console runs the portable `auralis-xgb-210k` artifact directly in the Node service. On the canonical entity-aware synthetic test split it reports 78.49% precision, 83.00% recall, 80.68% F1, 0.9442 ROC-AUC, 0.8806 PR-AUC, and a 7.60% false-positive rate at threshold 0.405. These are synthetic demonstration results, not production claims.
 
 The hot path combines a locked NumPy-trained logistic artifact with deterministic reason-code rules. It was chosen because the prototype needs reproducibility, explainability, very low operational complexity, and a safe fallback. It is not presented as the final production model. A governed benchmark should compare it with LightGBM/XGBoost for local transaction risk and a temporal graph model for relationship risk, while retaining the same final policy API.
 

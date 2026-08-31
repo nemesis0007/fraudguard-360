@@ -30,8 +30,19 @@ test("model health exposes the locked artifact manifest", () => withServer(async
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.data.status, "READY");
-  assert.match(body.data.model_version, /^fg-linear-/);
+  assert.match(body.data.model_version, /^auralis-xgb-210k-/);
   assert.deepEqual(body.data.holdout_scenarios, ["LAUNDER_001"]);
+}));
+
+test("evaluation scorecard separates measured evidence from open gaps", () => withServer(async (base) => {
+  const response = await fetch(`${base}/api/v1/evaluation/scorecard`);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.data.placeholder, false);
+  assert.equal(body.data.comparisons.length, 3);
+  assert.ok(body.data.lift_vs_linear.f1 > 0);
+  assert.equal(body.data.attack_coverage.filter((item) => item.evaluation_role === "COMPLETELY_EXCLUDED").length, 1);
+  assert.equal(body.data.evidence_gates.find((item) => item.id === "PRODUCTION_CALIBRATION").status, "OPEN_GAP");
 }));
 
 test("fidelity endpoint exposes the committed generator audit", () => withServer(async (base) => {
@@ -124,7 +135,7 @@ test("agent endpoints expose the local roster and a governed mission", () => wit
 
 test("site exposes attack anatomy and direct GitHub dataset access", () => withServer(async (base) => {
   const homepage = await fetch(base).then((response) => response.text());
-  assert.match(homepage, /See the attack[\s\S]*Prove the defense/);
+  assert.match(homepage, /Fraud changes shape[\s\S]*Your defense should too/);
   assert.match(homepage, /ENGINEERING HANDOFF/);
   assert.match(homepage, /theme-color" content="#000000"/);
   assert.match(homepage, /class="header-inner shell"/);
@@ -133,7 +144,9 @@ test("site exposes attack anatomy and direct GitHub dataset access", () => withS
   assert.match(homepage, /id="workspaceProgress"/);
   assert.match(homepage, /Make the workspace yours/);
   assert.match(homepage, /id="reduceMotion"/);
-  assert.match(homepage, /og-fraudguard-v4\.png/);
+  assert.match(homepage, /og\.png/);
+  assert.match(homepage, /class="auralis-card"/);
+  assert.match(homepage, /data-hero-preset="coordinated"/);
   assert.doesNotMatch(homepage, /Watch AI attack/);
   assert.match(homepage, /LIVE ATTACK ANATOMY/);
   assert.match(homepage, /id="attackDiagram"/);

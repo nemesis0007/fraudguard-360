@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "model_version": "auralis-xgb-210k-932b64e9bc",
+  "dataset": "synthetic-1.1",
+  "evaluation_type": "COMPLETELY_EXCLUDED_ATTACK_FAMILY",
+  "holdout_scenario": "LAUNDER_001",
+  "rows": 10000,
+  "seed": 104729,
+  "threshold": 0.405,
+  "metrics": {
+    "accuracy": 0.9009,
+    "precision": 0.763884,
+    "recall": 0.856142,
+    "f1": 0.807386,
+    "false_positive_rate": 0.084764,
+    "roc_auc": 0.924196,
+    "pr_auc": 0.805034,
+    "confusion_matrix": {
+      "tp": 2077,
+      "fp": 642,
+      "tn": 6932,
+      "fn": 349
+    }
+  },
+  "limitation": "Synthetic excluded-family stress evidence; not a production performance claim."
+}

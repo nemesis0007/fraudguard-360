@@ -3,31 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FraudGuard 360 is an engineering workspace for synthetic payment-fraud simulation, model evaluation, decision testing, and architecture review.">
+  <meta name="description" content="Auralis Risk is a human-governed GenAI red-team and ML defense lab for synthetic payment-fraud research.">
   <meta name="theme-color" content="#000000">
-  <meta property="og:title" content="FraudGuard 360 — Payment fraud engineering workspace">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000000'/%3E%3Cpath d='M17 44 32 14l15 30h-8l-3-7h-9l-3 7Zm13-14h4l-2-6Z' fill='%2364d2ff'/%3E%3C/svg%3E">
+  <meta property="og:title" content="Auralis Risk — AI payment defense lab">
   <meta property="og:description" content="Versioned scenarios, synthetic datasets, model evaluation, graph-aware decisions, and reproducible red-team experiments.">
-  <meta property="og:image" content="/og-fraudguard-v4.png">
+  <meta property="og:image" content="/og.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="FraudGuard 360 — Engineering Workspace">
-  <meta name="twitter:description" content="See the attack. Prove the defense.">
-  <meta name="twitter:image" content="/og-fraudguard-v4.png">
-  <title>FraudGuard 360 — Engineering Workspace</title>
-  <link rel="preload" as="image" href="/fraudguard-hero-v1.png" fetchpriority="high">
+  <meta name="twitter:title" content="Auralis Risk — AI Payment Defense Lab">
+  <meta name="twitter:description" content="Fraud changes shape. Your defense should too.">
+  <meta name="twitter:image" content="/og.png">
+  <title>Auralis Risk — AI Payment Defense Lab</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner shell">
-      <a class="brand" href="#top" aria-label="FraudGuard 360 home">
+      <a class="brand" href="#top" aria-label="Auralis Risk home">
         <span class="brand-symbol" aria-hidden="true"><i></i><i></i></span>
-        <span>FRAUDGUARD <b>360</b></span>
+        <span>AURALIS <b>RISK</b></span>
       </a>
-      <nav class="workspace-tabs" role="tablist" aria-label="FraudGuard workspaces">
+      <nav class="workspace-tabs" role="tablist" aria-label="Auralis Risk workspaces">
         <button type="button" role="tab" aria-selected="true" data-workspace-tab="overview">Start</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="missions">AI lab</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="threats">Attacks</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="simulation">Simulator</button>
+        <button type="button" role="tab" aria-selected="false" data-workspace-tab="evidence">Evidence</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="data">Dataset</button>
         <button type="button" role="tab" aria-selected="false" data-workspace-tab="system">How it works</button>
       </nav>
@@ -53,7 +54,7 @@
       <div class="workspace-guide-copy">
         <p class="workspace-guide-eyebrow" id="workspaceGuideEyebrow">START HERE</p>
         <h1 id="workspaceGuideTitle">Understand this workspace.</h1>
-        <p id="workspaceGuideDescription">A plain-language guide appears here for every part of FraudGuard.</p>
+        <p id="workspaceGuideDescription">A plain-language guide appears here for every part of Auralis Risk.</p>
       </div>
       <ol class="workspace-guide-flow" id="workspaceGuideFlow" aria-label="What happens in this workspace"></ol>
       <button class="workspace-guide-action" id="workspaceGuideAction" type="button">See the workspace <span>↓</span></button>
@@ -63,27 +64,43 @@
   <main id="top">
     <section class="hero shell" data-workspace-view="overview">
       <div class="hero-copy">
-        <div class="release-pill"><span></span> Fraud defense lab · Synthetic network · GFF 2026</div>
-        <h1>See the attack.<br><em>Prove the defense.</em></h1>
-        <p>Choose an adaptive payment campaign, replay it against the synthetic network, and inspect every signal, decision, and defensive intervention.</p>
+        <div class="release-pill"><span></span> Live fraud intelligence · Human governed · GFF 2026</div>
+        <h1>Fraud changes shape.<br><em>Your defense should too.</em></h1>
+        <p>Test synthetic fraud attacks, score payments with XGBoost, and turn model misses into human-reviewed improvements.</p>
         <div class="hero-actions">
           <button class="button button-primary" id="heroRun">Run the guided demo <span>→</span></button>
           <button class="text-button" type="button" data-open-workspace="system">Explore the system</button>
         </div>
-        <div class="trust-line">
-          <span>BUILT FOR</span>
-          <b>Issuers</b><i></i><b>Acquirers</b><i></i><b>Payment networks</b><i></i><b>Fraud teams</b>
-        </div>
       </div>
-      <div class="hero-visual" aria-label="Live payment network preview">
-        <img class="hero-art" src="/fraudguard-hero-v1.png" alt="A synthetic payment network showing an attack route intercepted by a defense decision" width="1736" height="909" fetchpriority="high" decoding="async">
-        <div class="hero-art-shade" aria-hidden="true"></div>
-        <div class="visual-top"><span>SYNTHETIC NETWORK / LOCAL RUNTIME</span><b><i></i> READY</b></div>
+      <div class="hero-visual" aria-label="Interactive card-payment risk check">
         <canvas id="heroCanvas" width="1240" height="620" aria-hidden="true"></canvas>
-        <div class="signal-card signal-red"><small>CAMPAIGN EVENT</small><strong>Entity cluster 04</strong><span>Graph risk observed</span></div>
-        <div class="signal-card signal-green"><small>DECISION RESPONSE</small><strong>STEP_UP</strong><span>Reason codes recorded</span></div>
-        <div class="visual-legend" aria-hidden="true"><span><i class="legend-attack"></i>Attack path</span><span><i class="legend-defense"></i>Defense path</span></div>
-        <div class="visual-foot"><span>12,804 events/s</span><span>28 ms fusion</span><span>0 raw PII</span></div>
+        <div class="hero-ambient hero-ambient-one" aria-hidden="true"></div><div class="hero-ambient hero-ambient-two" aria-hidden="true"></div>
+        <div class="visual-top"><span>PAYMENT DEFENSE / LIVE MODEL</span><b><i></i> ARTIFACT LOCKED</b></div>
+        <div class="card-risk-stage">
+          <article class="auralis-card" id="auralisCard" aria-label="Synthetic Auralis payment card">
+            <div class="card-sheen" aria-hidden="true"></div>
+            <header><span class="card-mark" aria-hidden="true"><i></i><i></i></span><b>AURALIS</b><small>DEFENSE LAB</small></header>
+            <div class="card-chip" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="card-contactless" aria-hidden="true"><i></i><i></i><i></i></div>
+            <p class="card-number">5412&nbsp;&nbsp;8794&nbsp;&nbsp;0036&nbsp;&nbsp;2026</p>
+            <footer><span><small>CARDHOLDER</small><b>SYNTHETIC CUSTOMER</b></span><span><small>VALID THRU</small><b>08/30</b></span><em>AI</em></footer>
+          </article>
+          <div class="risk-beam" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
+          <aside class="payment-receipt">
+            <div class="receipt-head"><span>LIVE AUTHORIZATION</span><i id="heroReceiptPulse"></i></div>
+            <div class="receipt-merchant"><span class="merchant-glyph" id="heroMerchantGlyph">A</span><div><strong id="heroMerchant">Aster Market</strong><small id="heroChannel">Card present · Mumbai</small></div><b id="heroAmount">₹2,480</b></div>
+            <div class="risk-meter"><span><i id="heroRiskFill"></i></span><div><small>MODEL RISK</small><b id="heroRiskScore">12 / 100</b></div></div>
+            <div class="receipt-decision"><span><small>DECISION</small><strong id="heroDecision">ALLOW</strong></span><span><small>FRAUD PROBABILITY</small><b id="heroProbability">12.0%</b></span></div>
+            <div class="receipt-reasons" id="heroReasons"><span>Known device</span><span>Stable amount</span></div>
+            <button type="button" id="heroInspect">Inspect this payment <span>→</span></button>
+          </aside>
+        </div>
+        <div class="hero-scenarios" role="group" aria-label="Choose a synthetic card scenario">
+          <button type="button" class="active" data-hero-preset="normal"><span></span><b>Everyday purchase</b><small>Low expected risk</small></button>
+          <button type="button" data-hero-preset="device"><span></span><b>New device</b><small>Step-up candidate</small></button>
+          <button type="button" data-hero-preset="coordinated"><span></span><b>Coordinated burst</b><small>Graph + velocity risk</small></button>
+        </div>
+        <div class="visual-foot"><span id="heroModelVersion">XGBOOST / LOADING</span></div>
       </div>
     </section>
 
@@ -92,16 +109,33 @@
         <div><strong>22</strong><span>attack families</span></div>
         <div><strong id="modelMetric">READY</strong><span>locked model artifact</span></div>
         <div><strong id="fidelityMetric">12 / 12</strong><span>fidelity gates passed</span></div>
-        <div><strong id="agentMetric">6</strong><span>local autonomous agents</span></div>
-        <p>The agents can modify only bounded simulation policies. They have no network, credential, customer-data, or live-payment access.</p>
+        <div><strong id="agentMetric">HUMAN</strong><span>approval before simulation</span></div>
+        <p>GenAI proposes defensive scenario metadata offline. It has no live-payment access, and an operator must approve every draft before synthetic events can be generated.</p>
       </div>
     </section>
 
     <section class="agent-lab-section" id="agent-lab" data-workspace-view="missions">
       <div class="shell">
         <div class="section-intro agent-lab-intro">
-          <div><p class="kicker red-kicker">RED-TEAM MISSION RUNNER</p><h2>Run repeatable<br>adversarial experiments.</h2></div>
-          <p>Select an objective and campaign. The local policy agents evaluate bounded candidates in isolated synthetic twins, retain the highest-scoring policy, and record every action and observation.</p>
+          <div><p class="kicker red-kicker">HUMAN-GOVERNED GENAI LAB</p><h2>Discover safely.<br>Approve deliberately.</h2></div>
+          <p>Use a hosted LLM or the safe offline analyst to propose observable attack telemetry. Strict validation and a human decision separate every draft from the synthetic simulator.</p>
+        </div>
+
+        <div class="threat-review-lab">
+          <div class="threat-review-compose">
+            <div class="mission-panel-title"><span>01 / ANALYST BRIEF</span><small id="threatProvider">Checking provider</small></div>
+            <label for="threatFocus">What defensive gap should the analyst explore?</label>
+            <textarea id="threatFocus" rows="3" maxlength="240">Adaptive cross-channel fraud that looks normal per transaction but forms a coordinated entity graph</textarea>
+            <div class="threat-review-fields">
+              <label for="threatBase">Known attack anchor<select id="threatBase"></select></label>
+              <label for="threatSurface">Payment surface<select id="threatSurface"><option>CARD</option><option>UPI</option><option>WALLET</option><option>BANK_TRANSFER</option><option>BNPL</option><option>REMITTANCE</option><option>MERCHANT_ACQUIRING</option><option>LOYALTY</option></select></label>
+            </div>
+            <button class="mission-run threat-discover" id="discoverThreat" type="button">Generate review draft <span>→</span></button>
+            <p class="threat-safety-note">Only synthetic, aggregate observables and bounded parameters are accepted. Operational abuse instructions are rejected.</p>
+          </div>
+          <div class="threat-review-result" id="threatReviewResult">
+            <div class="threat-empty"><span>02</span><b>No draft yet</b><p>Generate a scenario, inspect its evidence and parameters, then approve or reject it.</p></div>
+          </div>
         </div>
 
         <div class="mission-app">
@@ -151,7 +185,7 @@
       </div>
     </section>
 
-    <section class="platform shell" id="platform" data-workspace-view="overview">
+    <section class="platform shell" id="platform" data-workspace-view="overview" hidden aria-hidden="true">
       <div class="section-intro">
         <div><p class="kicker">SYSTEM COMPONENTS</p><h2>One workflow from<br>scenario to decision.</h2></div>
         <p>The system joins counterfactual simulation, transaction features, entity-graph context, locked-model inference, deterministic policy, and governed feedback.</p>
@@ -216,6 +250,15 @@
         <div class="section-intro arena-intro">
           <div><p class="kicker red-kicker">COUNTERFACTUAL REPLAY WORKSPACE</p><h2>Compare baseline, attack,<br>and adapted defense.</h2></div>
           <p>Change campaign controls and defense posture, then inspect the returned entity graph, comparative outcomes, pipeline trace, and explainable decision receipts.</p>
+        </div>
+
+        <div class="model-console">
+          <div class="model-console-copy"><p class="kicker">LIVE XGBOOST CLASSIFIER</p><h3>Test one feature vector.</h3><p>This locked challenger was trained only on the canonical 210,000-row synthetic benchmark. The result is inference only; it never updates the model.</p><span id="teamModelState">Checking model artifact</span></div>
+          <form class="model-inputs" id="modelInputForm">
+            <label>Transactions in 60 min<input id="modelVelocity" type="number" min="0" max="20" value="6"></label><label>Amount deviation ratio<input id="modelDeviation" type="number" min="0" max="12" step="0.1" value="2.8"></label><label>Shared-device accounts<input id="modelShared" type="number" min="0" max="20" value="5"></label><label>Merchant risk<input id="modelRelationship" type="number" min="0" max="1" step="0.01" value="0.76"></label><label class="model-check"><input id="modelNewDevice" type="checkbox" checked><span>New device</span></label><label class="model-check"><input id="modelNewMerchant" type="checkbox" checked><span>New payee</span></label><label class="model-check"><input id="modelLocation" type="checkbox"><span>Location shift</span></label>
+            <button class="run-button" type="submit">Classify with XGBoost <span>→</span></button>
+          </form>
+          <div class="model-result" id="modelResult"><small>MODEL OUTPUT</small><strong>AWAITING INPUT</strong><span>Probability, risk and model version will appear here.</span></div>
         </div>
 
         <div class="arena-app">
@@ -295,6 +338,51 @@
       </div>
     </section>
 
+    <section class="evidence-lab shell" id="evaluation" data-workspace-view="evidence">
+      <div class="section-intro evidence-intro">
+        <div><p class="kicker">HONEST MODEL EVIDENCE</p><h2>Not one accuracy number.<br>A defensible proof chain.</h2></div>
+        <p>Every number below is read from locked model artifacts. The dashboard separates measured evidence from open production gaps, then lets you rerun the excluded-family test without changing the active model.</p>
+      </div>
+
+      <div class="evidence-story" aria-label="Three-stage evaluation story">
+        <article><small>01 / BASELINE</small><b>Start with a transparent benchmark.</b><p>A linear model establishes the minimum credible bar on the same entity-disjoint test set.</p></article>
+        <article><small>02 / CHALLENGER</small><b>Improve detection without hiding friction.</b><p>XGBoost is compared on recall, F1, precision, and false-positive rate together.</p></article>
+        <article><small>03 / GENERALIZE</small><b>Test an attack family it never saw.</b><p>Laundering is excluded from training and evaluated as a separate synthetic stress test.</p></article>
+      </div>
+
+      <div class="evidence-command">
+        <div class="evidence-command-copy">
+          <span class="evidence-live"><i></i> ARTIFACT-BACKED</span>
+          <h3 id="evidenceHeadline">Loading model evidence...</h3>
+          <p id="evidenceSummary">Reading the locked baseline, champion, and holdout artifacts.</p>
+        </div>
+        <button class="button button-primary" id="runHoldoutProof" type="button">Rerun excluded-family proof <span>&rarr;</span></button>
+      </div>
+
+      <div class="model-comparison" id="modelComparison" aria-label="Model comparison"></div>
+
+      <div class="evidence-grid">
+        <section class="confusion-console">
+          <div class="subhead"><span>CHAMPION CONFUSION MATRIX</span><small>Mixed-family test set</small></div>
+          <div class="confusion-matrix" id="confusionMatrix"></div>
+          <p class="evidence-note">False positives and false negatives are visible because both create real operational cost.</p>
+        </section>
+        <section class="proof-ledger">
+          <div class="subhead"><span>EVIDENCE GATES</span><small>Verified vs still open</small></div>
+          <div id="evidenceGates"></div>
+        </section>
+      </div>
+
+      <section class="coverage-ledger">
+        <div class="subhead"><span>ATTACK COVERAGE LEDGER</span><small>21 trained &middot; 1 completely excluded</small></div>
+        <div class="coverage-list" id="coverageList"></div>
+      </section>
+
+      <div class="holdout-result" id="holdoutResult" aria-live="polite">
+        <small>LIVE PROOF STATUS</small><strong>READY</strong><span>Run the proof to generate a fresh, seeded synthetic comparison.</span>
+      </div>
+    </section>
+
     <section class="dataset-section" id="dataset" data-workspace-view="data">
       <div class="shell">
         <div class="section-intro dataset-intro">
@@ -338,7 +426,7 @@
         <p>The reference architecture is now reflected in executable service boundaries. Follow the data from red-team research to synthetic generation, registries, the sub-100 ms decision path, simulated payment outcome, and governed feedback.</p>
       </div>
       <div class="architecture-board">
-        <header><div><span class="architecture-mark">FG</span><b>FRAUDGUARD 360 / CONTROL PLANE</b></div><p><i></i> ARCHITECTURE STATUS <strong>LIVE</strong></p></header>
+        <header><div><span class="architecture-mark">AR</span><b>AURALIS RISK / CONTROL PLANE</b></div><p><i></i> ARCHITECTURE STATUS <strong>LIVE</strong></p></header>
         <section class="architecture-lane offline-lane">
           <div class="lane-label"><span>○</span><b>OFFLINE / NEARLINE</b><small>Discovery & generation</small></div>
           <div class="architecture-flow" id="architectureOffline"><div class="architecture-loading">Loading architecture registry…</div></div>
@@ -363,7 +451,7 @@
       </div>
     </section>
 
-    <section class="team-handoff shell" id="team" data-workspace-view="system">
+    <section class="team-handoff shell" id="team" data-workspace-view="system" hidden aria-hidden="true">
       <div class="section-intro team-intro">
         <div><p class="kicker">ENGINEERING HANDOFF</p><h2>Everything the team<br>needs to work safely.</h2></div>
         <p>Start with the engineering guide, inspect the API contracts, follow the contribution workflow, and use the operations runbook for local or hosted environments.</p>
@@ -378,10 +466,10 @@
       </div>
     </section>
 
-    <section class="evidence shell" id="evidence" data-workspace-view="data">
+    <section class="evidence shell" id="evidence" data-workspace-view="data" hidden aria-hidden="true">
       <div class="section-intro evidence-intro">
         <div><p class="kicker">EVIDENCE, NOT THEATER</p><h2>A hybrid data strategy<br>with honest boundaries.</h2></div>
-        <p>Fully synthetic data is useful for novel attacks but weak as proof of realism. Real-only data cannot show attacks that have not happened. FraudGuard combines the strengths without blurring their provenance.</p>
+        <p>Fully synthetic data is useful for novel attacks but weak as proof of realism. Real-only data cannot show attacks that have not happened. Auralis combines the strengths without blurring their provenance.</p>
       </div>
       <div class="evidence-stack" id="evidenceStack">
         <article><span>01</span><div><small>ACTIVE</small><h3>Payment-network twin</h3><p>Fictional, labeled, counterfactual scenarios for training and adversarial stress tests.</p></div><b>SYNTHETIC</b></article>
@@ -393,7 +481,7 @@
       </div>
     </section>
 
-    <section class="proof-ledger shell" id="challenge-proof" data-workspace-view="overview">
+    <section class="proof-ledger shell" id="challenge-proof" data-workspace-view="overview" hidden aria-hidden="true">
       <div class="section-intro proof-intro">
         <div><p class="kicker">CHALLENGE PROOF LEDGER</p><h2>Every requirement.<br>Visible and testable.</h2></div>
         <p>The brief is translated into product evidence. A judge can see the threat intelligence, the agents generating the world, the defense response, and the governed learning loop without reading the code first.</p>
@@ -402,7 +490,7 @@
       <div class="ledger-gaps"><span>BEFORE A REAL PILOT</span><div id="pilotGaps"></div></div>
     </section>
 
-    <section class="final-cta shell" data-workspace-view="overview">
+    <section class="final-cta shell" data-workspace-view="overview" hidden aria-hidden="true">
       <p class="kicker">TEAM-READY RESEARCH WORKSPACE</p>
       <h2>Run the experiment. Inspect the evidence. Review the change.</h2>
       <p>Every scenario, dataset, model artifact, decision, and limitation is versioned for reproducible team review.</p>
@@ -411,7 +499,7 @@
   </main>
 
   <footer class="site-footer shell">
-    <a class="brand" href="#top"><span class="brand-symbol"><i></i><i></i></span><span>FRAUDGUARD <b>360</b></span></a>
+    <a class="brand" href="#top"><span class="brand-symbol"><i></i><i></i></span><span>AURALIS <b>RISK</b></span></a>
     <p>Payment-fraud simulation and decision testing.<br><span>Technical research prototype · Synthetic data only</span></p>
     <div><a href="#architecture" data-open-workspace="system">Architecture</a><a href="#dataset" data-open-workspace="data">Dataset</a><a href="/guide.html">Guide</a><a href="https://github.com/nemesis0007/fraudguard-360">Repository</a></div>
   </footer>

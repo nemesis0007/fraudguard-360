@@ -2,7 +2,7 @@
 
 ## System purpose
 
-FraudGuard 360 is a closed-loop synthetic payment-fraud laboratory. It identifies AI-enabled campaigns, generates reproducible transactions and entity graphs, evaluates a locked model plus deterministic policy, records explainable decisions, and converts reviewed misses into future stress cases.
+Auralis Risk is a closed-loop synthetic payment-fraud laboratory. It identifies AI-enabled campaigns, generates reproducible transactions and entity graphs, evaluates a locked model plus deterministic policy, records explainable decisions, and converts reviewed misses into future stress cases.
 
 It is not a payment processor. All identifiers, transactions, authorization outcomes, and graphs are fictional.
 
