@@ -249,7 +249,7 @@ html[data-theme="light"] .workspace-guide{border-color:rgba(0,0,0,.08);backgroun
 @media(max-width:1050px){.model-console{grid-template-columns:1fr}.model-inputs{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.threat-review-lab{grid-template-columns:1fr}.threat-review-compose{border-right:0;border-bottom:1px solid rgba(255,255,255,.09)}}@media(max-width:600px){.model-inputs{grid-template-columns:1fr 1fr}.model-inputs .run-button{grid-column:1/-1}.threat-review-fields,.draft-scores{grid-template-columns:1fr}.draft-actions{flex-wrap:wrap}}
 
 /* Auralis v7: original Stripe-inspired product hero, built from live UI objects */
-body{background:radial-gradient(circle at 78% -8%,rgba(125,75,255,.16),transparent 30%),radial-gradient(circle at 8% 2%,rgba(0,190,255,.1),transparent 24%),#06070a}
+body{background:#000}
 .site-header{background:rgba(6,7,10,.74);border-color:rgba(255,255,255,.08);backdrop-filter:blur(26px) saturate(150%)}
 .brand-symbol{overflow:hidden;border-radius:9px;background:linear-gradient(145deg,#8b5cff,#54d9ff);box-shadow:0 0 30px rgba(112,104,255,.28)}.brand-symbol i{inset:8px 5px;border:0;border-radius:999px;background:#fff;transform:rotate(-26deg)}.brand-symbol i:last-child{inset:13px 6px;transform:rotate(-26deg);opacity:.48}
 .workspace-primary,.button-primary,.mission-run,.run-button,.atlas-launch{background:linear-gradient(110deg,#6e5cff,#168cff 58%,#28c7e9);box-shadow:0 14px 38px rgba(49,111,255,.24)}
