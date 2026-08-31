@@ -96,7 +96,7 @@ function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
   const selected = workspaceTargets[view] ? view : "overview";
   const guide = $("#workspaceGuide");
   const guideContent = workspaceGuides[selected];
-  guide.hidden = !guideContent;
+  guide.hidden = true;
   if (guideContent) {
     $("#workspaceGuideEyebrow").textContent = guideContent.eyebrow;
     $("#workspaceGuideTitle").textContent = guideContent.title;

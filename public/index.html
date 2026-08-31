@@ -66,12 +66,11 @@
       <div class="hero-copy">
         <div class="release-pill"><span></span> Live fraud intelligence · Human governed · GFF 2026</div>
         <h1>Fraud changes shape.<br><em>Your defense should too.</em></h1>
-        <p>A working AI defense lab for payment teams: discover new attack patterns, generate safe synthetic evidence, classify transactions with a locked XGBoost model, and turn misses into reviewed retraining candidates.</p>
+        <p>Test synthetic fraud attacks, score payments with XGBoost, and turn model misses into human-reviewed improvements.</p>
         <div class="hero-actions">
           <button class="button button-primary" id="heroRun">Run the guided demo <span>→</span></button>
           <button class="text-button" type="button" data-open-workspace="system">Explore the system</button>
         </div>
-        <div class="trust-line"><span>BUILT FOR</span><b>Issuers</b><i></i><b>Acquirers</b><i></i><b>Payment networks</b><i></i><b>Fraud teams</b></div>
       </div>
       <div class="hero-visual" aria-label="Interactive card-payment risk check">
         <canvas id="heroCanvas" width="1240" height="620" aria-hidden="true"></canvas>
@@ -101,7 +100,7 @@
           <button type="button" data-hero-preset="device"><span></span><b>New device</b><small>Step-up candidate</small></button>
           <button type="button" data-hero-preset="coordinated"><span></span><b>Coordinated burst</b><small>Graph + velocity risk</small></button>
         </div>
-        <div class="visual-foot"><span id="heroModelVersion">XGBOOST / LOADING</span><span>Human-gated GenAI</span><span>0 raw PII</span></div>
+        <div class="visual-foot"><span id="heroModelVersion">XGBOOST / LOADING</span></div>
       </div>
     </section>
 
@@ -186,7 +185,7 @@
       </div>
     </section>
 
-    <section class="platform shell" id="platform" data-workspace-view="overview">
+    <section class="platform shell" id="platform" data-workspace-view="overview" hidden aria-hidden="true">
       <div class="section-intro">
         <div><p class="kicker">SYSTEM COMPONENTS</p><h2>One workflow from<br>scenario to decision.</h2></div>
         <p>The system joins counterfactual simulation, transaction features, entity-graph context, locked-model inference, deterministic policy, and governed feedback.</p>
@@ -452,7 +451,7 @@
       </div>
     </section>
 
-    <section class="team-handoff shell" id="team" data-workspace-view="system">
+    <section class="team-handoff shell" id="team" data-workspace-view="system" hidden aria-hidden="true">
       <div class="section-intro team-intro">
         <div><p class="kicker">ENGINEERING HANDOFF</p><h2>Everything the team<br>needs to work safely.</h2></div>
         <p>Start with the engineering guide, inspect the API contracts, follow the contribution workflow, and use the operations runbook for local or hosted environments.</p>
@@ -467,7 +466,7 @@
       </div>
     </section>
 
-    <section class="evidence shell" id="evidence" data-workspace-view="data">
+    <section class="evidence shell" id="evidence" data-workspace-view="data" hidden aria-hidden="true">
       <div class="section-intro evidence-intro">
         <div><p class="kicker">EVIDENCE, NOT THEATER</p><h2>A hybrid data strategy<br>with honest boundaries.</h2></div>
         <p>Fully synthetic data is useful for novel attacks but weak as proof of realism. Real-only data cannot show attacks that have not happened. Auralis combines the strengths without blurring their provenance.</p>
@@ -482,7 +481,7 @@
       </div>
     </section>
 
-    <section class="proof-ledger shell" id="challenge-proof" data-workspace-view="overview">
+    <section class="proof-ledger shell" id="challenge-proof" data-workspace-view="overview" hidden aria-hidden="true">
       <div class="section-intro proof-intro">
         <div><p class="kicker">CHALLENGE PROOF LEDGER</p><h2>Every requirement.<br>Visible and testable.</h2></div>
         <p>The brief is translated into product evidence. A judge can see the threat intelligence, the agents generating the world, the defense response, and the governed learning loop without reading the code first.</p>
@@ -491,7 +490,7 @@
       <div class="ledger-gaps"><span>BEFORE A REAL PILOT</span><div id="pilotGaps"></div></div>
     </section>
 
-    <section class="final-cta shell" data-workspace-view="overview">
+    <section class="final-cta shell" data-workspace-view="overview" hidden aria-hidden="true">
       <p class="kicker">TEAM-READY RESEARCH WORKSPACE</p>
       <h2>Run the experiment. Inspect the evidence. Review the change.</h2>
       <p>Every scenario, dataset, model artifact, decision, and limitation is versioned for reproducible team review.</p>
