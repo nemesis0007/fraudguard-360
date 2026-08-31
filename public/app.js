@@ -112,8 +112,6 @@ function activateWorkspace(view, { updateHistory = true, scroll = true } = {}) {
     button.tabIndex = active ? 0 : -1;
   });
   document.body.dataset.workspace = selected;
-  const viewIndex = Object.keys(workspaceTargets).indexOf(selected);
-  $("#workspaceProgress").style.transform = `scaleX(${(viewIndex + 1) / Object.keys(workspaceTargets).length})`;
   $("#viewAnnouncer").textContent = `${workspaceNames[selected]} workspace selected`;
   if (document.documentElement.dataset.motion !== "reduced") {
     visibleSections.forEach((section, index) => {
